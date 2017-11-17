@@ -1,6 +1,9 @@
 # MPK.Puzzle
 MPK Projekt Puzzle Solver
 
+# Git intro
+
+
 
 # Current Todo
 Git für Puzzlelösung Projekt Momentane ToDos:
