@@ -2,6 +2,7 @@
 MPK Projekt Puzzle Solver
 
 # Git intro
+0, read github tutorial
 1, Clone repository
 2, branch master
 3, dont ever touch master again
