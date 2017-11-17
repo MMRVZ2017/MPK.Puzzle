@@ -1,0 +1,12 @@
+mögliche nächste Inputschritte
+	eigentliche Roboterkamera verwenden
+
+mögliche nächste Lösungsschritte:
+
+	genauere Form der Kanten
+	Farbe der Ränder miteinander vergleichen
+	med. Farbe des Teiles bez. Puzzle
+
+mögliche nächste Outputschritte:
+
+	
