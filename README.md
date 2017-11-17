@@ -2,11 +2,17 @@
 MPK Projekt Puzzle Solver
 
 # Git intro
+1, Clone repository
+2, branch master
+3, dont ever touch master again
+4, ..?
+5, Profit
 
+Seriously. don't merge branch to master unless you are absolutely, 100% sure it works!
 
 
 # Current Todo
-Git für Puzzlelösung Projekt Momentane ToDos:
+Git for Puzzle solving project
 
 1, Input:
 
@@ -18,7 +24,7 @@ Git für Puzzlelösung Projekt Momentane ToDos:
 
 2, Solver
 
--Grundsätzliche Aufbauweise konstruieren
+-Grundsätzliche Aufbauweise
 
 -Puzzle nach bekommenen Informationen der Input Gruppe lösen -soweit dies möglich ist-
 
