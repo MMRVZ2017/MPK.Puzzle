@@ -3,11 +3,18 @@ MPK Projekt Puzzle Solver
 
 # Git intro
 0, read github tutorial
+
 1, Clone repository
+
 2, branch master
+
 3, dont ever touch master again
+
 4, ..?
+
 5, Profit
+
+
 
 Seriously. don't merge branch to master unless you are absolutely, 100% sure it works!
 
