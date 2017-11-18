@@ -36,6 +36,7 @@ private:
     unsigned int  shifts;
     unsigned int  boxidentifier;
     unsigned int  identifier;
+
     static unsigned int idcount;
 };
 
@@ -126,8 +127,7 @@ class coor
 {
 public:
     int m, n;
-    coor():m(-1),n(-1){}
-    coor(int newm,int newn): m(newm), n(newn)
+    coor(int newm=-1,int newn=-1): m(newm), n(newn)
     {}
 };
 
@@ -135,14 +135,14 @@ class LogEntry
 {
 public:
     vector<PuzzlePiece*> PieceCollector;
-    vector<coor> CoorCollector; 
     int abstractionLevel;
-
     coor myCoor;
-    PuzzlePiece* myPuzzlePiece;
+
+    void advance(){abstractionLevel++;}
 
     LogEntry()
     {
+        myCoor();
         abstractionLevel=0;
     }
 private:
