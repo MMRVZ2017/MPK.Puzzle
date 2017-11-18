@@ -97,7 +97,7 @@ cout << endl;
 //checks if the myPart in its current orientation is legal in position m, n
 bool Puzzle::PlaceOfPartGood(unsigned int m,unsigned int n, PuzzlePiece& myPart)
 {
-
+       
     PuzzlePiece negativePart(0);
 
     negativePart.setConnections(negativePart.getConnections() | (getPiece(m,n+1).getConnections() & 0b11000000));
@@ -134,9 +134,8 @@ cout << endl;
         return 1;
     }
 
-
-
     return 0;
+
 }
 
 
@@ -145,43 +144,34 @@ cout << endl;
 //not yet functional!!!
 bool Puzzle::PlaceOfPart2Good(unsigned int m,unsigned int n, PuzzlePiece& myPart)
 {
-
+     PuzzlePiece tmpPuzzlePiece = myPart;    
+    
+    //make tmp a negativ part
+    if((tmpPuzzlePiece.getConnections() & 0b11000000) != 192 || 0)
+        tmpPuzzlePiece.setConnections(tmpPuzzlePiece.getConnections() ^ 0b11000000);
+    if((tmpPuzzlePiece.getConnections() & 0b00110000) != 48 || 0)
+        tmpPuzzlePiece.setConnections(tmpPuzzlePiece.getConnections() ^ 0b00110000);
+    if((tmpPuzzlePiece.getConnections() & 0b00001100) != 12 || 0)
+        tmpPuzzlePiece.setConnections(tmpPuzzlePiece.getConnections() ^ 0b00001100);
+    if((tmpPuzzlePiece.getConnections() & 0b00000011) != 3 || 0)
+        tmpPuzzlePiece.setConnections(tmpPuzzlePiece.getConnections() ^ 0b00000011);
+        
     PuzzlePiece negativePart(0);
 
     negativePart.setConnections(negativePart.getConnections() | (getPiece(m,n+1).getConnections() & 0b11000000));
     negativePart.setConnections(negativePart.getConnections() | (getPiece(m-1,n).getConnections() & 0b00110000));
     negativePart.setConnections(negativePart.getConnections() | (getPiece(m,n-1).getConnections() & 0b00001100));
     negativePart.setConnections(negativePart.getConnections() | (getPiece(m+1,n).getConnections() & 0b00000011));
+    
     negativePart.shift(2);
-
-    //A and D or B and C or not A and not B and not C and not D
-
-    if  ( 
-          (    (  (negativePart.getConnections() & 0b10000000)  &  (myPart.getConnections() & 0b01000000))
-            || (  (negativePart.getConnections() & 0b01000000)  &  (myPart.getConnections() & 0b10000000))
-            || ((!(negativePart.getConnections() & 0b10000000)  & !(myPart.getConnections() & 0b10000000)) & (!(negativePart.getConnections() & 0b01000000) & !(myPart.getConnections() & 0b01000000)))
-          )
-        &&
-          (    (  (negativePart.getConnections() & 0b00100000)  &  (myPart.getConnections() & 0b00010000))
-            || (  (negativePart.getConnections() & 0b00010000)  &  (myPart.getConnections() & 0b00100000))
-            || ((!(negativePart.getConnections() & 0b00100000)  & !(myPart.getConnections() & 0b00100000)) & (!(negativePart.getConnections() & 0b00010000) & !(myPart.getConnections() & 0b00010000)))
-          )
-        &&
-          (    (  (negativePart.getConnections() & 0b00001000)  &  (myPart.getConnections() & 0b00000100))
-            || (  (negativePart.getConnections() & 0b00000100)  &  (myPart.getConnections() & 0b00001000))
-            || ((!(negativePart.getConnections() & 0b00001000)  & !(myPart.getConnections() & 0b00001000)) & (!(negativePart.getConnections() & 0b00000100) & !(myPart.getConnections() & 0b00000100)))
-          )
-        &&
-          (    (  (negativePart.getConnections() & 0b00000010)  &  (myPart.getConnections() & 0b00000001))
-            || (  (negativePart.getConnections() & 0b00000001)  &  (myPart.getConnections() & 0b00000010))
-            || ((!(negativePart.getConnections() & 0b00000010)  & !(myPart.getConnections() & 0b00000010)) & (!(negativePart.getConnections() & 0b00000001) & !(myPart.getConnections() & 0b00000001)))
-          )
-        )
-
+    
+    //check tmp part with environment
+    if(((negativePart.getConnections() & 0b11000000) == (tmpPuzzlePiece.getConnections() & 0b11000000)) && ((negativePart.getConnections() & 0b00110000) == (tmpPuzzlePiece.getConnections() & 0b00110000))
+    && ((negativePart.getConnections() & 0b00001100) == (tmpPuzzlePiece.getConnections() & 0b00001100)) && ((negativePart.getConnections() & 0b00000011) == (tmpPuzzlePiece.getConnections() & 0b00000011)))
         return 1;
-
-    cout << "nogood" << endl;
+    
     return 0;
+
 }
 
 //prints the true puzzle (without 0 edges)
