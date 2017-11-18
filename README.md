@@ -8,15 +8,11 @@ MPK Projekt Puzzle Solver
 
 2, branch master into a team branch
 
-3, dont ever touch master again
+3, work only in this branch
 
-4, ..?
+4, don't ever touch the master.
 
-5, Profit
-
-
-
-Seriously. don't merge branch to master unless you are absolutely, 100% sure it works!
+Seriously. don't merge branch to master unless you are absolutely, 100% sure it works and you have discussed it with pm.
 
 
 # Current Todo
