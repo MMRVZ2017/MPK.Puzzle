@@ -6,6 +6,7 @@ void PuzzlePiece::shift(unsigned int moves)
     setConnections(((getConnections() >> (moves*2)) | (getConnections() << sizeof(unsigned char)*8 - (moves*2))));     
 }
 
+
 //creates random centerpiece
 void PuzzlePiece::randomCenterPiece()
 {

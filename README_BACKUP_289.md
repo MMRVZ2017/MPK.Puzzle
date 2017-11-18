@@ -6,7 +6,11 @@ MPK Projekt Puzzle Solver
 
 1, Clone repository
 
+<<<<<<< HEAD
+2, branch master
+=======
 2, branch master into a team branch
+>>>>>>> master
 
 3, dont ever touch master again
 
