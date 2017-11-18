@@ -6,9 +6,9 @@ MPK Projekt Puzzle Solver
 
 1, Clone repository
 
-2, branch master into a team branch
+2, branch master into a team branch (named "Team"+[teamname])
 
-3, work only in this branch
+3, work only in this team branch or subbranches
 
 4, don't ever touch the master.
 
