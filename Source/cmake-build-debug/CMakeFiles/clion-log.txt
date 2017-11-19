@@ -1,0 +1,4 @@
+C:\Users\Johannes\.CLion2017.2\system\cygwin_cmake\bin\cmake.exe -DCMAKE_BUILD_TYPE=Debug -G "CodeBlocks - Unix Makefiles" /cygdrive/j/Studium/_MSC/Semester_1/08_MPK/Projekt/2017-11-17_PuzzleSolver
+-- Configuring done
+-- Generating done
+-- Build files have been written to: /cygdrive/j/Studium/_MSC/Semester_1/08_MPK/Projekt/2017-11-17_PuzzleSolver/cmake-build-debug
