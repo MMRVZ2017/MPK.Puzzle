@@ -1,14 +1,15 @@
 #define MAX_ABSTRAX 1
 #define structdebug
 
-#include "header.h"
 
+#include "header.h"
+#include "../Codicil/test_puzzle_long40x40.h"
 
 
 int main()
 {
 
-	int cols=10, rows=10;
+	int cols=40, rows=40;
 	//some basic part stuff
 	vector<Part> myFirstPuzzle;
 	Part myFirstPart;
@@ -20,11 +21,14 @@ int main()
 	myRandomBox.createRandomPuzzle();
 	vector<PuzzlePiece> myFirstBox = myRandomBox.shuffle();
 
-
+	//undo everything and make this puzzle fucking imba hard!!!
+	//need 40x40 for this, so check your status
+	makehard4040puzzle(myFirstBox);
 
 	//some advanced solver stuff
 	vector<LogEntry> log;
 	vector<PuzzlePiece*> p_myFirstBox;
+
 
 	cout << "original puzzle: " << endl;
 	myRandomBox.printPuzzle();
