@@ -136,13 +136,12 @@ class LogEntry
 public:
     vector<PuzzlePiece*> PieceCollector;
     int abstractionLevel;
-    coor myCoor;
+    coor myCoor = coor();
 
     void advance(){abstractionLevel++;}
 
     LogEntry()
     {
-        myCoor();
         abstractionLevel=0;
     }
 private:
@@ -151,3 +150,14 @@ private:
 void printBox(vector<PuzzlePiece> myBox);
 vector<PuzzlePiece> createBox(uint m, uint n);
 void numerateBox(vector<PuzzlePiece>& myBox);
+
+bool next(vector<LogEntry>& log, vector<PuzzlePiece*>& p_Box, Puzzle& puzzleMat);
+coor calculateFirstCoor(vector<LogEntry>& log, vector<PuzzlePiece*>& p_Box, Puzzle& puzzleMat);
+coor calculateNextCoor(vector<LogEntry>& log, vector<PuzzlePiece*>& p_Box, Puzzle& puzzleMat);
+void solve(vector<LogEntry>& log, vector<PuzzlePiece*>& p_Box, Puzzle& puzzleMat);
+void abstractionlayer0solver(vector<LogEntry>& log, vector<PuzzlePiece*>& p_Box, Puzzle& puzzleMat);
+void abstractionlayer1solver(vector<LogEntry>& log, vector<PuzzlePiece*>& p_Box, Puzzle& puzzleMat);
+void setsolution(vector<LogEntry>& log, vector<PuzzlePiece*>& p_Box, Puzzle& puzzleMat);
+bool backtrack(vector<LogEntry>& log, vector<PuzzlePiece*>& p_Box, Puzzle& puzzleMat);
+
+

@@ -1,4 +1,4 @@
-#define MAX_ABSTRAX = 1
+#define MAX_ABSTRAX 1
 
 #include "header.h"
 
@@ -15,17 +15,17 @@ int main()
 	myFirstPuzzle.push_back(myFirstPart);
 
 	//some basic random puzzle stuff
-	randomBox myFirstBox(cols,rows);
-	myFirstBox.createRandomPuzzle();
-	myFirstBox.shuffle();
-	myFirstBox.printPuzzle();
-
+	randomBox myRandomBox(cols,rows);
+	myRandomBox.createRandomPuzzle();
+	vector<PuzzlePiece> myFirstBox = myRandomBox.shuffle();
+	myRandomBox.printPuzzle();
 
 
 
 	//some advanced solver stuff
 	vector<LogEntry> log;
 	vector<PuzzlePiece*> p_myFirstBox;
+
 	for(int i=0;i<myFirstBox.size();i++)
 		p_myFirstBox[i] = &myFirstBox[i];
 	Puzzle puzzleMat(cols, rows);
