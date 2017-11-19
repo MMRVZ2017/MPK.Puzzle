@@ -40,7 +40,7 @@ private:
     static unsigned int idcount;
 };
 
-unsigned int PuzzlePiece::idcount(0);
+
 
 class Puzzle
 {
@@ -139,13 +139,25 @@ public:
     coor myCoor = coor();
 
     void advance(){abstractionLevel++;}
+    void Set(){set=1;}
+    bool isSet(){return set;}
+    void advanceRandomed() { randomed++;}
+    void decreaseRandomed() { randomed--;}
+    int hasRandomed(){return randomed;}
 
     LogEntry()
     {
         abstractionLevel=0;
+        set=0;
     }
 private:
+    bool set;
+    static int randomed;
 };
+
+int LogEntry::randomed(0);
+unsigned int PuzzlePiece::idcount(0);
+
 
 void printBox(vector<PuzzlePiece> myBox);
 vector<PuzzlePiece> createBox(uint m, uint n);

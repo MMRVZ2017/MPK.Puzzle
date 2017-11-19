@@ -57,15 +57,12 @@ bool Puzzle::testRotationPiece(unsigned int m, unsigned int n, PuzzlePiece& myPa
 {
     for(int rotation=0; rotation < 4; rotation++)
     {
-        if(PlaceOfPartGood(m,n, myPart))
+        if(PlaceOfPartGood(m,n,myPart))
             return 1;
         myPart.shift(1);
     }
-#ifdef debug
-cout << "bad part: ";
-myPart.printPiece();
-cout << endl;
-#endif
+
+        //cout << "Was a bad part" << endl;
     return 0;
 }
 
@@ -107,10 +104,9 @@ bool Puzzle::PlaceOfPartGood(unsigned int m,unsigned int n, PuzzlePiece& myPart)
     negativePart.shift(2);
 
 
-
     if  ( 
           (    ((((negativePart.getConnections() & 0b11000000) ^  (myPart.getConnections() & 0b11000000))  != 0b00000000)                  && (((myPart.getConnections() & 0b11000000) != 0b00000000) && (negativePart.getConnections() & 0b11000000) != 0b00000000))
-            || ((((negativePart.getConnections() & 0b11000000) == 0b11000000) || ((myPart.getConnections() &  0b11000000) == 0b11000000))  && (( myPart.getConnections() & 0b11000000) != 0b00000000) && (negativePart.getConnections() & 0b11000000) != 0b00000000)
+            || ((((negativePart.getConnections() & 0b11000000) == 0b11000000) || ((myPart.getConnections() &  0b11000000) == 0b11000000))  && (((myPart.getConnections() & 0b11000000) != 0b00000000) && (negativePart.getConnections() & 0b11000000) != 0b00000000))
             ||  (((negativePart.getConnections() & 0b11000000) == 0b00000000) && ((myPart.getConnections() &  0b11000000) == 0b00000000))  ) 
         &&
           (    ((((negativePart.getConnections() & 0b00110000) ^ (myPart.getConnections() & 0b00110000))  != 0b00000000)                   && (((myPart.getConnections() & 0b00110000) != 0b00000000) && (negativePart.getConnections() & 0b00110000) != 0b00000000))
@@ -125,14 +121,15 @@ bool Puzzle::PlaceOfPartGood(unsigned int m,unsigned int n, PuzzlePiece& myPart)
             || ((((negativePart.getConnections() & 0b00000011) == 0b00000011) || ((myPart.getConnections() &  0b00000011) == 0b00000011))  && (((myPart.getConnections() & 0b00000011) != 0b00000000) && (negativePart.getConnections() & 0b00000011) != 0b00000000))
             ||  (((negativePart.getConnections() & 0b00000011) == 0b00000000) && ((myPart.getConnections() &  0b00000011) == 0b00000000))  )    
         )
-    {
-#ifdef debug        
-cout << "good Part: ";
-myPart.printPiece();
-cout << endl;
-#endif        
+    {    
+        //cout << "good Part: ";
+        //myPart.printPiece();
+        //cout << endl;       
         return 1;
     }
+    //cout << "bad Part: ";
+    //myPart.printPiece();
+    //cout << endl;       
 
     return 0;
 
