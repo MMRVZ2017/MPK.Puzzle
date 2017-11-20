@@ -32,6 +32,6 @@
 *.out
 *.app
 
-#Folders
-cmake-build-debug/
-.idea/
+#Directories
+Source/cmake-build-debug/
+Source/.idea/
