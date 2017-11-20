@@ -3,6 +3,7 @@
 #include "defines.h"
 #include "puzzleBox.h"
 #include "step.h"
+#include "constrMatrix.h"
 
 using namespace std;
 
@@ -36,6 +37,7 @@ public:
 private:
     vector <Step> myPath;
     Puzzlebox myBox;
+    ConstrMatrix myMatrix;
 };
 
 #endif //PATH_H
