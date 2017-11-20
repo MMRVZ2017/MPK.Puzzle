@@ -1,3 +1,0 @@
-/cygdrive/j/Studium/_MSC/Semester_1/08_MPK/Projekt/2017-11-17_PuzzleSolver/cmake-build-debug/CMakeFiles/rebuild_cache.dir
-/cygdrive/j/Studium/_MSC/Semester_1/08_MPK/Projekt/2017-11-17_PuzzleSolver/cmake-build-debug/CMakeFiles/edit_cache.dir
-/cygdrive/j/Studium/_MSC/Semester_1/08_MPK/Projekt/2017-11-17_PuzzleSolver/cmake-build-debug/CMakeFiles/2017_11_17_PuzzleSolver.dir

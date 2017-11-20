@@ -33,5 +33,5 @@
 *.app
 
 #Directories
-Source/cmake-build-debug/
-Source/.idea/
+cmake-build-debug
+.idea

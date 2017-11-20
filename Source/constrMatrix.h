@@ -16,9 +16,9 @@ public:
     ConstrMatrix();                                                     //initialises matrix
     ~ConstrMatrix(){}
     uint8_t get_constraints(int row, int col) const;                    //returns constraints from surrounding parts for a given position
-    void set_constraints(int row, int col, uint8_t connectors)          //writes constraints to a given position
-    void remove_constraints(int row, int col)                           //removes constraints for a given position
-    void print_constraints(int row, int col) const                      //prints constraints for a given position
+    void set_constraints(int row, int col, uint8_t connectors);         //writes constraints to a given position
+    void remove_constraints(int row, int col);                          //removes constraints for a given position
+    void print_constraints(int row, int col) const;                     //prints constraints for a given position
     void print_matrix() const;                                          //prints matrix including border lines
 
 private:

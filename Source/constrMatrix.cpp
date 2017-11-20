@@ -50,7 +50,7 @@ void rotate_part(uint8_t &part, int steps){                                     
     }
 }
 
-uint8_t check_constraints (uint8_t mask , uint8_t part, int orientation = 0){               // ToDo: move function to different class?
+uint8_t check_constraints (uint8_t mask , uint8_t part, int orientation ){               // ToDo: move function to different class?
     for (; orientation < 3; orientation++){
         if ((mask & part) == 0b00000000) return orientation;
         else rotate_part(part,1);
