@@ -1,6 +1,7 @@
 #include <iostream>
 #include <vector>
 #include "path.h"
+#include "constrMatrix.h"
 
 using namespace std;
 
