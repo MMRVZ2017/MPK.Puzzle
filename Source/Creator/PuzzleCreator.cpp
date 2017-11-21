@@ -124,7 +124,7 @@ vector <Part> PuzzleCreator::CreateRandomPuzzle(vector <Part> part_array, vector
 		{
 			uint8_t newPart = 0b00000000;
 			/*
-			3 Möglichkeiten: 00 - 01 - 10
+			3 Mï¿½glichkeiten: 00 - 01 - 10
 
 			Ecke:	min. 6 nuller 00100100 - nuller nebeneinander != 00010010
 			Kante:	min. 5 nuller 00100110
@@ -172,7 +172,7 @@ vector <Part> PuzzleCreator::CreateRandomPuzzle(vector <Part> part_array, vector
 	return part_array;
 }
 
-vector <Part> PuzzleCreator::CreateRandomPuzzle2(vector <Part> part_array, vector <Part *> corners_array, vector <Part *> edges_array, vector <Part *> inners_array)
+vector <Part> PuzzleCreator::CreateRandomPuzzle2(vector <Part> part_array, vector <Part *>& corners_array, vector <Part *>& edges_array, vector <Part *>& inners_array)
 {
 	int partIndex = 0;
 	int countCorner = 0;

@@ -17,11 +17,11 @@ public:
      * This is a function to shift a 8 bit continuous.
      *
      * The given bitstream will be shifted the given shiftLength to the left
-     *      example: HelperFunctions::ContinousShift(test, 4);
+     *      example: HelperFunctions::ContinuousShift(test, 4);
      *
      * If a negative number will be given as shiftLength, the bitstream will
      * be shifted the positive shiftLength to the right
-     *      example: HelperFunctions::ContinousShift(test, -4);
+     *      example: HelperFunctions::ContinuousShift(test, -4);
      */
     static uint8_t ContinuousShift(uint8_t bitStream, int shiftLength);
 };

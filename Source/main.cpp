@@ -1,19 +1,16 @@
-#include <iostream>
+ #include <iostream>
 #include <string>
 #include <bitset>
 #include <cstdlib>
 #include <algorithm>
 #include "Creator/PuzzleCreator.h"
 #include "Solver/PuzzleSolverGrp3.h"
-//teständerung
+#include "Helper/HelperFunctions.h"
+
 using namespace std;
 
-/*
-const uint8_t SPALTEN = 35;
-const uint8_t ZEILEN = 27;
-*/
-const uint8_t SPALTEN = 36;
-const uint8_t ZEILEN = 28;
+const uint8_t ZEILEN = 36;
+const uint8_t SPALTEN = 28;
 
 int main() {
     vector <Part> part_array(NR_PARTS);
@@ -71,10 +68,16 @@ int main() {
         }
     }*/
 
-    PuzzleSolverGrp3 pzlSolverGrp3(part_array, corners_array, edges_array, inners_array);
+    PuzzleSolverGrp3 pzlSolverGrp3(&part_array, corners_array, edges_array, inners_array);
     pzlSolverGrp3.SolvePuzzle();
+    /*
+    for(int i = 0; i < 10; i++)
+    {
+        pzlSolverGrp3.SolvePuzzle();
+    }
+     */
 
-    cin.get();
+    //cin.get();
 
     return 0;
 }
