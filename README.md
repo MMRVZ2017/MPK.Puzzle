@@ -1,6 +1,33 @@
 # MPK.Puzzle
 MPK Projekt Puzzle Solver
 
+Don't merge branch to master unless you are absolutely, 100% sure it works and you have discussed it with pm!
+
+
+# Current Todo
+Git for Puzzle solving project
+
+1, Input:
+
+- Kontrolle, ob extrahierte Information rotationsinvariant ist
+
+- Information in definierte Schnittstelle übergeben
+
+- Farbdurchschnitt der einzelnen Puzzleteile extrahieren
+
+2, Solver
+
+- Puzzle Solver Abstraktion 1 fertig erstellen (Form)
+
+- Puzzle Solver Abstraktion 2 (Farbdurchschnitt) Konzept erstellen und programmieren
+
+- Random Algorithmus?
+
+3, Output
+
+-visuelle Darstellung des Outputs der Matrix von Solver
+	hier soll das 'fertige' Puzzle dargestellt werden
+
 # Git intro
 0, read github tutorial
 
@@ -15,27 +42,3 @@ MPK Projekt Puzzle Solver
 Seriously. don't merge branch to master unless you are absolutely, 100% sure it works and you have discussed it with pm.
 
 
-# Current Todo
-Git for Puzzle solving project
-
-1, Input:
-
--Puzzle Bilder in richtige Orientierung bringen
-
--Puzzle Bilder informaion rein raus oder kante extrahieren
-
--Schnittstelle zwischen Input und Solver definieren
-
-2, Solver
-
--Grundsätzliche Aufbauweise
-
--Puzzle nach bekommenen Informationen der Input Gruppe lösen -soweit dies möglich ist-
-
-3, Output
-
--Transparenz der Bilder einstellen
-
--visuelle Darstellung des outputs von Solver
-
--Schnittstelle zwischen Solver und Output definieren
