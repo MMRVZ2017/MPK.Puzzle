@@ -1,6 +1,5 @@
 #include "PuzzleCreator.h"
-
-
+#include "../Helper/HelperFunctions.h"
 
 PuzzleCreator::PuzzleCreator(int spalten, int zeilen) : m_spalten(spalten), m_zeilen(zeilen)
 {
@@ -100,7 +99,7 @@ bool PuzzleCreator::PuzzleLogicForNewPuzzle(vector <Part> part_array, uint8_t ne
 	// 0b000001000 | 0b00000100 == 0b00001100
 	// 0b000001000 & 0b01000000 == 0b00000000
 	// Shift to get top nose of the new part compared to the bottom nose of the upper part
-	if (((upperPartNoseBottom | (newPartNoseTop >> 4)) == 0b00001100) && ((leftPartNoseRight | (newPartNoseLeft << 4)) == 0b00110000))
+	if (((upperPartNoseBottom ^ (newPartNoseTop >> 4)) == 0b00001100) && ((leftPartNoseRight ^ (newPartNoseLeft << 4)) == 0b00110000))
 	//if (((upperPartNoseBottom & (newPartNoseTop >> 4)) == 0b00000000) && ((leftPartNoseRight & (newPartNoseLeft << 4)) == 0b00000000))
 	{
 		// new part fits in the hole
@@ -124,7 +123,7 @@ vector <Part> PuzzleCreator::CreateRandomPuzzle(vector <Part> part_array, vector
 		{
 			uint8_t newPart = 0b00000000;
 			/*
-			3 Möglichkeiten: 00 - 01 - 10
+			3 Mï¿½glichkeiten: 00 - 01 - 10
 
 			Ecke:	min. 6 nuller 00100100 - nuller nebeneinander != 00010010
 			Kante:	min. 5 nuller 00100110
@@ -172,7 +171,7 @@ vector <Part> PuzzleCreator::CreateRandomPuzzle(vector <Part> part_array, vector
 	return part_array;
 }
 
-vector <Part> PuzzleCreator::CreateRandomPuzzle2(vector <Part> part_array, vector <Part *> corners_array, vector <Part *> edges_array, vector <Part *> inners_array)
+vector <Part> PuzzleCreator::CreateRandomPuzzle2(vector <Part> part_array, vector <Part *>& corners_array, vector <Part *>& edges_array, vector <Part *>& inners_array)
 {
 	int partIndex = 0;
 	int countCorner = 0;
@@ -236,6 +235,9 @@ vector <Part> PuzzleCreator::CreateRandomPuzzle2(vector <Part> part_array, vecto
 			partIndex++;
 		}
 	}
+
+	RotateWholePuzzle(part_array);
+	//ShuffleWholePuzzle(part_array);
 
 	return part_array;
 }
@@ -355,4 +357,27 @@ vector <Part> PuzzleCreator::CreatePuzzle(vector <Part> part_array, vector <Part
 		}
 	}
 	return part_array;
+}
+
+void PuzzleCreator::RotateWholePuzzle(vector <Part>& part_array)
+{
+	for(int index = 0; index < part_array.size(); index++)
+	{
+		int randomNum = 2 * (rand() % 4);
+		part_array[index].setConnections(HelperFunctions::ContinuousShift(part_array[index].getConnections(), randomNum));
+	}
+}
+
+void PuzzleCreator::ShuffleWholePuzzle(vector <Part>& part_array)
+{
+	//with this function the pointer of corner_array,.. will be lost
+	//random_shuffle(begin(part_array), end(part_array));
+
+	/*
+	for(int index = 0; index < part_array.size(); index++)
+	{
+		int randomPos = rand() % (part_array.size() + 1);
+		iter_swap(part_array.begin() + index, part_array.begin() + randomPos);
+	}
+	*/
 }

@@ -5,7 +5,7 @@
 #include <algorithm>
 #include "Creator/PuzzleCreator.h"
 #include "Solver/PuzzleSolverGrp3.h"
-//teständerung
+
 using namespace std;
 
 /*
@@ -71,8 +71,19 @@ int main() {
         }
     }*/
 
-    PuzzleSolverGrp3 pzlSolverGrp3(part_array, corners_array, edges_array, inners_array);
-    pzlSolverGrp3.SolvePuzzle();
+    PuzzleSolverGrp3 pzlSolverGrp3(&part_array, corners_array, edges_array, inners_array);
+
+    bool puzzleSolved = false;
+    int tries = 0;
+    while(!puzzleSolved)
+    {
+        tries++;
+        puzzleSolved = pzlSolverGrp3.SolvePuzzle();
+        pzlSolverGrp3.ClearPuzzle();
+        //cout << " || " << tries << " Versuche fehlgeschlagen!";
+    }
+
+    //puzzleSolved = pzlSolverGrp3.SolvePuzzle2();
 
     cin.get();
 
