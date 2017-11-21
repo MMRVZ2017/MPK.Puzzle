@@ -9,7 +9,6 @@ int main() {
     ConstrMatrix myfirstMatrix;
     myfirstMatrix.print_matrix();
     
-//    test
 
     cout << endl;
     myfirstMatrix.print_constraints(0,0);
