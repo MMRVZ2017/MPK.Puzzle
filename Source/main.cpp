@@ -60,8 +60,8 @@ int main() {
     part_array[3].setConnections(0b00001001); // Piece 4
     part_array[4].setConnections(0b10101000); // Piece 5
     part_array[5].setConnections(0b01011001); // Piece 6
-    part_array[6].setConnections(0b01011010); // Piece 7
-    //part_array[6].setConnections(0b10101010); // Piece 7
+    //part_array[6].setConnections(0b01011010); // Piece 7
+    part_array[6].setConnections(0b10101010); // Piece 7
     part_array[7].setConnections(0b01000101); // Piece 8
     part_array[8].setConnections(0b01010000); // Piece 9
     part_array[9].setConnections(0b01010010); // Piece 10
@@ -81,16 +81,30 @@ int main() {
     Step::printNrUsedPartType();                            // Prints the number of used parts of each part-type
     //puzzlePath.printPath();
 
-    for (uint16_t i = 0; i < NR_POSITIONS; i++){
-        puzzlePath.placePart(puzzlePath.getStep(i));        // Places a part for every step (No part-constraints, just edges,corners,inners-constraints)
-    }
+    //        puzzlePath.placePart(puzzlePath.getStep(i));        // Places a part for every step (No part-constraints, just edges,corners,inners-constraints)
 
-    cout << "Rotated to: " << unsigned(puzzlePath.getStep(2)->rotate()) << endl;        // This rotates a part and returns it's new positions
+    bool flag = false;
+    uint16_t goBackIdx = 0;
+    for (uint16_t i = 0; i < NR_POSITIONS; i++){
+        cout << "PLACING PART" << unsigned(i) <<endl;
+        flag = puzzlePath.placePart(puzzlePath.getStep(i), 0);
+        if (flag == false) {
+            for (goBackIdx = uint16_t(i); flag != true; goBackIdx--) {
+                cout << "GO BACK FROM PART" << unsigned(i) << endl;
+                puzzlePath.goBack(goBackIdx);
+                flag = puzzlePath.placePart(puzzlePath.getStep(goBackIdx-1), 1);
+            }
+            i = goBackIdx;
+        }
+    }   // TODO: Catch wrong puzzles
+
+    //cout << "Rotated to: " << unsigned(puzzlePath.getStep(2)->rotate()) << endl;        // This rotates a part and returns it's new positions
 
     puzzlePath.printPath();                                 // Where "1" is visible, this part is possible
 
     puzzlePath.getPuzzleBox()->printTypeArr();
     Step::printNrUsedPartType();
+    puzzlePath.printSolution();
 
     return 1;
 }

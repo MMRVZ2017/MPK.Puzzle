@@ -2,49 +2,86 @@
 
 int debug = 0;
 
-void Path::placePart(Step* myStep) {
-    int8_t partType = getNextPossiblePartTypeIdx(myStep);
+uint16_t Path::goBack(uint16_t actStepIdx){
+    Step *myStep = getStep(actStepIdx);
+    Step *lastStep = getStep(uint16_t(actStepIdx-1));
+    int8_t actPartType = myStep->getFittingPartTypeIdx();
+
+    /*myStep->printNrUsedPartType();
+    myBox.printTypeArr();
+    cout << "Displaying Step " << actStepIdx << endl;
+    myStep->printPossiblePartTypeArr();
+    cout << "Displaying Step " << actStepIdx-1 << endl;
+    lastStep->printPossiblePartTypeArr();*/
+
+    if (actPartType != -1){
+        decNrUsedPartType(myStep, actPartType);
+    }
+    myStep->resetPossiblePartTypes();
+    myConstr.remove_constraints(myStep->getPosition().getRow(),myStep->getPosition().getCol());
+
+    /*myStep->printNrUsedPartType();
+    myBox.printTypeArr();
+    cout << "Displaying Step " << actStepIdx << endl;
+    myStep->printPossiblePartTypeArr();
+    cout << "Displaying Step " << actStepIdx-1 << endl;
+    lastStep->printPossiblePartTypeArr();*/
+
+    return 0;
+}
+
+bool Path::placePart(Step* myStep, int8_t state) {
+    int8_t partType = NR_PART_TYPES+1;
     int8_t orientation;
-    if (partType == -1){
-        goBack();
-        cout << endl << "   Path::placePart: DeadEnd. Go-Back called." << endl;
-        return;
+
+    // TODO: Check for edges --> Wenn einmal gesetzt nicht umorientieren oder über Constraints am Rand abfangen
+
+    if (state == 1){                                        // Wenn Back-Tracking
+        partType = myStep->getFittingPartTypeIdx();         // -1: Es wurde noch keiner gesetzt
+        if (partType != -1) myStep->setOrientation(int8_t(myStep->getOrientation()+1));     // Orientierung ändern für nächsten Versuch
+        decNrUsedPartType(myStep, myStep->getFittingPartTypeIdx());             // Teil "wieder zurücklegen" (weil nachher wieder gesetzt)
+    }
+    if (state == 0 || partType == -1){                      // No Back-Tracking (Anderer Zweig weil bei Backtracking zuerst umorienterien) oder noch kein passender Teil gesetzt gewesen
+        partType = getNextPossiblePartTypeIdx(myStep);      // Einen möglichen Part suchen
+        if (partType == -1){                                // Keine Grundform mehr übrig wo 0 drinnen steht -> goBack
+            cout << "Keine Grundform mehr übrig, GROB -> Go Back" << endl;
+            return false;
+        }
     }
 
     while(true) {
-        cout << bitset<8>(getConstrMatrix()->get_constraints(myStep->getPosition().getRow(),myStep->getPosition().getCol())) << endl;
-        cout << bitset<8>(getPuzzleBox()->getBaseTypeConnections(partType)) << endl;
+        //cout << bitset<8>(getConstrMatrix()->get_constraints(myStep->getPosition().getRow(),myStep->getPosition().getCol())) << endl;
+        //cout << bitset<8>(getPuzzleBox()->getBaseTypeConnections(partType)) << endl;
         //cout << unsigned(myStep->getOrientation()) << endl;
+
         orientation = getConstrMatrix()->check_constraints(getConstrMatrix()->get_constraints(myStep->getPosition().getRow(),myStep->getPosition().getCol()),\
         getPuzzleBox()->getBaseTypeConnections(partType), myStep->getOrientation());
-        cout << signed(orientation) << endl;
-        myConstr.print_matrix();
+        //cout << signed(orientation) << endl;
         if(orientation != -1) {
-            cout << "I broke" << endl;
-            debug++;
+            cout << "Part fits in!" << signed(partType) << endl;
             break;
         } else {
+            cout << "Part doesn't fit in!" << signed(partType) << endl;
             myStep->setPossiblePartType(partType, 2);
+            myStep->setOrientation(0);
             partType = getNextPossiblePartTypeIdx(myStep);
             if (partType == -1){
-                goBack();
-                cout << endl << "   Path::placePart: DeadEnd. Go-Back called DOWN." << endl;
-                abort();
+                cout << "Keine Grundform mehr übrig, DETAIL -> Go Back" << endl;
+                return false;
             }
         }
     }
 
     if(incNrUsedPartType(myStep, partType)){               // if a part of this type is available
         myStep->setPossiblePartType(partType, 1);          // Part of this type is set
-        myStep->setOrientation(orientation);           // Set orientation of part
+        myStep->setOrientation(orientation);                // Set orientation of part
         uint8_t temp = getPuzzleBox()->getBaseTypeConnections(partType);
         myConstr.rotate_part(temp, orientation);
         myConstr.set_constraints(myStep->getPosition().getRow(), myStep->getPosition().getCol(), temp);
     } else {
-        cout << endl << "  Path::placePart: Something went wrong!" << endl;
+        cout << endl << "Path::placePart: Something went wrong!" << signed(partType) << endl;
     }
     myConstr.print_matrix();
-    //if (debug == 5) abort();
 }
 
 int8_t Path::getNextPossiblePartTypeIdx(Step *myStep) const {
@@ -72,7 +109,6 @@ bool Path::decNrUsedPartType(Step *myStep, int8_t partType) {
     myStep->setNrUsedPartType(partType, uint16_t(myStep->getNrUsedPartType(partType)-1));
     return true;
 }
-
 
 void Path::printPath(uint16_t first2print, uint16_t last2print) {
     if (first2print <= last2print) {
@@ -141,5 +177,12 @@ void Path::setPositions() {
         for(uint8_t j = 12; j < NR_PART_TYPES; j++) {
             myPath[i].setPossiblePartType(j, 0);
         }
+    }
+}
+
+void Path::printSolution() {
+    for (int i = 0; i < NR_POSITIONS; i++){
+            cout << i << ": " << unsigned(getStep(i)->getPosition().getRow()) << " " << unsigned(getStep(i)->getPosition().getCol()) << ": " \
+                 << signed(getStep(i)->getFittingPartTypeIdx()) << "  Ori: " << signed(getStep(i)->getOrientation()) << endl;
     }
 }

@@ -35,7 +35,7 @@ void ConstrMatrix::set_constraints(int row, int col, uint8_t connectors) {
 }
 
 void ConstrMatrix::remove_constraints(int row, int col) {
-    matrix[row+1][col+1]=0b11111111;
+    matrix[row+1][col+1]=0b00000000;//0b11111111;
 }
 
 void ConstrMatrix::print_constraints(int row, int col) const {
@@ -46,7 +46,7 @@ void ConstrMatrix::print_constraints(int row, int col) const {
 void ConstrMatrix::rotate_part(uint8_t &part, int steps){                                                 // ToDo: move function to different class?
     for (int i=0; i < steps; i++){
         part = (part << 2) | (part >> 6);
-        cout << "rotated part to " << bitset<sizeof(unsigned char)*8>(part) << endl;        //debug only ToDo: remove cout when finished
+        //cout << "rotated part to " << bitset<sizeof(unsigned char)*8>(part) << endl;        //debug only ToDo: remove cout when finished
     }
 }
 

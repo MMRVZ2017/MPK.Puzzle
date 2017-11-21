@@ -39,6 +39,7 @@ public:
     void setOrientation(int8_t newOrientation) {orientation = newOrientation;}
     int8_t getOrientation() const {return orientation;}
     void setPossiblePartType(int8_t partType, int8_t state) {possiblePartType[partType] = state;}
+    void resetPossiblePartTypes();
     int8_t getPossiblePartType(int8_t partType) const {return possiblePartType[partType];}
     void setNrUsedPartType(int8_t partType, uint16_t num){nrUsedPartType[partType] = num;}
     int16_t getNrUsedPartType(int8_t partType) const {return nrUsedPartType[partType];}
