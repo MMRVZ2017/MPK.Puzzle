@@ -43,17 +43,19 @@ void ConstrMatrix::print_constraints(int row, int col) const {
 }
 
 
-void rotate_part(uint8_t &part, int steps){                                                 // ToDo: move function to different class?
+void ConstrMatrix::rotate_part(uint8_t &part, int steps){                                                 // ToDo: move function to different class?
     for (int i=0; i < steps; i++){
         part = (part << 2) | (part >> 6);
         cout << "rotated part to " << bitset<sizeof(unsigned char)*8>(part) << endl;        //debug only ToDo: remove cout when finished
     }
 }
 
-uint8_t check_constraints (uint8_t mask , uint8_t part, int orientation ){               // ToDo: move function to different class?
-    for (; orientation < 3; orientation++){
+int8_t ConstrMatrix::check_constraints (uint8_t mask , uint8_t part, int8_t orientation ){               // ToDo: move function to different class?
+    for (; orientation < 4; orientation++){
+       // cout << bitset<8>(mask) << endl;
+       // cout << bitset<8>(part) << endl;
         if ((mask & part) == 0b00000000) return orientation;
         else rotate_part(part,1);
     }
-    return 4;                                                                               //part did not fit -> return a none valid value
+    return -1;                                                                               //part did not fit -> return a none valid value
 }

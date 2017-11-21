@@ -1,22 +1,59 @@
 #include "path.h"
 
+int debug = 0;
+
 void Path::placePart(Step* myStep) {
     int8_t partType = getNextPossiblePartTypeIdx(myStep);
+    int8_t orientation;
+    if (partType == -1){
+        goBack();
+        cout << endl << "   Path::placePart: DeadEnd. Go-Back called." << endl;
+        return;
+    }
+
+    while(true) {
+        cout << bitset<8>(getConstrMatrix()->get_constraints(myStep->getPosition().getRow(),myStep->getPosition().getCol())) << endl;
+        cout << bitset<8>(getPuzzleBox()->getBaseTypeConnections(partType)) << endl;
+        //cout << unsigned(myStep->getOrientation()) << endl;
+        orientation = getConstrMatrix()->check_constraints(getConstrMatrix()->get_constraints(myStep->getPosition().getRow(),myStep->getPosition().getCol()),\
+        getPuzzleBox()->getBaseTypeConnections(partType), myStep->getOrientation());
+        cout << signed(orientation) << endl;
+        myConstr.print_matrix();
+        if(orientation != -1) {
+            cout << "I broke" << endl;
+            debug++;
+            break;
+        } else {
+            myStep->setPossiblePartType(partType, 2);
+            partType = getNextPossiblePartTypeIdx(myStep);
+            if (partType == -1){
+                goBack();
+                cout << endl << "   Path::placePart: DeadEnd. Go-Back called DOWN." << endl;
+                abort();
+            }
+        }
+    }
+
     if(incNrUsedPartType(myStep, partType)){               // if a part of this type is available
         myStep->setPossiblePartType(partType, 1);          // Part of this type is set
-        myStep->setOrientation(0);           // Set orientation of part
+        myStep->setOrientation(orientation);           // Set orientation of part
+        uint8_t temp = getPuzzleBox()->getBaseTypeConnections(partType);
+        myConstr.rotate_part(temp, orientation);
+        myConstr.set_constraints(myStep->getPosition().getRow(), myStep->getPosition().getCol(), temp);
     } else {
         cout << endl << "  Path::placePart: Something went wrong!" << endl;
     }
+    myConstr.print_matrix();
+    //if (debug == 5) abort();
 }
 
 int8_t Path::getNextPossiblePartTypeIdx(Step *myStep) const {
     int8_t idxActUsed = myStep->getFittingPartTypeIdx();           // Search after already used part
     for (int8_t i = int8_t(idxActUsed+1); i < NR_PART_TYPES; i++){
-        if (myStep->getPossiblePartType(i) == 0 && myStep->getNrUsedPartType(i) != myBox.countType(i)) return i;
+        if (myStep->getPossiblePartType(i) != 2 && myStep->getPossiblePartType(i) == 0 && myStep->getNrUsedPartType(i) != myBox.countType(i)) return i;
     }
     for (int8_t i = 0; i < idxActUsed; i++){                       // Search before already used part
-        if (myStep->getPossiblePartType(i) == 0 && myStep->getNrUsedPartType(i) != myBox.countType(i)) return i;
+        if (myStep->getPossiblePartType(i) != 2 && myStep->getPossiblePartType(i) == 0 && myStep->getNrUsedPartType(i) != myBox.countType(i)) return i;
     }
     return -1;                                                     // No fitting part left --> Something is wrong before this step
 }

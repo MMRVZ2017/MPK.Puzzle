@@ -4,7 +4,7 @@ int16_t Step::nrUsedPartType[NR_PART_TYPES] = {0};
 
 Step::Step() {
     for(int i = 0; i < NR_PART_TYPES; i++) possiblePartType[i] = -1;        // Set impossible for every position at init
-    orientation = 4;
+    orientation = 0;
     position.setPosCol(NR_ROWS+1);
     position.setPosRow(NR_COLS+1);
 }

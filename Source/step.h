@@ -36,8 +36,8 @@ public:
 
     void setPosition(uint8_t row, uint8_t col) {position.setPosRow(row); position.setPosCol(col);}
     PuzzlePosition getPosition() const {return position;}
-    void setOrientation(uint8_t newOrientation) {orientation = newOrientation;}
-    uint8_t getOrientation() const {return orientation;}
+    void setOrientation(int8_t newOrientation) {orientation = newOrientation;}
+    int8_t getOrientation() const {return orientation;}
     void setPossiblePartType(int8_t partType, int8_t state) {possiblePartType[partType] = state;}
     int8_t getPossiblePartType(int8_t partType) const {return possiblePartType[partType];}
     void setNrUsedPartType(int8_t partType, uint16_t num){nrUsedPartType[partType] = num;}
@@ -52,7 +52,7 @@ public:
 private:
     PuzzlePosition position{};                      // Where the part of this step is placed in the puzzle
     int8_t possiblePartType[NR_PART_TYPES];         // Stores if parts of type 0-15 fit into this PuzzlePosition (1 if fit, 0 if not tried, -1 if not fit)
-    uint8_t orientation;                            // How the part must be rotated to fit
+    int8_t orientation;                            // How the part must be rotated to fit
     static int16_t nrUsedPartType[NR_PART_TYPES];   // Stores, how many parts of type 0-15 are already used
 };
 
