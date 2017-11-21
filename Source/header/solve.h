@@ -156,6 +156,14 @@ private:
     static int randomed;
 };
 
+class BoxClassify
+{
+    vector<PuzzlePiece*> p_Box;
+    vector<vector<PuzzlePiece*>> ab1class;
+
+
+};
+
 int LogEntry::randomed(0);
 unsigned int PuzzlePiece::idcount(0);
 

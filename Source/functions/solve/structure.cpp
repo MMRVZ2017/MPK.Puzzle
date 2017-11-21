@@ -76,7 +76,7 @@ bool next(vector<LogEntry>& log, vector<PuzzlePiece*>& p_Box, Puzzle& puzzleMat)
     	}
     }
     //cout << "next" << endl;
-    if(log.back().myCoor.n>36)
+    if(log.back().myCoor.n>8)
     {	
         cout << "m: " << log.back().myCoor.m << "  n: " << log.back().myCoor.n << endl;
     	status(log,p_Box,puzzleMat);
@@ -141,6 +141,7 @@ void abstractionlayer1solver(vector<LogEntry>& log, vector<PuzzlePiece*>& p_Box,
 	//remove all that do not fit according to abstraction layer 0
 	for(int i=0;i<(log.back().PieceCollector.size());)
 	{
+		//TODO: change checker from checking every box piece to only checking the simplifyed version ob the box with abstraction layer one
 		if(!(puzzleMat.testRotationPiece(log.back().myCoor.m, log.back().myCoor.n, *(log.back().PieceCollector[i]))))
 		{
 			log.back().PieceCollector.erase(log.back().PieceCollector.begin()+i);
