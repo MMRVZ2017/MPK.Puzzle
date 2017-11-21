@@ -3,9 +3,7 @@ void status(vector<LogEntry>& log, vector<PuzzlePiece*>& p_Box, Puzzle& puzzleMa
 
 bool next(vector<LogEntry>& log, vector<PuzzlePiece*>& p_Box, Puzzle& puzzleMat)
 {
-
 	//status(log,p_Box,puzzleMat);
-
     //log not yet started
     if(!(log.size()))
     {   
@@ -15,7 +13,6 @@ bool next(vector<LogEntry>& log, vector<PuzzlePiece*>& p_Box, Puzzle& puzzleMat)
         solve(log, p_Box,puzzleMat); 
     }
 
-    
     //last log element is set, create new log element
     else if(log.back().isSet())
     {
@@ -79,8 +76,12 @@ bool next(vector<LogEntry>& log, vector<PuzzlePiece*>& p_Box, Puzzle& puzzleMat)
     	}
     }
     //cout << "next" << endl;
-
-	return 1;
+    if(log.back().myCoor.n>36)
+    {	
+        cout << "m: " << log.back().myCoor.m << "  n: " << log.back().myCoor.n << endl;
+    	status(log,p_Box,puzzleMat);
+    }
+    return 1;
 }
 
 
@@ -198,6 +199,8 @@ bool backtrack(vector<LogEntry>& log, vector<PuzzlePiece*>& p_Box, Puzzle& puzzl
 	{
 		//cout << "one" << endl;
 		p_Box.push_back(log.back().PieceCollector[0]);
+        //shuffleup
+        random_shuffle(p_Box.begin(),p_Box.end());
 		puzzleMat.removePiece(log.back().myCoor.m, log.back().myCoor.n);
 		log.pop_back(); 
 		//cout << "removed" << endl;
@@ -211,6 +214,8 @@ bool backtrack(vector<LogEntry>& log, vector<PuzzlePiece*>& p_Box, Puzzle& puzzl
 	{
 		//cout << "multiple" << endl;
 		p_Box.push_back(log.back().PieceCollector[0]);
+        //shuffleup
+        random_shuffle(p_Box.begin(),p_Box.end());
 		log.back().PieceCollector.erase(log.back().PieceCollector.begin()); 
 		
 		if(log.back().PieceCollector.size()==1)
@@ -241,8 +246,8 @@ void status(vector<LogEntry>& log, vector<PuzzlePiece*>& p_Box, Puzzle& puzzleMa
 		else
 			cout << "isset: 0" << endl;
 
-		cout << "Abstraction: " << log[i].abstractionLevel << endl;
-		cout << "m: " << log[i].myCoor.m << " n: " << log[i].myCoor.n << endl;
+		//cout << "Abstraction: " << log[i].abstractionLevel << endl;
+		//cout << "m: " << log[i].myCoor.m << " n: " << log[i].myCoor.n << endl;
 		/*for(int j=0;j<log[i].PieceCollector.size();j++)
 		{
 			(*(log[i].PieceCollector[j])).printPiece();
@@ -253,6 +258,11 @@ void status(vector<LogEntry>& log, vector<PuzzlePiece*>& p_Box, Puzzle& puzzleMa
 	cout << endl;
 	cout << "Box:" << endl;
 	cout << "size:  " << p_Box.size() << endl;
+	for(vector<PuzzlePiece*>::iterator i = p_Box.begin();i!=p_Box.end();i++)
+	{
+		(*(*i)).printPiece();
+		cout << endl;
+	}
 
 	cout << "Puzzle:" << endl;
 	puzzleMat.printPuzzle();

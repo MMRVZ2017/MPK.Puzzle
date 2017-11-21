@@ -136,7 +136,7 @@ class LogEntry
 public:
     vector<PuzzlePiece*> PieceCollector;
     int abstractionLevel;
-    coor myCoor = coor();
+    coor myCoor;
 
     void advance(){abstractionLevel++;}
     void Set(){set=1;}
@@ -147,6 +147,7 @@ public:
 
     LogEntry()
     {
+        myCoor = coor();
         abstractionLevel=0;
         set=0;
     }
