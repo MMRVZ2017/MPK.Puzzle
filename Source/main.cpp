@@ -9,7 +9,7 @@
 int main()
 {
 
-	int cols=10, rows=10;
+	int cols=40, rows=40;
 	//some basic part stuff
 	vector<Part> myFirstPuzzle;
 	Part myFirstPart;
@@ -23,7 +23,8 @@ int main()
 
 	//undo everything and make this puzzle fucking imba hard!!!
 	//need 40x40 for this, so check your status
-	//makehard4040puzzle(myFirstBox);
+
+	makehard4040puzzle(myFirstBox);
 
 	//some advanced solver stuff
 	vector<LogEntry> log;

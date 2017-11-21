@@ -77,11 +77,11 @@ bool next(vector<LogEntry>& log, vector<PuzzlePiece*>& p_Box, Puzzle& puzzleMat)
     	}
     }
     //cout << "next" << endl;
-    /*if(log.back().myCoor.n>8)
+    if(log.back().myCoor.n>8)
     {	
         cout << "m: " << log.back().myCoor.m << "  n: " << log.back().myCoor.n << endl;
-    	status(log,p_Box,puzzleMat);
-    }*/
+    //	status(log,p_Box,puzzleMat);
+    }
     return 1;
 }
 
