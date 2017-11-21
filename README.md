@@ -1,18 +1,7 @@
 # MPK.Puzzle
 MPK Projekt Puzzle Solver
 
-# Git intro
-0, read github tutorial
-
-1, Clone repository
-
-2, branch master into a team branch
-
-3, work only in this branch
-
-4, don't ever touch the master.
-
-Seriously. don't merge branch to master unless you are absolutely, 100% sure it works and you have discussed it with pm.
+Don't merge branch to master unless you are absolutely, 100% sure it works and you have discussed it with pm!
 
 
 # Current Todo
@@ -20,22 +9,36 @@ Git for Puzzle solving project
 
 1, Input:
 
--Puzzle Bilder in richtige Orientierung bringen
+- Kontrolle, ob extrahierte Information rotationsinvariant ist
 
--Puzzle Bilder informaion rein raus oder kante extrahieren
+- Information in definierte Schnittstelle übergeben
 
--Schnittstelle zwischen Input und Solver definieren
+- Farbdurchschnitt der einzelnen Puzzleteile extrahieren
 
 2, Solver
 
--Grundsätzliche Aufbauweise
+- Puzzle Solver Abstraktion 1 fertig erstellen (Form)
 
--Puzzle nach bekommenen Informationen der Input Gruppe lösen -soweit dies möglich ist-
+- Puzzle Solver Abstraktion 2 (Farbdurchschnitt) Konzept erstellen und programmieren
+
+- Random Algorithmus?
 
 3, Output
 
--Transparenz der Bilder einstellen
+-visuelle Darstellung des Outputs der Matrix von Solver
+	hier soll das 'fertige' Puzzle dargestellt werden
 
--visuelle Darstellung des outputs von Solver
+# Git intro
+0, read github tutorial
 
--Schnittstelle zwischen Solver und Output definieren
+1, Clone repository
+
+2, branch master into a team branch (named "Team"+[teamname])
+
+3, work only in this team branch or subbranches
+
+4, don't ever touch the master.
+
+Seriously. don't merge branch to master unless you are absolutely, 100% sure it works and you have discussed it with pm.
+
+
