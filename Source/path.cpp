@@ -32,7 +32,7 @@ bool Path::incNrUsedPartType(Step* myStep, int8_t partType) {
 
 bool Path::decNrUsedPartType(Step *myStep, int8_t partType) {
     if(myStep->getNrUsedPartType(partType) == 0) return false;                     // if already 0
-    myStep->setNrUsedPartType(partType, uint16_t(myStep->getNrUsedPartType(partType)+1));
+    myStep->setNrUsedPartType(partType, uint16_t(myStep->getNrUsedPartType(partType)-1));
     return true;
 }
 

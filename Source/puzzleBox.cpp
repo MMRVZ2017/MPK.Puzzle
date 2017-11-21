@@ -143,11 +143,6 @@ int Puzzlebox::countType(int type) const
         return -1;
 }
 
-int Puzzlebox::whichType(Part * piece)
-{
-    return (*piece).getType();
-}
-
 // Print all vectors
 void Puzzlebox::printAllVectors()
 {

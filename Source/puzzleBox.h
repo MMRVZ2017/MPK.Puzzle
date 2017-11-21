@@ -38,8 +38,7 @@ class Puzzlebox
 public:
     Puzzlebox(): numType{0}, numWrote{0}{}
     ~Puzzlebox() {};
-    int countType(int) const;                         // returns the counted parts for the asked type of a puzzle piece
-    int whichType(Part *);
+    int countType(int) const;                   // returns the counted parts for the asked type of a puzzle piece
     void sortParts(vector <Part> *);            // write lists
     void printAllVectors();
     void printVector(int);                      // print all elements of a vector
