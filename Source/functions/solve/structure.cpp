@@ -25,6 +25,7 @@ bool next(vector<LogEntry>& log, vector<PuzzlePiece*>& p_Box, Puzzle& puzzleMat)
    	 	log.back().myCoor = calculateNextCoor(log, p_Box, puzzleMat);  
     	solve(log, p_Box,puzzleMat); 
     }
+
     //last log element is empty, backtrack
     else if(!(log.back().PieceCollector.size()))
     {
@@ -76,11 +77,11 @@ bool next(vector<LogEntry>& log, vector<PuzzlePiece*>& p_Box, Puzzle& puzzleMat)
     	}
     }
     //cout << "next" << endl;
-    if(log.back().myCoor.n>8)
+    /*if(log.back().myCoor.n>8)
     {	
         cout << "m: " << log.back().myCoor.m << "  n: " << log.back().myCoor.n << endl;
     	status(log,p_Box,puzzleMat);
-    }
+    }*/
     return 1;
 }
 
@@ -123,6 +124,7 @@ void solve(vector<LogEntry>& log, vector<PuzzlePiece*>& p_Box, Puzzle& puzzleMat
         case 1:
         abstractionlayer1solver(log,p_Box,puzzleMat);
         break;
+
         default:
         break;
     }
