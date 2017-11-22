@@ -56,12 +56,12 @@ bool Path::placePart(Step* myStep, int8_t state) {
 
         orientation = getConstrMatrix()->check_constraints(getConstrMatrix()->get_constraints(myStep->getPosition().getRow(),myStep->getPosition().getCol()),\
         getPuzzleBox()->getBaseTypeConnections(partType), myStep->getOrientation());
-        //cout << signed(orientation) << endl;
+        //cout << signed(orientation) << endl;J
         if(orientation != -1) {
-            cout << "Part fits in!" << signed(partType) << endl;
+            cout << "Part fits in! " << "(Type: " << signed(partType) << ")" << endl;
             break;
         } else {
-            cout << "Part doesn't fit in!" << signed(partType) << endl;
+            cout << "Part doesn't fit in! " << "(Type: " <<  signed(partType) <<  ")" << endl;
             myStep->setPossiblePartType(partType, 2);
             myStep->setOrientation(0);
             partType = getNextPossiblePartTypeIdx(myStep);
@@ -82,6 +82,7 @@ bool Path::placePart(Step* myStep, int8_t state) {
         cout << endl << "Path::placePart: Something went wrong!" << signed(partType) << endl;
     }
     myConstr.print_matrix();
+    return true;
 }
 
 int8_t Path::getNextPossiblePartTypeIdx(Step *myStep) const {

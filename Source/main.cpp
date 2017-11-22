@@ -83,6 +83,9 @@ int main() {
 
     //        puzzlePath.placePart(puzzlePath.getStep(i));        // Places a part for every step (No part-constraints, just edges,corners,inners-constraints)
 
+    cout << "Matrix at the beginning" << endl;
+    puzzlePath.getConstrMatrix()->print_matrix();
+
     bool flag = false;
     uint16_t goBackIdx = 0;
     for (uint16_t i = 0; i < NR_POSITIONS; i++){
