@@ -2,6 +2,7 @@
 #include <vector>
 #include "path.h"
 #include "constrMatrix.h"
+#include "test_puzzle_long40x40.h"
 
 using namespace std;
 
@@ -54,6 +55,7 @@ int main() {
     // --------------------------------------
 
     // EXAMPLE PUZZLE
+
     part_array[0].setConnections(0b00010100); // Piece 1
     part_array[1].setConnections(0b00011010); // Piece 2
     part_array[2].setConnections(0b00100110); // Piece 3
@@ -67,6 +69,12 @@ int main() {
     part_array[9].setConnections(0b01010010); // Piece 10
     part_array[10].setConnections(0b01010010); // Piece 11
     part_array[11].setConnections(0b10000010); // Piece 12
+
+    //makehard4040puzzle(part_array);
+
+    // um es auf ein 20 x 20 puzzle zu ändern, einfach alle oberen Teile  vom 3x4 auskommentieren, und das makehard4040puzzle(part_array) einkommentieren
+    // zusätzlich in den defines, die Anzahl der Parts, rows, col, edges udw. ändern
+
     // END OF PUZZLE DECLARATION
 
     /* ------------------------------ END OF PRE-CALC ----------------------------------*/

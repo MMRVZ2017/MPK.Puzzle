@@ -174,7 +174,7 @@ void Path::setPositions() {
     }
 
         // Set constraints
-    for(uint8_t i = (NR_COLS * 2 + (NR_ROWS-2)*2); i < NR_POSITIONS; i++) {
+    for(uint16_t i = (NR_COLS * 2 + (NR_ROWS-2)*2); i < NR_POSITIONS; i++) {
         for(uint8_t j = 12; j < NR_PART_TYPES; j++) {
             myPath[i].setPossiblePartType(j, 0);
         }
