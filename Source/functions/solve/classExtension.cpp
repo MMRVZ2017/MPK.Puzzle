@@ -53,9 +53,9 @@ unsigned int Puzzle::tryAllPieces(unsigned int m, unsigned int n, vector<PuzzleP
 }
 
 //tests the myPart in all 4 rotations at position m, n
-bool Puzzle::testRotationPiece(unsigned int m, unsigned int n, PuzzlePiece& myPart)
+bool Puzzle::testRotationPiece(unsigned int m, unsigned int n, PuzzlePiece& myPart, int nrOfRotations)
 {
-    for(int rotation=0; rotation < 4; rotation++)
+    for(int rotation=0; rotation < nrOfRotations; rotation++)
     {
         if(PlaceOfPartGood(m,n,myPart))
             return 1;

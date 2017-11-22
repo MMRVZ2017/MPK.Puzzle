@@ -143,6 +143,7 @@ void abstractionlayer1solver(vector<LogEntry>& log, vector<PuzzlePiece*>& p_Box,
 	//remove all that do not fit according to abstraction layer 0
 	for(int i=0;i<(log.back().PieceCollector.size());)
 	{
+        (*(log.back().PieceCollector[i])).resetShift();
 		//TODO: change checker from checking every box piece to only checking the simplifyed version ob the box with abstraction layer one
 		if(!(puzzleMat.testRotationPiece(log.back().myCoor.m, log.back().myCoor.n, *(log.back().PieceCollector[i]))))
 		{
@@ -200,33 +201,52 @@ bool backtrack(vector<LogEntry>& log, vector<PuzzlePiece*>& p_Box, Puzzle& puzzl
             //delete last logd put back into box + backtrack
 	else if((log.back().PieceCollector.size())==1)
 	{
-		//cout << "one" << endl;
-		p_Box.push_back(log.back().PieceCollector[0]);
-        //shuffleup
-        random_shuffle(p_Box.begin(),p_Box.end());
-		puzzleMat.removePiece(log.back().myCoor.m, log.back().myCoor.n);
-		log.pop_back(); 
-		//cout << "removed" << endl;
-		//status(log,p_Box,puzzleMat);  	
-		backtrack(log,p_Box,puzzleMat);
+        (*(log.back().PieceCollector[0])).shift(1);
+        if(puzzleMat.testRotationPiece(log.back().myCoor.m, log.back().myCoor.n, *(log.back().PieceCollector[0]), 4-(*(log.back().PieceCollector[0])).getShift()))
+            setsolution(log,p_Box,puzzleMat);
+        else
+        {
+    		//cout << "one" << endl;
+    		p_Box.push_back(log.back().PieceCollector[0]);
+            //shuffleup
+            random_shuffle(p_Box.begin(),p_Box.end());
+    		puzzleMat.removePiece(log.back().myCoor.m, log.back().myCoor.n);
+    		log.pop_back(); 
+    		//cout << "removed" << endl;
+    		//status(log,p_Box,puzzleMat);  	
+    		backtrack(log,p_Box,puzzleMat);
+        }
 		return 1;
 	}
         //last log entry multiple solutions (and current one was randomed)
             //delete randomed piece from PieceCollector and go to next (which might random again depending on function)
 	else if((log.back().PieceCollector.size())>1)
 	{
-		//cout << "multiple" << endl;
-		p_Box.push_back(log.back().PieceCollector[0]);
-        //shuffleup
-        random_shuffle(p_Box.begin(),p_Box.end());
-		log.back().PieceCollector.erase(log.back().PieceCollector.begin()); 
-		
-		if(log.back().PieceCollector.size()==1)
-			log.back().decreaseRandomed();
-		
-		//cout << "erased first element" << endl;
-		//status(log,p_Box,puzzleMat);
-		setsolution(log,p_Box,puzzleMat);
+
+        //check if piece has second rotation solution
+        (*(log.back().PieceCollector[0])).shift(1);
+        if(puzzleMat.testRotationPiece(log.back().myCoor.m, log.back().myCoor.n, *(log.back().PieceCollector[0]), 4-(*(log.back().PieceCollector[0])).getShift()))
+            setsolution(log,p_Box,puzzleMat);
+        else
+        {
+
+            //cout << "multiple" << endl;
+            p_Box.push_back(log.back().PieceCollector[0]);
+            //shuffleup
+            random_shuffle(p_Box.begin(),p_Box.end());
+            log.back().PieceCollector.erase(log.back().PieceCollector.begin()); 
+            
+            if(log.back().PieceCollector.size()==1)
+                log.back().decreaseRandomed();
+            
+            //for abstraction layer 1 so that first rotation solution is set.
+            (*(log.back().PieceCollector[0])).resetShift();
+            //cout << "erased first element" << endl;
+            //status(log,p_Box,puzzleMat);
+            setsolution(log,p_Box,puzzleMat);
+
+        }
+
 		return 1;
 		//no need to remove from puzzle mat, as sersolution overwrites it anyway
 	}

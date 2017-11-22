@@ -22,7 +22,8 @@ public:
             break;
         }
     }
-
+    unsigned int  getShift(){return shifts;}
+    void          resetShift(){shifts=0;}
     void          shift(unsigned int moves);
     void          randomCenterPiece();
     void          printPiece() { cout << bitset<sizeof(unsigned char)*8> (getConnections()); }
@@ -94,7 +95,7 @@ public:
     bool PlaceOfPartGood(unsigned int m, unsigned int n, PuzzlePiece& myPart);
     bool PlaceOfPart2Good(unsigned int m,unsigned int n, PuzzlePiece& myPart);
 
-    bool testRotationPiece(unsigned int m, unsigned int n, PuzzlePiece& myPart);
+    bool testRotationPiece(unsigned int m, unsigned int n, PuzzlePiece& myPart, int nrOfRotations=4);
     unsigned int tryAllPieces(unsigned int m, unsigned int n, vector<PuzzlePiece>& myBox, unsigned int separator);
     unsigned int putBackIntoBox(unsigned int m, unsigned int n, vector<PuzzlePiece>& myBox);
 
