@@ -31,7 +31,7 @@ uint16_t Path::goBack(uint16_t actStepIdx){
 }
 
 bool Path::placePart(Step* myStep, int8_t state) {
-    int8_t partType = NR_PART_TYPES+1;
+    int8_t partType = NR_PART_TYPES+1;              // invalid
     int8_t orientation;
 
     // TODO: Check for edges --> Wenn einmal gesetzt nicht umorientieren oder über Constraints am Rand abfangen
@@ -81,7 +81,7 @@ bool Path::placePart(Step* myStep, int8_t state) {
     } else {
         cout << endl << "Path::placePart: Something went wrong!" << signed(partType) << endl;
     }
-    myConstr.print_matrix();
+    //myConstr.print_matrix();
     return true;
 }
 

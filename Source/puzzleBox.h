@@ -48,9 +48,9 @@ public:
     uint8_t getBaseTypeConnections(int8_t idx){return baseTypes[idx];}
 
 private:
-    vector < Part * > type[18];
-    int numType[18];                    // contains all occurrences of the part categeories 0..18
-    int numWrote[18];                   // contains the sum of all set parts of part categoeries 0..18
+    vector < Part * > type[NR_PART_TYPES];
+    int numType[NR_PART_TYPES];                    // contains all occurrences of the part categeories 0..18
+    int numWrote[NR_PART_TYPES];                   // contains the sum of all set parts of part categoeries 0..18
     static uint8_t baseTypes[NR_PART_TYPES];
 };
 

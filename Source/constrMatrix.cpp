@@ -54,16 +54,16 @@ void ConstrMatrix::rotate_part(uint8_t &part, int steps){                       
 }
 
 int8_t ConstrMatrix::check_constraints (uint8_t mask , uint8_t part, int8_t orientation ){               // ToDo: move function to different class?
-
     if(orientation != 0)
     {
         rotate_part(part,orientation);
     }
 
-
     for (; orientation < 4; orientation++){
+        if ((mask & part) == 0b00000000) return orientation;
+        else rotate_part(part,1);
 
-        /* WEIDI
+/* WEIDI
         int containsEdge = 0;
         int invalidOrientation = 0;
         int edge1 = 0;
@@ -137,11 +137,6 @@ int8_t ConstrMatrix::check_constraints (uint8_t mask , uint8_t part, int8_t orie
         // cout << bitset<8>(mask) << endl;
         // cout << bitset<8>(part) << endl;
         */
-
-
-        if ((mask & part) == 0b00000000) return orientation;
-        else rotate_part(part,1);
-
 
     }
     return -1;                                                                               //part did not fit -> return a none valid value

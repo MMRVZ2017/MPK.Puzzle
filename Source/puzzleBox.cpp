@@ -141,7 +141,7 @@ void Puzzlebox::sortParts(vector <Part> * piece_array)
 
 int Puzzlebox::countType(int type) const
 {
-    if (type >= 0 && type < 18)
+    if (type >= 0 && type < NR_PART_TYPES)
         return numType[type];
     else
         return -1;
@@ -150,7 +150,7 @@ int Puzzlebox::countType(int type) const
 // Print all vectors
 void Puzzlebox::printAllVectors()
 {
-    for(int i=0; i < 18; i++)
+    for(int i=0; i < NR_PART_TYPES; i++)
     {
         printVector(i);
     }
