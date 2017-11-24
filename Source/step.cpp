@@ -49,7 +49,7 @@ void Step::printNrUsedPartType(){
 }
 
 void Step::resetPossiblePartTypes() {
-    cout << "Reset called" << endl;
+    if(PRINT_MESSAGES) cout << "Reset called" << endl;
     for(uint8_t i = 0; i < NR_PART_TYPES; i++){
         if(possiblePartType[i] != -1) setPossiblePartType(i, 0);
     }

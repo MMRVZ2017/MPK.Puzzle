@@ -44,7 +44,7 @@ bool Path::placePart(Step* myStep, int8_t state) {
     if (state == 0 || partType == -1){                      // No Back-Tracking (Anderer Zweig weil bei Backtracking zuerst umorienterien) oder noch kein passender Teil gesetzt gewesen
         partType = getNextPossiblePartTypeIdx(myStep);      // Einen möglichen Part suchen
         if (partType == -1){                                // Keine Grundform mehr übrig wo 0 drinnen steht -> goBack
-            cout << "Keine Grundform mehr übrig, GROB -> Go Back" << endl;
+            if(PRINT_MESSAGES) cout << "Keine Grundform mehr übrig, GROB -> Go Back" << endl;
             return false;
         }
     }
@@ -58,15 +58,15 @@ bool Path::placePart(Step* myStep, int8_t state) {
         getPuzzleBox()->getBaseTypeConnections(partType), myStep->getOrientation());
         //cout << signed(orientation) << endl;J
         if(orientation != -1) {
-            cout << "Part fits in! " << "(Type: " << signed(partType) << ")" << endl;
+            if(PRINT_MESSAGES) cout << "Part fits in! " << "(Type: " << signed(partType) << ")" << endl;
             break;
         } else {
-            cout << "Part doesn't fit in! " << "(Type: " <<  signed(partType) <<  ")" << endl;
+            if(PRINT_MESSAGES) cout << "Part doesn't fit in! " << "(Type: " <<  signed(partType) <<  ")" << endl;
             myStep->setPossiblePartType(partType, 2);
             myStep->setOrientation(0);
             partType = getNextPossiblePartTypeIdx(myStep);
             if (partType == -1){
-                cout << "Keine Grundform mehr übrig, DETAIL -> Go Back" << endl;
+                if(PRINT_MESSAGES) cout << "Keine Grundform mehr übrig, DETAIL -> Go Back" << endl;
                 return false;
             }
         }
@@ -183,7 +183,7 @@ void Path::setPositions() {
 
 void Path::printSolution() {
     for (int i = 0; i < NR_POSITIONS; i++){
-            cout << i << ": " << unsigned(getStep(i)->getPosition().getRow()) << " " << unsigned(getStep(i)->getPosition().getCol()) << ": " \
+            cout << i << ": " << "[" << unsigned(getStep(i)->getPosition().getRow()) << "]" << "[" << unsigned(getStep(i)->getPosition().getCol()) << "]: " \
                  << signed(getStep(i)->getFittingPartTypeIdx()) << "  Ori: " << signed(getStep(i)->getOrientation()) << endl;
     }
 }

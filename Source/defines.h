@@ -2,8 +2,9 @@
 #define DEFINES_H
 
 // Just CHANGE these defines
-#define NR_ROWS 20 //3 //20 //28
-#define NR_COLS 20 //4 //20 //36
+#define NR_ROWS 10 //3 //20 //28
+#define NR_COLS 10 //4 //20 //36
+#define PRINT_MESSAGES true
 
 // Do NOT CHANGE these defines
 #define NR_PARTS (NR_ROWS * NR_COLS)
