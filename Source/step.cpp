@@ -3,7 +3,10 @@
 int16_t Step::nrUsedPartType[NR_PART_TYPES] = {0};
 
 Step::Step() {
-    for(int i = 0; i < NR_PART_TYPES; i++) possiblePartType[i] = -1;        // Set impossible for every position at init
+    for(int i = 0; i < NR_PART_TYPES; i++){
+        possiblePartType[i] = -1;           // Set impossible for every position at init
+        nrUsedPartType[i] = 0;
+    }
     orientation = 0;
     position.setPosCol(NR_ROWS+1);
     position.setPosRow(NR_COLS+1);
@@ -26,7 +29,7 @@ uint8_t Step::rotate() {
 }
 
 int8_t Step::getFittingPartTypeIdx() const {
-    for(uint8_t i = 0; i < NR_PART_TYPES; i++){
+    for(int8_t i = 0; i < NR_PART_TYPES; i++){
         if(possiblePartType[i] == 1) return i;
     }
     return -1;
@@ -49,7 +52,7 @@ void Step::printNrUsedPartType(){
 }
 
 void Step::resetPossiblePartTypes() {
-    cout << "Reset called" << endl;
+    //cout << "Reset called" << endl;
     for(uint8_t i = 0; i < NR_PART_TYPES; i++){
         if(possiblePartType[i] != -1) setPossiblePartType(i, 0);
     }

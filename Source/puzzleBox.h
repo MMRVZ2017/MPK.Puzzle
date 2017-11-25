@@ -36,9 +36,9 @@ private:
 class Puzzlebox
 {
 public:
-    Puzzlebox(): numType{0}, numWrote{0}{}
+    Puzzlebox(): numWrote{0}{}      //numType{0},
     ~Puzzlebox() {};
-    int countType(int) const;                   // returns the counted parts for the asked type of a puzzle piece
+    static int8_t countType(int);                   // returns the counted parts for the asked type of a puzzle piece
     void sortParts(vector <Part> *);            // write lists
     void printAllVectors();
     void printVector(int);                      // print all elements of a vector
@@ -49,7 +49,7 @@ public:
 
 private:
     vector < Part * > type[NR_PART_TYPES];
-    int numType[NR_PART_TYPES];                    // contains all occurrences of the part categeories 0..18
+    static int8_t numType[NR_PART_TYPES];                    // contains all occurrences of the part categeories 0..18
     int numWrote[NR_PART_TYPES];                   // contains the sum of all set parts of part categoeries 0..18
     static uint8_t baseTypes[NR_PART_TYPES];
 };

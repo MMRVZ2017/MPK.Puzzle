@@ -1,5 +1,8 @@
 #include <iostream>
 #include <vector>
+#include <random>
+#include <cstdlib>
+#include <ctime>
 #include "defines.h"
 #include "puzzleBox.h"
 #include "step.h"
@@ -10,7 +13,7 @@ using namespace std;
 #ifndef PATH_H
 #define PATH_H
 
-/* -------------------------------------------------------------------------------------------------------------------------- */
+/*--------------------------------------------------------------------------------------------------------------------------- */
 /* ---------------------------------------------------------- PATH ---------------------------------------------------------- */
 /* -------------------------------------------------------------------------------------------------------------------------- */
 
@@ -32,6 +35,8 @@ public:
     uint16_t goBack(uint16_t actStepIdx);
     void printSolution();
     //void exportSolution() const;
+    void countNumTypesUsed();
+    void resetPath();
 
     void printPath(uint16_t first2print, uint16_t last2print);        // Prints content of Step from first2print to last2print (first=last: print only one step)
     void printPath();                                                 // Prints complete Path
