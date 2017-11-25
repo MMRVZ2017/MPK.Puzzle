@@ -3,47 +3,11 @@
 #include "path.h"
 #include "constrMatrix.h"
 #include "test_puzzle_long40x40.h"
+#include "puzzleGenerator.hpp"
 
 using namespace std;
 
 int main() {
-/*    ConstrMatrix myfirstMatrix;
-    myfirstMatrix.print_matrix();
-    
-
-    cout << endl;
-    myfirstMatrix.print_constraints(0,0);
-    myfirstMatrix.print_constraints(1,0);
-    myfirstMatrix.print_constraints(1,1);
-    myfirstMatrix.print_constraints(0,NR_COLS-1);
-    myfirstMatrix.print_constraints(NR_ROWS-1,0);
-    myfirstMatrix.print_constraints(NR_ROWS-1,NR_COLS-1);
-    cout << endl;
-
-    cout << signed(myfirstMatrix.check_constraints(0b11000011,0b01010000,0)) << endl;
-
-   /* myfirstMatrix.set_constraints(0,1,0b00110111);
-    myfirstMatrix.set_constraints(2,1,0b10111111);
-    myfirstMatrix.set_constraints(1,0,0b11011100);
-    myfirstMatrix.set_constraints(1,2,0b11111110);
-
-    myfirstMatrix.print_matrix();
-    myfirstMatrix.print_constraints(1,1);
-
-    uint8_t testPart[5]{
-            0b00000000,
-            0b11111111,
-            0b01101001,
-            0b00011011,
-            0b10010110,
-    };
-    for (int i = 0; i < 5 ; i++) {
-        cout << endl << "Checking position (1,1) with Part " << bitset<sizeof(unsigned char)*8>(testPart[i])<< endl;
-        cout << "Result:" << unsigned(check_constraints(myfirstMatrix.get_constraints(1, 1), testPart[i], 0)) << endl;
-
-    }*/
-
-  // return 1;
 
 
     /* ------------------------------ START OF PRE-CALC ------------------------------*/
@@ -54,12 +18,12 @@ int main() {
     vector <Part *> inners_array(NR_INNERS);
     // --------------------------------------
 
-    // EXAMPLE PUZZLE
-
-   /* part_array[0].setConnections(0b00010100); // Piece 1
-    part_array[1].setConnections(0b00011010); // Piece 2
+    // EXAMPLE PUZZLE 3x4
+    /*
+    part_array[0].setConnections(0b01010000); // Piece 1
+    part_array[1].setConnections(0b01101000); // Piece 2
     part_array[2].setConnections(0b00100110); // Piece 3
-    part_array[3].setConnections(0b00001001); // Piece 4
+    part_array[3].setConnections(0b01000010); // Piece 4
     part_array[4].setConnections(0b10101000); // Piece 5
     part_array[5].setConnections(0b01011001); // Piece 6
     //part_array[6].setConnections(0b01011010); // Piece 7
@@ -68,25 +32,30 @@ int main() {
     part_array[8].setConnections(0b01010000); // Piece 9
     part_array[9].setConnections(0b01010010); // Piece 10
     part_array[10].setConnections(0b01010010); // Piece 11
-    part_array[11].setConnections(0b10000010); // Piece 12*/
+    part_array[11].setConnections(0b10000010); // Piece 12
+    */
 
-    /*part_array[0].setConnections(0b00010100); // Piece 1
+    // EXAMPLE PUZZLE 3x3
+    /*
+	part_array[0].setConnections(0b00010100); // Piece 1
     part_array[1].setConnections(0b00011010); // Piece 2
     part_array[2].setConnections(0b00000110); // Piece 3
-    //part_array[3].setConnections(0b00001001); // Piece 4
     part_array[3].setConnections(0b10101000); // Piece 5
     part_array[4].setConnections(0b01011001); // Piece 6
     part_array[5].setConnections(0b00101010); // Piece 7
-    //part_array[7].setConnections(0b01000101); // Piece 8
     part_array[6].setConnections(0b01010000); // Piece 9
     part_array[7].setConnections(0b01010010); // Piece 10
     part_array[8].setConnections(0b01000010); // Piece 11
-    //part_array[11].setConnections(0b10000010); // Piece 12*/
+	*/
 
-    makehard4040puzzle(part_array);
+    // Puzzle Generator START
+    randomBox myRandomBox(NR_COLS,NR_ROWS); // Just change the define values for NR_COLS and NR_ROWS
+    myRandomBox.createRandomPuzzle();
+    part_array = myRandomBox.shuffle();
+    // Puzzle Generator END
 
-    // um es auf ein 20 x 20 puzzle zu ändern, einfach alle oberen Teile  vom 3x4 auskommentieren, und das makehard4040puzzle(part_array) einkommentieren
-    // zusätzlich in den defines, die Anzahl der Parts, rows, col, edges udw. ändern
+    //makehard1010puzzle(part_array);
+    //makehard4040puzzle(part_array);
 
     // END OF PUZZLE DECLARATION
 
@@ -120,7 +89,7 @@ int main() {
     bool flag = false;
     uint16_t goBackIdx = 0;
     for (uint16_t i = 0; i < NR_POSITIONS; i++){
-        if(PRINT_MESSAGES) cout << "PLACING PART" << unsigned(i) <<endl;
+        if(PRINT_MESSAGES) cout << "PLACING PART " << unsigned(i) <<endl;
         numTries++;
         if(i > furthestStep) furthestStep = i;
         //tryOrder[orderCounter] = i; orderCounter ++;
@@ -164,6 +133,8 @@ int main() {
     }
     cout << endl;*/
     //puzzlePath.printSolution();
+
+    puzzlePath.getConstrMatrix()->print_matrix();
 
     cout << "Tries: " << numTries << " Go Back: " << numGoBack << " Furthest Step: " << signed(furthestStep) << endl;
 

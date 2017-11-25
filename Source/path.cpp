@@ -247,7 +247,7 @@ void Path::setPositions() {
 
 void Path::printSolution() {
     for (int i = 0; i < NR_POSITIONS; i++){
-            cout << i << ": " << unsigned(getStep(i)->getPosition().getRow()) << " " << unsigned(getStep(i)->getPosition().getCol()) << ": " \
+            cout << i << ": " << "[" << unsigned(getStep(i)->getPosition().getRow()) << "]" << "[" << unsigned(getStep(i)->getPosition().getCol()) << "]: " \
                  << signed(getStep(i)->getFittingPartTypeIdx()) << "  Ori: " << signed(getStep(i)->getOrientation()) << endl;
     }
 }
