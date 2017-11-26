@@ -118,8 +118,7 @@ bool Path::placePart(int16_t idx, int8_t state) {           // Idx of part to pl
     // Try until one part fits:
     while(true) {
         // Get correct orientation for part
-        orientation = myConstr.check_constraints(getConstrMatrix()->get_constraints(myStep->getPosition().getRow(), myStep->getPosition().getCol()), \
-        getPuzzleBox()->getBaseTypeConnections(partType), myStep->getOrientation());            // TODO: This has to be shorter
+        orientation = myConstr.check_constraints(myStep->getPosition(), partType, myStep->getOrientation());
 
         // Check if part fits
         if (orientation == -1) { // If the part does not fit
@@ -143,9 +142,7 @@ bool Path::placePart(int16_t idx, int8_t state) {           // Idx of part to pl
     if (incNrUsedPartType(partType)) {                      // if a part of this type is available (Should be true because checked before)
         myStep->setPossiblePartType(partType, 1);           // Set part of this type
         myStep->setOrientation(orientation);                // Set orientation of part
-        uint8_t temp = getPuzzleBox()->getBaseTypeConnections(partType);
-        myConstr.rotate_part(temp, orientation);
-        myConstr.set_constraints(myStep->getPosition().getRow(), myStep->getPosition().getCol(), temp);     // TODO: This has to be shorter
+        myConstr.set_constraints(myStep->getPosition(), partType, orientation);     // Set constraints
     } else {
         // Something gröber went wrong -> Show message all the time
         failed3++;

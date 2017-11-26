@@ -35,27 +35,40 @@ void ConstrMatrix::set_constraints(int row, int col, uint8_t connectors) {
     matrix[row+1][col+1]=connectors;
 }
 
+void ConstrMatrix::set_constraints(PuzzlePosition actPosition, int8_t partType, int8_t orientation) {
+    matrix[actPosition.getRow() + 1][actPosition.getCol() + 1] = rotate_part(partType, orientation);
+}
+
 void ConstrMatrix::remove_constraints(int row, int col) {
-    matrix[row+1][col+1]=0b00000000;//0b11111111;
+    matrix[row+1][col+1]=0b00000000;
 }
 
 void ConstrMatrix::print_constraints(int row, int col) const {
     cout << "Constraints for(" << row << ";" << col <<"):" << bitset<sizeof(unsigned char)*8>(get_constraints(row,col)) << endl;
 }
 
-
-void ConstrMatrix::rotate_part(uint8_t &part, int steps){                                                 // ToDo: move function to different class?
+void ConstrMatrix::rotate_part(uint8_t &part, int steps){
     for (int i=0; i < steps; i++){
         part = (part << 2) | (part >> 6);
-        //cout << "rotated part to " << bitset<sizeof(unsigned char)*8>(part) << endl;        //debug only ToDo: remove cout when finished
+        //cout << "rotated part to " << bitset<sizeof(unsigned char)*8>(part) << endl;
     }
 }
 
-int8_t ConstrMatrix::check_constraints (uint8_t mask , uint8_t part, int8_t orientation ){               // ToDo: move function to different class?
-    if(orientation != 0)
-    {
-        rotate_part(part,orientation);
+uint8_t ConstrMatrix::rotate_part(int8_t partType, int steps){
+    uint8_t part = Puzzlebox::getBaseTypeConnections(partType);
+    for (int i=0; i < steps; i++){
+        part = (part << 2) | (part >> 6);
+        //cout << "rotated part to " << bitset<sizeof(unsigned char)*8>(part) << endl;
     }
+    return part;
+}
+
+int8_t ConstrMatrix::check_constraints (PuzzlePosition actPosition, int8_t partType, int8_t orientation ){
+    // Get part and constraints
+    uint8_t part = Puzzlebox::getBaseTypeConnections(partType);
+    uint8_t mask = get_constraints(actPosition.getRow(), actPosition.getCol());
+
+    if(orientation != 0) rotate_part(part,orientation);
 
     for (; orientation < 4; orientation++){
         if ((mask & part) == 0b00000000) return orientation;

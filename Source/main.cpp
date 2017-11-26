@@ -28,7 +28,7 @@ int main() {
     // PRINT INFORMATION
     Puzzlebox::printTypeArr();                              // Print the number of available parts of each part-type
     Step::printNrUsedPartType();                            // Print the number of used parts of each part-type
-    puzzlePath.count_printNumTypesUsed();                         // Print the number of actually used parts (1 set in possiblePartType[])
+    puzzlePath.count_printNumTypesUsed();                   // Print the number of actually used parts (1 set in possiblePartType[])
     //puzzlePath.printPath();
     cout << "Matrix at the beginning" << endl;
     puzzlePath.getConstrMatrix()->print_matrix();
@@ -46,7 +46,7 @@ int main() {
     puzzlePath.getConstrMatrix()->print_matrix();
     Puzzlebox::printTypeArr();                              // Print the number of available parts of each part-type
     Step::printNrUsedPartType();                            // Print the number of used parts of each part-type
-    puzzlePath.count_printNumTypesUsed();                         // Print the number of actually used parts (1 set in possiblePartType[])
+    puzzlePath.count_printNumTypesUsed();                   // Print the number of actually used parts (1 set in possiblePartType[])
     //puzzlePath.printPath();
     //puzzlePath.printDebug();
 

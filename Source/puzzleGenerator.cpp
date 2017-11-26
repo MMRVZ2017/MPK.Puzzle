@@ -1,16 +1,6 @@
-//
-// Created by Christoph Weidinger on 23.11.17.
-//
-
 #include "puzzleGenerator.hpp"
 
-
 using namespace std;
-
-
-
-using namespace std;
-
 
 Part randomPuzzlePiece::setPart(randomPuzzlePiece oldrandomPuzzlePiece)
 {
@@ -18,7 +8,6 @@ Part randomPuzzlePiece::setPart(randomPuzzlePiece oldrandomPuzzlePiece)
     newPart.setConnections(oldrandomPuzzlePiece.getConnections());
     return newPart;
 }
-
 
 bool randomPuzzle::setPiece(uint m,uint n,randomPuzzlePiece newPiece)
 {
@@ -36,7 +25,6 @@ bool randomPuzzle::removePiece(uint m,uint n)
     Matrix[n+1][m+1].setConnections(0b11111111);
     return 1;
 }
-
 
 
 unsigned int randomPuzzlePiece::idcount(0);

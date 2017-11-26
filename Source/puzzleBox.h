@@ -45,7 +45,7 @@ public:
     void printPart(Part *);                     // print part connections
     static void printTypeArr();                        // prints array with number of each type of part available
     void printID(Part *);
-    uint8_t getBaseTypeConnections(int8_t idx){return baseTypes[idx];}
+    static uint8_t getBaseTypeConnections(int8_t idx){return baseTypes[idx];}
 
 private:
     vector < Part * > type[NR_PART_TYPES];
