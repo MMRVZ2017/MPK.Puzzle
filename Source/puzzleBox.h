@@ -43,7 +43,7 @@ public:
     void printAllVectors();
     void printVector(int);                      // print all elements of a vector
     void printPart(Part *);                     // print part connections
-    void printTypeArr();                        // prints array with number of each type of part available
+    static void printTypeArr();                        // prints array with number of each type of part available
     void printID(Part *);
     uint8_t getBaseTypeConnections(int8_t idx){return baseTypes[idx];}
 

@@ -1,43 +1,99 @@
 #include "path.h"
+
+// VARIABLES FOR DEBUGGING
 int numInc[18] = {0};
 int numDec[18] = {0};
 int failed1 = 0;
 int failed2 = 0;
 int failed3 = 0;
-int debug = 0;
 
-uint16_t Path::goBack(uint16_t actStepIdx){     // Go Back from Index actStepIdx
+int32_t Path::solvePuzzle(int32_t limit) {
+
+    // DEBUG
+    int32_t numTries = 0;
+    int tryOrder[10000] = {0};      // If used, make sure you don't write out of the array!
+    int orderCounter = 0;
+
+    // *** ESSENTIAL
+    bool flag = false;
+    uint16_t goBackIdx = 0;
+
+    for (uint16_t i = 0; i < NR_POSITIONS; i++){
+        // DEBUG
+        numTries++;
+        if(PRINT_MESSAGES) cout << "PLACING PART " << unsigned(i) <<endl;
+        if(i > furthestStep) furthestStep = i;
+        //tryOrder[orderCounter] = i; orderCounter ++;
+
+        // Place a part
+        flag = placePart(i, 0);
+        // If part does not fit
+        if (!flag) {
+            // then go back as long as you don't find a fitting part
+            for (goBackIdx = uint16_t(i); !flag; goBackIdx--) {
+
+                // DEBUG
+                numGoBack++;
+                if(PRINT_MESSAGES) cout << "GO BACK FROM PART" << unsigned(goBackIdx) << endl;
+
+                // Put away the part and the constraints
+                goBack(goBackIdx);
+
+                // DEBUG
+                if(PRINT_MESSAGES) cout << "PLACING " << goBackIdx-1 << " Was Part: " << signed(getStep(int16_t(goBackIdx-1))->getFittingPartTypeIdx()) << endl;
+                if(PRINT_MESSAGES) getStep(uint16_t(goBackIdx-1))->printPossiblePartTypeArr();
+                //tryOrder[orderCounter] = goBackIdx-1; orderCounter ++;
+
+                // And try another part
+                flag = placePart(uint16_t(goBackIdx-1), 1);
+            }
+            // When a fitting part is found, go ahead with outer loop
+            i = goBackIdx;
+        }
+        if (numTries >= limit){
+            break;
+        }
+    }   // TODO: Catch wrong puzzles, Catch goBack to index 0
+
+    // DEBUG
+    //for (int i = 0; i < orderCounter; i++) cout << tryOrder[i] << endl;
+
+    return numTries;
+}
+
+void Path::goBack(uint16_t actStepIdx){     // Go Back from Index actStepIdx
     Step *myStep = getStep(actStepIdx);
     int8_t actPartType = myStep->getFittingPartTypeIdx();
 
+    // DEBUG
     /*myStep->printNrUsedPartType();
     myBox.printTypeArr();
     cout << "Displaying Step " << actStepIdx << endl;
     myStep->printPossiblePartTypeArr();
     cout << "Displaying Step " << actStepIdx-1 << endl;
     lastStep->printPossiblePartTypeArr();*/
-
     if(PRINT_MESSAGES) cout << "Call reset for idx " << unsigned(actStepIdx) << endl;
-    if (actPartType != -1){                                                 // A part is already at this position -> put it away
-        if (decNrUsedPartType(myStep, actPartType) == false) failed1++;
-        myStep->setPossiblePartType(actPartType, 0);
-        myConstr.remove_constraints(myStep->getPosition().getRow(),myStep->getPosition().getCol());
-    }
-    myStep->resetPossiblePartTypes();                                       // Reset constraints (possible part types) and orientation anyway
-    myStep->setOrientation(0);
 
+    // Delete everything from this step
+    if (actPartType != -1){                                                 // A part is already at this position -> put it away
+        if (!decNrUsedPartType(actPartType)) failed1++;                     // Put it back into the box
+        myConstr.remove_constraints(myStep->getPosition().getRow(),myStep->getPosition().getCol());     // TODO: That has to be shorter
+    }
+    myStep->resetPossiblePartTypes();                                       // Reset part types -> Every part is possible again
+    myStep->setOrientation(0);                                              // Reset orientation
+
+    // DEBUG
     /*myStep->printNrUsedPartType();
     myBox.printTypeArr();
     cout << "Displaying Step " << actStepIdx << endl;
     myStep->printPossiblePartTypeArr();
     cout << "Displaying Step " << actStepIdx-1 << endl;
     lastStep->printPossiblePartTypeArr();*/
-
-    return 0;
 }
 
-bool Path::placePart(Step* myStep, int8_t state) {
-    int8_t partType = -1;              // invalid
+bool Path::placePart(int16_t idx, int8_t state) {           // Idx of part to place; state == 0: just place it; state == 1: we are going back
+    Step* myStep = getStep(idx);
+    int8_t partType = -1;
     int8_t orientation;
     int8_t actPartType = 0;
 
@@ -51,77 +107,81 @@ bool Path::placePart(Step* myStep, int8_t state) {
         return false;
     }
 
-    // When backtracking and there was a part: delete it        // TODO: REALLY WEIRD STUFF HAPPENS HERE!
+    // When backtracking and there was a part: delete it
     if (state == 1 || actPartType != -1) {
-        //myStep->printPossiblePartTypeArr();
-        //cout << signed(actPartType) << endl;
-        if (decNrUsedPartType(myStep, actPartType) == false) failed2++;
-        myStep->setPossiblePartType(actPartType, 0);
-        myStep->setOrientation(0);
-        myConstr.remove_constraints(myStep->getPosition().getRow(),myStep->getPosition().getCol());
-        myStep->setPossiblePartType(actPartType, 2);
+        if (!decNrUsedPartType(actPartType)) failed2++;         // Put it back into the box
+        myStep->setPossiblePartType(actPartType, 2);            // This part is not good in this position TODO: Rotate first in this case?
+        myStep->setOrientation(0);                              // Reset orientation
+        myConstr.remove_constraints(myStep->getPosition().getRow(),myStep->getPosition().getCol());     // Reset constraints
     }
 
     // Try until one part fits:
     while(true) {
-        //cout << bitset<8>(getConstrMatrix()->get_constraints(myStep->getPosition().getRow(),myStep->getPosition().getCol())) << endl;
-        //cout << bitset<8>(getPuzzleBox()->getBaseTypeConnections(partType)) << endl;
-        //cout << unsigned(myStep->getOrientation()) << endl;
-
         // Get correct orientation for part
-        orientation = getConstrMatrix()->check_constraints(getConstrMatrix()->get_constraints(myStep->getPosition().getRow(), myStep->getPosition().getCol()), \
-        getPuzzleBox()->getBaseTypeConnections(partType), myStep->getOrientation());
-        //cout << signed(orientation) << endl;
+        orientation = myConstr.check_constraints(getConstrMatrix()->get_constraints(myStep->getPosition().getRow(), myStep->getPosition().getCol()), \
+        getPuzzleBox()->getBaseTypeConnections(partType), myStep->getOrientation());            // TODO: This has to be shorter
 
         // Check if part fits
-        if (orientation == -1) {
+        if (orientation == -1) { // If the part does not fit
             if(PRINT_MESSAGES) cout << "Part doesn't fit in! " << "(Type: " << signed(partType) << ")" << endl;
             myStep->setPossiblePartType(partType, 2);
             myStep->setOrientation(0);
-            // Get other part if it does not fit and jump back to orientation-check
+            // get another part if and jump back to orientation-check
             partType = getNextPossiblePartTypeIdx(myStep);
+            // If there is no other part left: go back
             if (partType == -1) {
                 if(PRINT_MESSAGES) cout << "Keine Grundform mehr übrig, DETAIL -> Go Back" << endl;
                 return false;
             }
-        } else { //Part fits
+        } else { // If the part fits
             if(PRINT_MESSAGES) cout << "Part fits in! " << "(Type: " << signed(partType) << "," << signed(orientation) << ")" << endl;
             break;
         }
     }
 
-    if (incNrUsedPartType(myStep, partType)) {              // if a part of this type is available
-        myStep->setPossiblePartType(partType, 1);           // Part of this type is set
+    // Set fitting part for the step
+    if (incNrUsedPartType(partType)) {                      // if a part of this type is available (Should be true because checked before)
+        myStep->setPossiblePartType(partType, 1);           // Set part of this type
         myStep->setOrientation(orientation);                // Set orientation of part
         uint8_t temp = getPuzzleBox()->getBaseTypeConnections(partType);
         myConstr.rotate_part(temp, orientation);
-        myConstr.set_constraints(myStep->getPosition().getRow(), myStep->getPosition().getCol(), temp);
+        myConstr.set_constraints(myStep->getPosition().getRow(), myStep->getPosition().getCol(), temp);     // TODO: This has to be shorter
     } else {
+        // Something gröber went wrong -> Show message all the time
         failed3++;
-        if(PRINT_MESSAGES) cout << "Path::placePart: Something went wrong!" << signed(partType) << endl << endl;
+        cout << "Path::placePart: Something went wrong!" << signed(partType) << endl << endl;
         return false;
     }
     return true;
 }
 
 int8_t Path::getNextPossiblePartTypeIdx(Step *myStep) const {
-    random_device rd; // obtain a random number from hardware
-    mt19937 eng(rd()); // seed the generator
+    // Do random stuff
+    random_device rd;               // obtain a random number from hardware
+    mt19937 eng(rd());              // seed the generator
 
-    int8_t possibilities[NR_PART_TYPES] = {-1};
-    int8_t pos = 0;
+    int8_t possibilities[NR_PART_TYPES] = {-1};        // To store the possibilities
+    int8_t numPos = 0;                                 // To store the number of possibilities (for random-generator)
 
     for(int8_t i = 0; i < NR_PART_TYPES; i++){
+        // Check if this part is possible
         if(myStep->getPossiblePartType(i) == 0 && Puzzlebox::countType(i) > 0 && Step::getNrUsedPartType(i) < Puzzlebox::countType(i)) {
-            possibilities[pos] = i;             // Save it, if position is possible
-            pos++;
+            possibilities[numPos] = i;
+            numPos++;
         }
     }
-    if(pos == 0) return -1;
-    if(pos == 1) return possibilities[0];
-    uniform_int_distribution<> distr(1, pos);   // Get a random position
+    // If there was no possible part type
+    if(numPos == 0) return -1;
+
+    // If there was only 1 possible part type
+    if(numPos == 1) return possibilities[0];
+
+    // If there were more than 1 possible parts
+    uniform_int_distribution<> distr(1, numPos);            // Get a random part type
     return possibilities[distr(eng)-1];
+
     /*
+    // Searching for next part without random
     int8_t idxActUsed = myStep->getFittingPartTypeIdx();
     if (idxActUsed != (NR_PART_TYPES-1)) {
         for (auto i = int8_t(idxActUsed + 1); i < NR_PART_TYPES; i++) {  // Search after already used part
@@ -134,13 +194,14 @@ int8_t Path::getNextPossiblePartTypeIdx(Step *myStep) const {
     return -1;         */                                            // No fitting part left --> Something is wrong before this step
 }
 
-bool Path::incNrUsedPartType(Step* myStep, int8_t partType) {
-    //myStep->printNrUsedPartType();
-    //myBox.printTypeArr();
-    //cout << signed(partType) << " " << myBox.countType(partType) << endl;
+bool Path::incNrUsedPartType(int8_t partType) {
+    // Debug
     numInc[partType]++;
+
+    // Get the actual number of parts of this type
     int16_t nrUsedPartType = Step::getNrUsedPartType(partType);
-    if(Puzzlebox::countType(partType) > 0 && Step::getNrUsedPartType(partType) < Puzzlebox::countType(partType)) {
+    // If there is a part left
+    if(Puzzlebox::countType(partType) > 0 && nrUsedPartType < Puzzlebox::countType(partType)) {
         nrUsedPartType = int16_t(nrUsedPartType + 1);
         Step::setNrUsedPartType(partType, nrUsedPartType);
         return true;
@@ -149,48 +210,19 @@ bool Path::incNrUsedPartType(Step* myStep, int8_t partType) {
     }
 }
 
-bool Path::decNrUsedPartType(Step *myStep, int8_t partType) {
+bool Path::decNrUsedPartType(int8_t partType) {
+    // Debug
     numDec[partType]++;
+
+    // If there are no parts of this type
     if(Step::getNrUsedPartType(partType) == 0){
-        return false;                            // if already 0
+        return false;
     } else {
         int16_t nrUsedPartType = Step::getNrUsedPartType(partType);
         nrUsedPartType = int16_t(nrUsedPartType - 1);
         Step::setNrUsedPartType(partType, nrUsedPartType);
         return true;
     }
-}
-
-void Path::printPath(uint16_t first2print, uint16_t last2print) {
-    if (first2print <= last2print) {
-        for (auto it = myPath.begin() + first2print; it != myPath.begin() + last2print + 1; it++) {        // auto = vector<Step>::iterator
-            cout << distance(myPath.begin(), it) << ": ";               // however this is working
-            cout << *it << endl;
-        }
-    } else {
-        cout << endl << "    Path::printPath: invalid indizes!" << endl;
-    }
-}
-
-void Path::printPath() {
-    for (auto it = myPath.begin(); it != myPath.end(); it++) {        // auto = vector<Step>::iterator
-        cout << distance(myPath.begin(), it) << ": ";               // however this is working
-        cout << *it << endl;
-    }
-    cout << "NUM INC: ";
-    for (int i = 0; i < 18; i++){
-        cout << numInc[i] << " ";
-    }
-    cout << endl;
-    cout << "NUM DEC: ";
-    for (int i = 0; i < 18; i++){
-        cout << numDec[i] << " ";
-    }
-    cout << endl;
-    cout << "Failed 1: " << failed1 << endl;
-    cout << "Failed 2: " << failed2 << endl;
-    cout << "Failed 3: " << failed3 << endl;
-    countNumTypesUsed();
 }
 
 void Path::setPositions() {
@@ -245,14 +277,7 @@ void Path::setPositions() {
     }
 }
 
-void Path::printSolution() {
-    for (int i = 0; i < NR_POSITIONS; i++){
-            cout << i << ": " << "[" << unsigned(getStep(i)->getPosition().getRow()) << "]" << "[" << unsigned(getStep(i)->getPosition().getCol()) << "]: " \
-                 << signed(getStep(i)->getFittingPartTypeIdx()) << "  Ori: " << signed(getStep(i)->getOrientation()) << endl;
-    }
-}
-
-void Path::countNumTypesUsed() {
+void Path::count_printNumTypesUsed() {
     int numUsed[18] = {0};
     for(int16_t i = 0; i < NR_POSITIONS; i++){
         numUsed[getStep(i)->getFittingPartTypeIdx()]++;
@@ -265,16 +290,55 @@ void Path::countNumTypesUsed() {
 }
 
 void Path::resetPath() {
-    for(int r = 0; r < NR_ROWS; r++){
-        for(int c = 0; c < NR_COLS; c++){
+    for(int16_t r = 0; r < NR_ROWS; r++){
+        for(int16_t c = 0; c < NR_COLS; c++){
             myConstr.remove_constraints(r, c);
         }
     }
-    for(int i = 0; i < NR_POSITIONS; i++){
+    for(int16_t i = 0; i < NR_POSITIONS; i++){
         getStep(i)->setOrientation(0);
         getStep(i)->resetPossiblePartTypes();
     }
-    for(int i = 0; i < NR_PARTS; i++){
+    for(int8_t i = 0; i < NR_PARTS; i++){
         Step::setNrUsedPartType(i, 0);
     }
+    numTries = 0;
+    numGoBack = 0;
+    furthestStep = 0;
+}
+
+void Path::printPath(uint16_t first2print, uint16_t last2print) {
+    if (first2print <= last2print) {
+        for (int16_t i = first2print; i <= last2print; i++){
+            cout << i << ": " << "[" << unsigned(getStep(i)->getPosition().getRow()) << "]" << "[" << unsigned(getStep(i)->getPosition().getCol()) << "]: " \
+                 << signed(getStep(i)->getFittingPartTypeIdx()) << "  Ori: " << signed(getStep(i)->getOrientation()) << " | ";
+            getStep(i)->printPossiblePartTypeArr();
+        }
+    } else {
+        cout << endl << "    Path::printPath: invalid indizes!" << endl;
+    }
+}
+
+void Path::printPath() {
+    for (int16_t i = 0; i < NR_POSITIONS; i++){
+        cout << i << ": " << "[" << unsigned(getStep(i)->getPosition().getRow()) << "]" << "[" << unsigned(getStep(i)->getPosition().getCol()) << "]: " \
+                 << signed(getStep(i)->getFittingPartTypeIdx()) << "  Ori: " << signed(getStep(i)->getOrientation()) << " | ";
+        getStep(i)->printPossiblePartTypeArr();
+    }
+}
+
+void Path::printDebug() {
+    cout << "NUM INC: ";
+    for(int i = 0; i < 18; i++){
+        cout << numInc[i] << " ";
+    }
+    cout << endl;
+    cout << "NUM DEC: ";
+    for(int i = 0; i < 18; i++){
+        cout << numDec[i] << " ";
+    }
+    cout << endl;
+    cout << "Failed 1: " << failed1 << endl;
+    cout << "Failed 2: " << failed2 << endl;
+    cout << "Failed 3: " << failed3 << endl;
 }
