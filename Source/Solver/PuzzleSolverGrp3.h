@@ -10,6 +10,7 @@ public:
 
     bool SolvePuzzle();
     bool SolvePuzzle2();
+    bool SolvePuzzleNiko();
     void ClearPuzzle();
 	vector<vector<SolutionElement>>* GetSolutionMatrix();
 
@@ -22,10 +23,13 @@ private:
     bool PuzzleLogic(uint8_t currentPart, int collumn, int row);
     bool PuzzleLogic_v2(uint8_t currentPart, int collumn, int row);
     uint8_t GetOrientationForSolutionMatrix(uint16_t index, uint8_t side, uint8_t currentPartNoseOnSide);
-    int GetIndexFromPartArray(vector <Part *> wishedArray, int wishedIndex);
     int GetIndexFromPart(Part* part);
     bool RecursiveFindAndPlace(vector<pair<int,int>> nextPuzzlePlaces, vector<pair<int,int>>& tempPuzzle);
     void InitializeVectors();
     void InitializeSolutionMatrix();
+
+    // Niko
+    void solveOuterEdge();
+    void solveCorners();
 };
 
