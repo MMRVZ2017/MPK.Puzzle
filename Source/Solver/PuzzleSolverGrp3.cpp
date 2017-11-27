@@ -251,6 +251,7 @@ bool PuzzleSolverGrp3::RecursiveFindAndPlace(vector<pair<int,int>> nextPuzzlePla
 {
     bool puzzleSolved = false;
     int possiblePlace = 0;
+    int partRotated = 0;
     vector<Part *> blackList;
 
     while(possiblePlace < nextPuzzlePlaces.size())
@@ -315,7 +316,7 @@ bool PuzzleSolverGrp3::RecursiveFindAndPlace(vector<pair<int,int>> nextPuzzlePla
             numRotations = 0;
             while ((!PartSet) && (numRotations < 4)) {
                 partIndex = GetIndexFromPart(currentPart);
-                partOrientation = m_part_array->at(partIndex).getConnections();
+                partOrientation = HelperFunctions::ContinuousShift(m_part_array->at(partIndex).getConnections(), (partRotated * 2));
                 partOrientation = HelperFunctions::ContinuousShift(partOrientation, (numRotations * 2));
                 PartSet = PuzzleLogic_v2(partOrientation, spalte, zeile);
                 if (!PartSet) {
@@ -346,6 +347,19 @@ bool PuzzleSolverGrp3::RecursiveFindAndPlace(vector<pair<int,int>> nextPuzzlePla
         m_solutionVector[spalte][zeile].index = partIndex;
         m_solutionVector[spalte][zeile].orientation = numRotations;
 
+        // Ausgabe der fertigen Matrix
+        /*
+        for (uint32_t zeile = 0; zeile < m_NumZeilen; zeile++)
+        {
+            for (uint32_t spalte = 0; spalte < m_NumSpalten; spalte++)
+            {
+                cout << m_solutionVector[spalte][zeile].index << " - " << bitset<8>(HelperFunctions::ContinuousShift((*m_part_array)[m_solutionVector[spalte][zeile].index].getConnections(), (m_solutionVector[spalte][zeile].orientation * 2))).to_string() << "||";
+            }
+            cout << endl;
+        }*/
+        //cout << "Next Places: " << nextPuzzlePlaces.size() << endl;
+        //cout << "----------------------------" << endl;
+
         // Eine Ebene tiefer in der rekursiven Funktion
         if(nextPuzzlePlaces.size() > 0)
         {
@@ -358,11 +372,17 @@ bool PuzzleSolverGrp3::RecursiveFindAndPlace(vector<pair<int,int>> nextPuzzlePla
 
         if(puzzleSolved == false)
         {
+            //cout << "Rekursion rauf" << endl;
             m_solutionVector[spalte][zeile].index = -1;
             m_solutionVector[spalte][zeile].orientation = 0;
             nextPuzzlePlaces.insert (nextPuzzlePlaces.begin(), make_pair(spalte, zeile));
-            blackList.push_back(currentPart);
             placedParts.pop_back();
+            partRotated++;
+
+            if(partRotated > 3)
+            {
+                blackList.push_back(currentPart);
+            }
         }
         else
         {

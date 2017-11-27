@@ -7,8 +7,8 @@
 
 using namespace std;
 
-const uint8_t SPALTEN = 3;
-const uint8_t ZEILEN = 3;
+const uint8_t SPALTEN = 7;
+const uint8_t ZEILEN = 7;
 
 void MatrixAusgeben(vector <Part> part_array)
 {
@@ -24,6 +24,7 @@ void MatrixAusgeben(vector <Part> part_array)
 }
 
 int main() {
+    srand (time(NULL));
     vector <Part> part_array(SPALTEN * ZEILEN);
 
     PuzzleCreator pzlCreator(SPALTEN, ZEILEN, &part_array);
