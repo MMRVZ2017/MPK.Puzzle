@@ -28,6 +28,7 @@ PuzzleSolverGrp3::PuzzleSolverGrp3(vector <Part>* part_array, vector <Part *> co
 
 void PuzzleSolverGrp3::SolvePuzzle()
 {
+    srand(time (NULL));
     /*
 	cout << "Groesse:" << m_solutionVector.size() << endl;
 	cout << "Groesse:" << m_solutionVector[1].size() << endl;
@@ -52,7 +53,7 @@ void PuzzleSolverGrp3::SolvePuzzle()
     uint8_t underPartFemale = 0b00000100, underPartMale = 0b00001000;
     uint8_t leftPartFemale = 0b00000001, leftPartMale = 0b00000010;
 
-    for (countParts = 0; (countParts < m_inners_array.size()) && (retrysPuzzleField < 1000); countParts++)
+    for (countParts = 0; (countParts < m_inners_array.size()) && (retrysPuzzleField < 1500); countParts++)
     {
         // Method setAllFalse();
         checkNeighbourLeft = false;
@@ -76,6 +77,8 @@ void PuzzleSolverGrp3::SolvePuzzle()
         if (m_solutionVector[posX][posY].index == 65535) // -1=65535, Field is empty => check neighbours
         {
             cout << "Current Field is free!" << endl;
+
+            // check if neighbours are around this field
             if ((m_solutionVector[posX-1][posY].index == 65535) && (m_solutionVector[posX+1][posY].index == 65535) &&
                 (m_solutionVector[posX][posY-1].index == 65535) && (m_solutionVector[posX][posY+1].index == 65535))
             {
@@ -87,7 +90,7 @@ void PuzzleSolverGrp3::SolvePuzzle()
             }
             else
             {
-                cout << "Current Field is not free!" << endl;
+                cout << "Neighbours found. Checking conflicts with neighbours" << endl;
 
                 // check all neighbours of current puzzle part
                 if (m_solutionVector[posX-1][posY].index != -1)
@@ -161,7 +164,7 @@ void PuzzleSolverGrp3::SolvePuzzle()
                      //&& (checkNeighbourLeft == false || checkNeighbourRight == false || checkNeighbourUnder == false || checkNeighbourUpper == false) )
                 {
                     // there where no conflicts found with neighbour parts
-                    cout << "No conflicts with neighbour parts. Place Puzzle part to: " << m_solutionVector[posX][posY].index << endl;
+                    cout << "No conflicts with neighbour parts. Place Puzzle part at: " << "X:[" << posX << "]" << " Y:[" << posY << "]" << endl;
 
                     m_solutionVector[posX][posY].index = GetIndexFromPartArray(m_inners_array, countParts);
                     m_solutionVector[posX][posY].orientation = rotatedPart;
@@ -194,6 +197,7 @@ void PuzzleSolverGrp3::SolvePuzzle()
             cout << "X: " << posX << ", Y: " << posY << endl;
             cout << "m_solutionVector at [posX][posY].index = " << m_solutionVector[posX][posY].index << endl;
             cout << "Field is already used, searching another Field" << endl;
+            cout << "---" << endl;
 
             retrysPuzzleField++;
             countParts--;
