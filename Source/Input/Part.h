@@ -13,19 +13,21 @@ using namespace std;
 class Part
 {
 public:
-	Part() : connections(0) {}
+	Part() : m_connections(0) {}
+	Part(uint8_t connections) : m_connections(connections) {}
+
 	~Part() {}
 	uint8_t getConnections() const
 	{
-		return connections;
+		return m_connections;
 	}
 	void setConnections(uint8_t newconnections)
 	{
-		connections = newconnections;
+		m_connections = newconnections;
 	}
 
 private:
-	uint8_t connections;
+	uint8_t m_connections;
 };
 
 /*int main()

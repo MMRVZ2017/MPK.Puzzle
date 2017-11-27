@@ -1,7 +1,7 @@
 #include "PuzzleCreator.h"
 #include "../Helper/HelperFunctions.h"
 
-PuzzleCreator::PuzzleCreator(int spalten, int zeilen) : m_spalten(spalten), m_zeilen(zeilen)
+PuzzleCreator::PuzzleCreator(int spalten, int zeilen, vector <Part>* part_array) : m_spalten(spalten), m_zeilen(zeilen), m_part_array(part_array)
 {
 }
 
@@ -48,15 +48,6 @@ uint8_t PuzzleCreator::CreateRandomPart(int wishedEdges)
 			newPart |= CreateNose() << sides[numNoses];
 		}
 
-		/*random_shuffle(begin(sides), end(sides));
-
-		cout << bitset<8>(newPart).to_string() << endl;
-
-		for (int i = 0; i < 4; i++)
-		{
-		cout << sides[i] << endl;
-		}*/
-
 		partCreated = true;
 	}
 
@@ -64,43 +55,56 @@ uint8_t PuzzleCreator::CreateRandomPart(int wishedEdges)
 }
 
 /* Only look on the upper and left part, because the other are not set yet */
-bool PuzzleCreator::PuzzleLogicForNewPuzzle(vector <Part> part_array, uint8_t newPart, int partIndex)
+bool PuzzleCreator::PuzzleLogicForNewPuzzle(uint8_t newPart, int partIndex)
 {
 	uint8_t newPartNoseTop = newPart & 0b11000000;
 	uint8_t newPartNoseLeft = newPart & 0b00000011;
+
 	uint8_t leftPartNoseRight = 0b00000000;
 	uint8_t upperPartNoseBottom = 0b00000000;
 
-	if ((partIndex - 1 >= 0) && ((partIndex % m_spalten) != 0))
-	{
-		leftPartNoseRight = part_array[partIndex - 1].getConnections() & 0b00110000;
-	}
-	else
+	bool topSuitable = false;
+	bool leftSuitable = false;
+
+	if (partIndex == 0)
 	{
 		// Set the first puzzle part in the puzzle without checking
 		return true;
 	}
-
-	if (partIndex - m_spalten > 0)
+	else if((partIndex % m_spalten) == 0)
 	{
-		upperPartNoseBottom = part_array[partIndex - m_spalten].getConnections() & 0b00001100;
+		// Puzzle parts on the first collumn are fitting left allways
+		leftSuitable = true;
 	}
 	else
 	{
-		// Set puzzle parts in the first row without checking
-		return true;
+		leftPartNoseRight = m_part_array->at(partIndex - 1).getConnections() & 0b00110000;
 	}
 
-	/*
-	0 1 2 3 4
-	5 6 7 8 9
-	*/
-	// 0b000001000 & 0b00001000 == 0b00001000
-	// 0b000001000 | 0b00000100 == 0b00001100
-	// 0b000001000 & 0b01000000 == 0b00000000
-	// Shift to get top nose of the new part compared to the bottom nose of the upper part
-	if (((upperPartNoseBottom ^ (newPartNoseTop >> 4)) == 0b00001100) && ((leftPartNoseRight ^ (newPartNoseLeft << 4)) == 0b00110000))
-	//if (((upperPartNoseBottom & (newPartNoseTop >> 4)) == 0b00000000) && ((leftPartNoseRight & (newPartNoseLeft << 4)) == 0b00000000))
+	if ((partIndex - m_spalten) > 0)
+	{
+		upperPartNoseBottom = m_part_array->at(partIndex - m_spalten).getConnections() & 0b00001100;
+	}
+	else
+	{
+		// Puzzle parts in the first row are fitting top allways
+		topSuitable = true;
+	}
+
+	uint8_t resTop = upperPartNoseBottom ^ (HelperFunctions::ContinuousShift(newPartNoseTop, 4));
+	uint8_t resLeft = leftPartNoseRight ^ (HelperFunctions::ContinuousShift(newPartNoseLeft, 4));
+
+	if((resTop == 0b00001100) && (topSuitable == false))
+	{
+		topSuitable = true;
+	}
+
+	if((resLeft == 0b00110000) && (leftSuitable == false))
+	{
+		leftSuitable = true;
+	}
+
+	if((topSuitable == true) && (leftSuitable == true))
 	{
 		// new part fits in the hole
 		return true;
@@ -110,12 +114,9 @@ bool PuzzleCreator::PuzzleLogicForNewPuzzle(vector <Part> part_array, uint8_t ne
 	return false;
 }
 
-vector <Part> PuzzleCreator::CreateRandomPuzzle(vector <Part> part_array, vector <Part *> corners_array, vector <Part *> edges_array, vector <Part *> inners_array)
+vector <Part>* PuzzleCreator::CreateRandomPuzzle()
 {
 	int partIndex = 0;
-	int countCorner = 0;
-	int countEdge = 0;
-	int countInners = 0;
 
 	for (int zeile = 0; zeile < m_zeilen; zeile++)
 	{
@@ -123,7 +124,7 @@ vector <Part> PuzzleCreator::CreateRandomPuzzle(vector <Part> part_array, vector
 		{
 			uint8_t newPart = 0b00000000;
 			/*
-			3 M�glichkeiten: 00 - 01 - 10
+			3 Moeglichkeiten: 00 - 01 - 10
 
 			Ecke:	min. 6 nuller 00100100 - nuller nebeneinander != 00010010
 			Kante:	min. 5 nuller 00100110
@@ -136,10 +137,9 @@ vector <Part> PuzzleCreator::CreateRandomPuzzle(vector <Part> part_array, vector
 				while (!partSet)
 				{
 					newPart = CreateRandomPart(2);
-					partSet = PuzzleLogicForNewPuzzle(part_array, newPart, partIndex);
+					partSet = PuzzleLogicForNewPuzzle(newPart, partIndex);
 				}
-				part_array[partIndex].setConnections(newPart);
-				corners_array[countCorner++] = &part_array[partIndex];
+				m_part_array->at(partIndex).setConnections(newPart);
 			}
 			else if ((zeile == 0) || (zeile == m_zeilen - 1) || (spalte == 0) || (spalte == m_spalten - 1))
 			{
@@ -147,10 +147,9 @@ vector <Part> PuzzleCreator::CreateRandomPuzzle(vector <Part> part_array, vector
 				while (!partSet)
 				{
 					newPart = CreateRandomPart(1);
-					partSet = PuzzleLogicForNewPuzzle(part_array, newPart, partIndex);
+					partSet = PuzzleLogicForNewPuzzle(newPart, partIndex);
 				}
-				part_array[partIndex].setConnections(newPart);
-				edges_array[countEdge++] = &part_array[partIndex];
+				m_part_array->at(partIndex).setConnections(newPart);
 			}
 			else
 			{
@@ -158,25 +157,21 @@ vector <Part> PuzzleCreator::CreateRandomPuzzle(vector <Part> part_array, vector
 				while (!partSet)
 				{
 					newPart = CreateRandomPart(0);
-					partSet = PuzzleLogicForNewPuzzle(part_array, newPart, partIndex);
+					partSet = PuzzleLogicForNewPuzzle(newPart, partIndex);
 				}
-				part_array[partIndex].setConnections(newPart);
-				inners_array[countInners++] = &part_array[partIndex];
+				m_part_array->at(partIndex).setConnections(newPart);
 			}
 
 			partIndex++;
 		}
 	}
 
-	return part_array;
+	return m_part_array;
 }
 
-vector <Part> PuzzleCreator::CreateRandomPuzzle2(vector <Part> part_array, vector <Part *>& corners_array, vector <Part *>& edges_array, vector <Part *>& inners_array)
+vector <Part>* PuzzleCreator::CreateRandomPuzzle2()
 {
 	int partIndex = 0;
-	int countCorner = 0;
-	int countEdge = 0;
-	int countInners = 0;
 
 	for (int zeile = 0; zeile < m_zeilen; zeile++)
 	{
@@ -184,7 +179,10 @@ vector <Part> PuzzleCreator::CreateRandomPuzzle2(vector <Part> part_array, vecto
 		{
 			uint8_t newPart = 0b00000000;
 
-			if (((zeile == 0) && (spalte == 0)) || ((zeile == m_zeilen - 1) && (spalte == 0)) || ((zeile == 0) && (spalte == m_spalten - 1)) || ((zeile == m_zeilen - 1) && (spalte == m_spalten - 1)))
+			if (((zeile == 0) && (spalte == 0))
+				|| ((zeile == m_zeilen - 1) && (spalte == 0))
+				|| ((zeile == 0) && (spalte == m_spalten - 1))
+				|| ((zeile == m_zeilen - 1) && (spalte == m_spalten - 1)))
 			{
 				bool partSet = false;
 				while (!partSet)
@@ -197,10 +195,9 @@ vector <Part> PuzzleCreator::CreateRandomPuzzle2(vector <Part> part_array, vecto
 					{
 						continue;
 					}
-					partSet = PuzzleLogicForNewPuzzle(part_array, newPart, partIndex);
+					partSet = PuzzleLogicForNewPuzzle(newPart, partIndex);
 				}
-				part_array[partIndex].setConnections(newPart);
-				corners_array[countCorner++] = &part_array[partIndex];
+				m_part_array->at(partIndex).setConnections(newPart);
 			}
 			else if ((zeile == 0) || (zeile == m_zeilen - 1) || (spalte == 0) || (spalte == m_spalten - 1))
 			{
@@ -215,10 +212,9 @@ vector <Part> PuzzleCreator::CreateRandomPuzzle2(vector <Part> part_array, vecto
 					{
 						continue;
 					}
-					partSet = PuzzleLogicForNewPuzzle(part_array, newPart, partIndex);
+					partSet = PuzzleLogicForNewPuzzle(newPart, partIndex);
 				}
-				part_array[partIndex].setConnections(newPart);
-				edges_array[countEdge++] = &part_array[partIndex];
+				m_part_array->at(partIndex).setConnections(newPart);
 			}
 			else
 			{
@@ -226,47 +222,106 @@ vector <Part> PuzzleCreator::CreateRandomPuzzle2(vector <Part> part_array, vecto
 				while (!partSet)
 				{
 					newPart = CreateRandomPart(0);
-					partSet = PuzzleLogicForNewPuzzle(part_array, newPart, partIndex);
+					partSet = PuzzleLogicForNewPuzzle(newPart, partIndex);
 				}
-				part_array[partIndex].setConnections(newPart);
-				inners_array[countInners++] = &part_array[partIndex];
+				m_part_array->at(partIndex).setConnections(newPart);
 			}
 
 			partIndex++;
 		}
 	}
 
-	RotateWholePuzzle(part_array);
-	//ShuffleWholePuzzle(part_array);
+	RotateWholePuzzle();
+	ShuffleWholePuzzle();
 
-	return part_array;
+	return m_part_array;
 }
 
-vector <Part> PuzzleCreator::CreatePuzzle(vector <Part> part_array, vector <Part *> corners_array, vector <Part *> edges_array, vector <Part *> inners_array)
+bool PuzzleCreator::CreateRandomPuzzle3()
+{
+    int partIndex = 0;
+
+    for (int row = 0; row < m_zeilen; row++)
+    {
+        for (int collumn = 0; collumn < m_spalten; collumn++)
+        {
+            uint8_t newPartConnections = 0b00000000;
+
+            if (((row == 0) && (collumn == 0)) || ((row == m_zeilen - 1) && (collumn == 0)) || ((row == 0) && (collumn == m_spalten - 1)) || ((row == m_zeilen - 1) && (collumn == m_spalten - 1)))
+            {
+                bool partSet = false;
+                while (!partSet)
+                {
+                    newPartConnections = CreateRandomPart(2);
+                    if (((row == 0)			&& (collumn == 0)			&& ((newPartConnections & 0b11000011) != 0b00000000)) ||
+                        ((row == 0)			&& (collumn == m_spalten-1)	&& ((newPartConnections & 0b11110000) != 0b00000000)) ||
+                        ((row == m_zeilen-1)	&& (collumn == 0)			&& ((newPartConnections & 0b00001111) != 0b00000000)) ||
+                        ((row == m_zeilen-1)	&& (collumn == m_spalten-1)	&& ((newPartConnections & 0b00111100) != 0b00000000)))
+                    {
+                        continue;
+                    }
+                    partSet = PuzzleLogicForNewPuzzle(newPartConnections, partIndex);
+                }
+
+				m_part_array->at(partIndex) = newPartConnections;
+            }
+            else if ((row == 0) || (row == m_zeilen - 1) || (collumn == 0) || (collumn == m_spalten - 1))
+            {
+                bool partSet = false;
+                while (!partSet)
+                {
+                    newPartConnections = CreateRandomPart(1);
+                    if (((row == 0)					&& ((newPartConnections & 0b11000000) != 0b00000000)) ||
+                        ((row == m_zeilen-1)		&& ((newPartConnections & 0b00001100) != 0b00000000)) ||
+                        ((collumn == 0)				&& ((newPartConnections & 0b00000011) != 0b00000000)) ||
+                        ((collumn == m_spalten-1)	&& ((newPartConnections & 0b00110000) != 0b00000000)))
+                    {
+                        continue;
+                    }
+                    partSet = PuzzleLogicForNewPuzzle(newPartConnections, partIndex);
+                }
+
+				m_part_array->at(partIndex) = newPartConnections;
+            }
+            else
+            {
+                bool partSet = false;
+                while (!partSet)
+                {
+                    newPartConnections = CreateRandomPart(0);
+                    partSet = PuzzleLogicForNewPuzzle(newPartConnections, partIndex);
+                }
+
+				m_part_array->at(partIndex) = newPartConnections;
+            }
+
+            partIndex++;
+        }
+    }
+
+    RotateWholePuzzle();
+    ShuffleWholePuzzle();
+
+    return true;
+}
+
+vector <Part>* PuzzleCreator::CreatePuzzle()
 {
 	int partIndex = 0;
-	int countCorner = 0;
-	int countEdge = 0;
-	int countInners = 0;
+
 	for (int zeile = 0; zeile < m_zeilen; zeile++)
 	{
 		for (int spalte = 0; spalte < m_spalten; spalte++)
 		{
-			if (countInners == 884)
-			{
-				cout << endl;
-			}
 			if ((zeile == 0) || (zeile == m_zeilen))
 			{
 				if (spalte == 0)
 				{
-					part_array[partIndex].setConnections(0b00100100);
-					corners_array[countCorner++] = &part_array[partIndex];
+					m_part_array->at(partIndex).setConnections(0b00100100);
 				}
 				else if (spalte == m_spalten)
 				{
-					part_array[partIndex].setConnections(0b00000101);
-					corners_array[countCorner++] = &part_array[partIndex];
+					m_part_array->at(partIndex).setConnections(0b00000101);
 				}
 				else
 				{
@@ -274,26 +329,22 @@ vector <Part> PuzzleCreator::CreatePuzzle(vector <Part> part_array, vector <Part
 					{
 						if ((spalte % 2) == 0)
 						{
-							part_array[partIndex].setConnections(0b00100110);
-							edges_array[countEdge++] = &part_array[partIndex];
+							m_part_array->at(partIndex).setConnections(0b00100110);
 						}
 						else
 						{
-							part_array[partIndex].setConnections(0b00010101);
-							edges_array[countEdge++] = &part_array[partIndex];
+							m_part_array->at(partIndex).setConnections(0b00010101);
 						}
 					}
 					else
 					{
 						if ((spalte % 2) == 0)
 						{
-							part_array[partIndex].setConnections(0b10010001);
-							edges_array[countEdge++] = &part_array[partIndex];
+							m_part_array->at(partIndex).setConnections(0b10010001);
 						}
 						else
 						{
-							part_array[partIndex].setConnections(0b10100010);
-							edges_array[countEdge++] = &part_array[partIndex];
+							m_part_array->at(partIndex).setConnections(0b10100010);
 						}
 					}
 				}
@@ -302,26 +353,22 @@ vector <Part> PuzzleCreator::CreatePuzzle(vector <Part> part_array, vector <Part
 			{
 				if ((zeile % 2) == 0)
 				{
-					part_array[partIndex].setConnections(0b01100100);
-					edges_array[countEdge++] = &part_array[partIndex];
+					m_part_array->at(partIndex).setConnections(0b01100100);
 				}
 				else
 				{
-					part_array[partIndex].setConnections(0b10011000);
-					edges_array[countEdge++] = &part_array[partIndex];
+					m_part_array->at(partIndex).setConnections(0b10011000);
 				}
 			}
 			else if (spalte == m_spalten)
 			{
 				if ((zeile % 2) == 0)
 				{
-					part_array[partIndex].setConnections(0b10000101);
-					edges_array[countEdge++] = &part_array[partIndex];
+					m_part_array->at(partIndex).setConnections(0b10000101);
 				}
 				else
 				{
-					part_array[partIndex].setConnections(0b10000110);
-					edges_array[countEdge++] = &part_array[partIndex];
+					m_part_array->at(partIndex).setConnections(0b10000110);
 				}
 			}
 			else
@@ -330,54 +377,42 @@ vector <Part> PuzzleCreator::CreatePuzzle(vector <Part> part_array, vector <Part
 				{
 					if ((spalte % 2) == 0)
 					{
-						part_array[partIndex].setConnections(0b01100110);
-						inners_array[countInners++] = &part_array[partIndex];
+						m_part_array->at(partIndex).setConnections(0b01100110);
 					}
 					else
 					{
-						part_array[partIndex].setConnections(0b10010101);
-						inners_array[countInners++] = &part_array[partIndex];
+						m_part_array->at(partIndex).setConnections(0b10010101);
 					}
 				}
 				else
 				{
 					if ((spalte % 2) == 0)
 					{
-						part_array[partIndex].setConnections(0b10011001);
-						inners_array[countInners++] = &part_array[partIndex];
+						m_part_array->at(partIndex).setConnections(0b10011001);
 					}
 					else
 					{
-						part_array[partIndex].setConnections(0b10100110);
-						inners_array[countInners++] = &part_array[partIndex];
+						m_part_array->at(partIndex).setConnections(0b10100110);
 					}
 				}
 			}
 			partIndex++;
 		}
 	}
-	return part_array;
+	return m_part_array;
 }
 
-void PuzzleCreator::RotateWholePuzzle(vector <Part>& part_array)
+void PuzzleCreator::RotateWholePuzzle()
 {
-	for(int index = 0; index < part_array.size(); index++)
+	for(int index = 0; index < m_part_array->size(); index++)
 	{
 		int randomNum = 2 * (rand() % 4);
-		part_array[index].setConnections(HelperFunctions::ContinuousShift(part_array[index].getConnections(), randomNum));
+		m_part_array->at(index).setConnections(HelperFunctions::ContinuousShift(m_part_array->at(index).getConnections(), randomNum));
 	}
 }
 
-void PuzzleCreator::ShuffleWholePuzzle(vector <Part>& part_array)
+void PuzzleCreator::ShuffleWholePuzzle()
 {
-	//with this function the pointer of corner_array,.. will be lost
-	//random_shuffle(begin(part_array), end(part_array));
-
-	/*
-	for(int index = 0; index < part_array.size(); index++)
-	{
-		int randomPos = rand() % (part_array.size() + 1);
-		iter_swap(part_array.begin() + index, part_array.begin() + randomPos);
-	}
-	*/
+	random_shuffle(begin(*m_part_array), end(*m_part_array));
 }
+

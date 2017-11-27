@@ -3,35 +3,59 @@
 #include <bitset>
 #include <map>
 
-PuzzleSolverGrp3::PuzzleSolverGrp3(vector <Part>* part_array, vector <Part *> corners_array, vector <Part *> edges_array, vector <Part *> inners_array)
-	: m_part_array(part_array), m_corners_array(corners_array), m_edges_array(edges_array), m_inners_array(inners_array)
+PuzzleSolverGrp3::PuzzleSolverGrp3(vector <Part>* part_array) : m_part_array(part_array)
 {
-	int numSpalten = 0;
-	int numZeilen = 0;
-	for (int kanteHtemp = 1; kanteHtemp <= (m_edges_array.size() / 2) - 1; kanteHtemp++)
-	{
-		int kanteVtemp = (m_edges_array.size() / 2) - kanteHtemp;
-
-		if ((kanteHtemp * kanteVtemp) == m_inners_array.size()) // 884
-		{
-			if (kanteHtemp >= kanteVtemp)
-			{
-                numSpalten = kanteHtemp + 2;
-                numZeilen = kanteVtemp + 2;
-			}
-			/*cout << "Zeilen: " << kanteVtemp + 2 << endl;
-			cout << "Spalten: " << kanteHtemp + 2 << endl;
-			cout << "Anzahl Kanten: " << kanteVtemp * 2 + kanteHtemp * 2 << endl; // 36*28 = 884
-			cout << "Matrixgroesse = " << (kanteVtemp + 2)*(kanteHtemp + 2) << endl;*/
-		}
-	}
-
-	m_solutionVector = vector<vector<SolutionElement>>(numSpalten, vector<SolutionElement>(numZeilen));
+    InitializeVectors();
+    InitializeSolutionMatrix();
 }
-
 
 PuzzleSolverGrp3::~PuzzleSolverGrp3()
 {
+}
+
+void PuzzleSolverGrp3::InitializeVectors()
+{
+    for(int index = 0; index < m_part_array->size(); index++)
+    {
+        bitset<8> partConnections = m_part_array->at(index).getConnections();
+
+        switch(partConnections.count())
+        {
+            case 2:
+                m_corners_array.push_back(&m_part_array->at(index));
+                break;
+            case 3:
+                m_edges_array.push_back(&m_part_array->at(index));
+                break;
+            case 4:
+                m_inners_array.push_back(&m_part_array->at(index));
+                break;
+            default:
+                cout << "Error: Should not be called\n";
+                break;
+        }
+    }
+}
+
+void PuzzleSolverGrp3::InitializeSolutionMatrix()
+{
+    int numSpalten = 0;
+    int numZeilen = 0;
+    for (int kanteHtemp = 1; kanteHtemp <= (m_edges_array.size() / 2) - 1; kanteHtemp++)
+    {
+        int kanteVtemp = (m_edges_array.size() / 2) - kanteHtemp;
+
+        if ((kanteHtemp * kanteVtemp) == m_inners_array.size()) // 884
+        {
+            if (kanteHtemp >= kanteVtemp)
+            {
+                numSpalten = kanteHtemp + 2;
+                numZeilen = kanteVtemp + 2;
+            }
+        }
+    }
+
+    m_solutionVector = vector<vector<SolutionElement>>(numSpalten, vector<SolutionElement>(numZeilen));
 }
 
 void PuzzleSolverGrp3::ClearPuzzle()
@@ -141,7 +165,7 @@ bool PuzzleSolverGrp3::SolvePuzzle()
 
             if(numTries >= (m_solutionVector.size() * m_solutionVector[0].size()))
             {
-                cout << "numTries: " << numTries << " Index: " << index << endl;
+                //cout << "numTries: " << numTries << " Index: " << index << endl;
                 return false;
             }
             if(numTries >= 900 - 1)//(m_solutionVector.size() * m_solutionVector[0].size() * 100))
@@ -191,9 +215,12 @@ bool PuzzleSolverGrp3::SolvePuzzle()
 bool PuzzleSolverGrp3::SolvePuzzle2()
 {
     bool puzzleSolved = false;
-    //puzzleSolved = SolveBorder();
 
-    // Zuerst erste Ecke
+    // Vector mit möglichen Andockstellen erzeugen
+    // The left upper corner always at first
+    vector<pair<int,int>> nextPuzzlePlaces;
+    nextPuzzlePlaces.push_back(make_pair(0, 0));
+
     for(int cornerIndex = 0; (cornerIndex < m_corners_array.size() && puzzleSolved == false); cornerIndex++)
     {
         bool firstPartSet = false;
@@ -214,25 +241,16 @@ bool PuzzleSolverGrp3::SolvePuzzle2()
             }
         }
 
-        //Vector mit möglichen Andockstellen erzeugen
-        vector<pair<int,int>> nextPuzzlePlaces;
-        nextPuzzlePlaces.push_back(make_pair(1, 0));
-        nextPuzzlePlaces.push_back(make_pair(0, 1));
+
 
         vector<pair<int,int>> tempPuzzle;
         tempPuzzle.push_back(make_pair(partIndex, partOrientation));
 
-        puzzleSolved = RecursiveFindAndPlace(nextPuzzlePlaces, tempPuzzle);
         //Rekursive Logik zum Erkennen von möglichen Anbausteinen und testen des Steins mit den geringsten Möglichkeiten
-
+        puzzleSolved = RecursiveFindAndPlace(nextPuzzlePlaces, tempPuzzle);
     }
 
     // Dann immer dort wo am meisten Möglichkeiten
-}
-
-bool PuzzleSolverGrp3::SolveBorder()
-{
-
 }
 
 int PuzzleSolverGrp3::GetIndexFromPartArray(vector <Part *> wishedArray, int wishedIndex)
@@ -241,6 +259,20 @@ int PuzzleSolverGrp3::GetIndexFromPartArray(vector <Part *> wishedArray, int wis
     for(int index = 0; index < m_part_array->size(); index++)
     {
         if(&m_part_array->at(index) == wishedArray[wishedIndex])
+        {
+            partIndex = index;
+            break;
+        }
+    }
+    return partIndex;
+}
+
+int PuzzleSolverGrp3::GetIndexFromPart(Part* part)
+{
+    int partIndex = 0;
+    for(int index = 0; index < m_part_array->size(); index++)
+    {
+        if(&m_part_array->at(index) == part)
         {
             partIndex = index;
             break;
@@ -258,6 +290,7 @@ bool PuzzleSolverGrp3::RecursiveFindAndPlace(vector<pair<int,int>> nextPuzzlePla
     {
         int spalte = nextPuzzlePlaces[possiblePlace].first;
         int zeile = nextPuzzlePlaces[possiblePlace].second;
+        Part* nextPart = 0;
 
         // Ein passendes Teil setzen && Checken ob das Teil eh noch nicht gesetzt ist
         if ((spalte == 0) || (spalte == m_solutionVector.size()) || (zeile == 0) || (zeile == m_solutionVector[0].size()))
@@ -274,6 +307,23 @@ bool PuzzleSolverGrp3::RecursiveFindAndPlace(vector<pair<int,int>> nextPuzzlePla
         else
         {
             // Inner
+        }
+
+        // Setzen des ersten Bausteins --> Muss eine Ecke sein
+        bool PartSet = false;
+        int numRotations = 0;
+        int partIndex = 0;
+        uint8_t partOrientation = 0;
+        while((!PartSet) && (numRotations < 4))
+        {
+            partIndex = GetIndexFromPart(nextPart);
+            partOrientation = m_part_array->at(partIndex).getConnections();
+            partOrientation = HelperFunctions::ContinuousShift(partOrientation, (numRotations * 2));
+            PartSet = PuzzleLogic_v2(partOrientation, 0, 0);
+            if(!PartSet)
+            {
+                numRotations++;
+            }
         }
 
         // Neue nextPuzzlePlaces berechnen
@@ -616,4 +666,9 @@ uint8_t PuzzleSolverGrp3::GetOrientationForSolutionMatrix(uint16_t index, uint8_
     }
 
     return partOrientationOnSide;
+}
+
+vector<vector<SolutionElement>>* PuzzleSolverGrp3::GetSolutionMatrix()
+{
+    return &m_solutionVector;
 }

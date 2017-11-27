@@ -5,12 +5,13 @@
 class PuzzleSolverGrp3
 {
 public:
-	PuzzleSolverGrp3(vector <Part>* part_array, vector <Part *> corners_array, vector <Part *> edges_array, vector <Part *> inners_array);
+	PuzzleSolverGrp3(vector <Part>* part_array);
 	~PuzzleSolverGrp3();
 
     bool SolvePuzzle();
     bool SolvePuzzle2();
     void ClearPuzzle();
+	vector<vector<SolutionElement>>* GetSolutionMatrix();
 
 private:
 	vector <Part>*	m_part_array;
@@ -21,8 +22,10 @@ private:
     bool PuzzleLogic(uint8_t currentPart, int collumn, int row);
     bool PuzzleLogic_v2(uint8_t currentPart, int collumn, int row);
     uint8_t GetOrientationForSolutionMatrix(uint16_t index, uint8_t side, uint8_t currentPartNoseOnSide);
-    bool SolveBorder();
     int GetIndexFromPartArray(vector <Part *> wishedArray, int wishedIndex);
+    int GetIndexFromPart(Part* part);
     bool RecursiveFindAndPlace(vector<pair<int,int>> nextPuzzlePlaces, vector<pair<int,int>>& tempPuzzle);
+    void InitializeVectors();
+    void InitializeSolutionMatrix();
 };
 
