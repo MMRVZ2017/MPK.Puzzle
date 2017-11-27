@@ -11,6 +11,7 @@ public:
     bool SolvePuzzle();
     bool SolvePuzzle2();
     bool SolvePuzzleNiko();
+    bool SolvePuzzleDave();
     void ClearPuzzle();
 	vector<vector<SolutionElement>>* GetSolutionMatrix();
 
