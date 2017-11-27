@@ -4,7 +4,7 @@ ConstrMatrix::ConstrMatrix() {
     for(int i=0; i < NR_ROWS+2; i++){
         for (int j=0; j < NR_COLS+2; j++){
             if (i == 0 || i == NR_ROWS +1 || j == 0 || j == NR_COLS +1)
-                matrix[i][j]=0b11111111;                                                       //no constraints
+                matrix[i][j]=0b11111111;                                                       //make border around puzzle
             else matrix[i][j]=0b00000000;                                                      //no constraints
         }
     }
@@ -43,9 +43,14 @@ void ConstrMatrix::remove_constraints(int row, int col) {
     matrix[row+1][col+1]=0b00000000;
 }
 
+void ConstrMatrix::remove_constraints(PuzzlePosition actPosition) {
+    matrix[actPosition.getRow() + 1][actPosition.getCol() + 1]=0b00000000;
+}
+
 void ConstrMatrix::print_constraints(int row, int col) const {
     cout << "Constraints for(" << row << ";" << col <<"):" << bitset<sizeof(unsigned char)*8>(get_constraints(row,col)) << endl;
 }
+
 
 void ConstrMatrix::rotate_part(uint8_t &part, int steps){
     for (int i=0; i < steps; i++){

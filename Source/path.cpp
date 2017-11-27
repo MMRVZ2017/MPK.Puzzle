@@ -77,7 +77,8 @@ void Path::goBack(uint16_t actStepIdx){     // Go Back from Index actStepIdx
     // Delete everything from this step
     if (actPartType != -1){                                                 // A part is already at this position -> put it away
         if (!decNrUsedPartType(actPartType)) failed1++;                     // Put it back into the box
-        myConstr.remove_constraints(myStep->getPosition().getRow(),myStep->getPosition().getCol());     // TODO: That has to be shorter
+        myConstr.remove_constraints(myStep->getPosition());
+
     }
     myStep->resetPossiblePartTypes();                                       // Reset part types -> Every part is possible again
     myStep->setOrientation(0);                                              // Reset orientation
@@ -112,7 +113,7 @@ bool Path::placePart(int16_t idx, int8_t state) {           // Idx of part to pl
         if (!decNrUsedPartType(actPartType)) failed2++;         // Put it back into the box
         myStep->setPossiblePartType(actPartType, 2);            // This part is not good in this position TODO: Rotate first in this case?
         myStep->setOrientation(0);                              // Reset orientation
-        myConstr.remove_constraints(myStep->getPosition().getRow(),myStep->getPosition().getCol());     // Reset constraints
+        myConstr.remove_constraints(myStep->getPosition());     // Reset constraints
     }
 
     // Try until one part fits:
