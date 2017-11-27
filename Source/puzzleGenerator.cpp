@@ -39,7 +39,7 @@ void numerateBox(vector<randomPuzzlePiece>& myBox);
 void randomPuzzlePiece::shift(unsigned int moves)
 {
     shifts = (shifts+moves)%4;
-    setConnections(((getConnections() >> (moves*2)) | (getConnections() << sizeof(unsigned char)*8 - (moves*2))));
+    setConnections(((getConnections() >> (moves*2)) | (getConnections() << (sizeof(unsigned char)*8 - (moves*2)))));
 }
 
 
@@ -73,7 +73,7 @@ void randomPuzzlePiece::randomCenterPiece()
 //use separator if you have to retract to a position
 //seperator may be bigger than box size, if all puzzle pieces have already been looked at.
 // it immediately retracts again then (returns -1)
-unsigned int randomPuzzle::tryAllPieces(unsigned int m, unsigned int n, vector<randomPuzzlePiece>& myBox, unsigned int separator)
+int randomPuzzle::tryAllPieces(unsigned int m, unsigned int n, vector<randomPuzzlePiece>& myBox, unsigned int separator)
 {
     for(int i=separator; i<myBox.size();i++)
     {
@@ -94,12 +94,12 @@ bool randomPuzzle::testRotationPiece(unsigned int m, unsigned int n, randomPuzzl
     for(int rotation=0; rotation < 4; rotation++)
     {
         if(PlaceOfPartGood(m,n,myPart))
-            return 1;
+            return true;
         myPart.shift(1);
     }
 
     //cout << "Was a bad part" << endl;
-    return 0;
+    return false;
 }
 
 //insterts piece at position in box according to boxidentifier and removes piece from puzzle
@@ -272,7 +272,7 @@ vector<Part> randomBox::shuffle()
     for (vector<Part>::iterator i = Box.begin(); i != Box.end(); i++)
     {
         int moves = rand()%4;
-        (*i).setConnections((((*i).getConnections() >> (moves*2)) | ((*i).getConnections() << sizeof(unsigned char)*8 - (moves*2))));
+        (*i).setConnections((((*i).getConnections() >> (moves*2)) | ((*i).getConnections() << (sizeof(unsigned char)*8 - (moves*2)))));
     }
     return Box;
 }

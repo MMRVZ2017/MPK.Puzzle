@@ -296,7 +296,7 @@ void Path::resetPath() {
         getStep(i)->setOrientation(0);
         getStep(i)->resetPossiblePartTypes();
     }
-    for(int8_t i = 0; i < NR_PARTS; i++){
+    for(int16_t i = 0; i < NR_PARTS; i++){
         Step::setNrUsedPartType(i, 0);
     }
     numTries = 0;

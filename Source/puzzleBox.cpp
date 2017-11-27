@@ -3,7 +3,7 @@
 uint8_t Puzzlebox::baseTypes[NR_PART_TYPES] = {0b01010000, 0b10100000, 0b01100000, 0b10010000, \
                                                0b01010001, 0b10100010, 0b01100001, 0b01100010, 0b10010001, 0b10010010, 0b01010010, 0b10100001, \
                                                0b01010101, 0b10101010, 0b10101001, 0b10011001, 0b01101001, 0b01010110};
-int8_t Puzzlebox::numType[NR_PART_TYPES] = {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0};
+int16_t Puzzlebox::numType[NR_PART_TYPES] = {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0};
 
 void Puzzlebox::sortParts(vector <Part> * piece_array)
 {

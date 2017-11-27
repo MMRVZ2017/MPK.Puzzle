@@ -110,13 +110,13 @@ public:
     uint getCols(){ return col; }
     uint getRows(){ return row; }
 
-    //functtion definitions
+    //function definitions
     void printPuzzle();
     bool PlaceOfPartGood(unsigned int m, unsigned int n, randomPuzzlePiece& myPart);
     bool PlaceOfPart2Good(unsigned int m,unsigned int n, randomPuzzlePiece& myPart);
 
     bool testRotationPiece(unsigned int m, unsigned int n, randomPuzzlePiece& myPart);
-    unsigned int tryAllPieces(unsigned int m, unsigned int n, vector<randomPuzzlePiece>& myBox, unsigned int separator);
+    int tryAllPieces(unsigned int m, unsigned int n, vector<randomPuzzlePiece>& myBox, unsigned int separator);
     unsigned int putBackIntoBox(unsigned int m, unsigned int n, vector<randomPuzzlePiece>& myBox);
 
 

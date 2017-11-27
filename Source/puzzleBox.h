@@ -49,8 +49,8 @@ public:
 
 private:
     vector < Part * > type[NR_PART_TYPES];
-    static int8_t numType[NR_PART_TYPES];                    // contains all occurrences of the part categeories 0..18
-    int numWrote[NR_PART_TYPES];                   // contains the sum of all set parts of part categoeries 0..18
+    static int16_t numType[NR_PART_TYPES];                    // contains all occurrences of the part categeories 0..18
+    int16_t numWrote[NR_PART_TYPES];                   // contains the sum of all set parts of part categoeries 0..18
     static uint8_t baseTypes[NR_PART_TYPES];
 };
 

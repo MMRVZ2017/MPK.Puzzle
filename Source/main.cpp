@@ -20,6 +20,7 @@ int main() {
     part_array = myRandomBox.shuffle();
     //makehard4040puzzle(part_array);
 
+
     // INIT PUZZLE SOLVER
     Path puzzlePath(&part_array);                           // Make a new path
     puzzlePath.setPositions();                              // Give each step a position and the resulting constraints (edges, corners, inners)
