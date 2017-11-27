@@ -50,16 +50,16 @@ int main() {
     }*/
 
     // Solver - Maximilian - Depth First
-    /*if(!pzlSolverGrp3.SolvePuzzle2())
+    if(!pzlSolverGrp3.SolvePuzzle2())
     {
         cout << "Puzzle ist nicht lösbar!" << endl;
-    }*/
+    }
 
     // Solver - Niko - Border
     //bool puzzleSolved = pzlSolverGrp3.SolvePuzzleNiko();
 
     // Solver - Dave - Border
-    bool puzzleSolved = pzlSolverGrp3.SolvePuzzleDave();
+    //bool puzzleSolved = pzlSolverGrp3.SolvePuzzleDave();
 
     // Ausgabe der fertigen Matrix
     /*vector<vector<SolutionElement>>* solutionMatrix = pzlSolverGrp3.GetSolutionMatrix();

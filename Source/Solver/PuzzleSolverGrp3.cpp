@@ -2,6 +2,10 @@
 #include "../Helper/HelperFunctions.h"
 #include <bitset>
 #include <map>
+#include <iostream>
+#include <algorithm>
+#include <vector>
+#include <iterator>
 
 PuzzleSolverGrp3::PuzzleSolverGrp3(vector <Part>* part_array) : m_part_array(part_array)
 {
@@ -54,6 +58,9 @@ void PuzzleSolverGrp3::InitializeSolutionMatrix()
             }
         }
     }
+
+    m_NumSpalten = numSpalten;
+    m_NumZeilen = numZeilen;
 
     m_solutionVector = vector<vector<SolutionElement>>(numSpalten, vector<SolutionElement>(numZeilen));
 }
@@ -215,42 +222,140 @@ bool PuzzleSolverGrp3::SolvePuzzle()
 bool PuzzleSolverGrp3::SolvePuzzle2()
 {
     bool puzzleSolved = false;
+    vector<Part *> placedParts;
 
     // Vector mit möglichen Andockstellen erzeugen
     // The left upper corner always at first
     vector<pair<int,int>> nextPuzzlePlaces;
     nextPuzzlePlaces.push_back(make_pair(0, 0));
 
-    for(int cornerIndex = 0; (cornerIndex < m_corners_array.size() && puzzleSolved == false); cornerIndex++)
+    //Rekursive Logik zum Erkennen von möglichen Anbausteinen und testen des Steins mit den geringsten Möglichkeiten
+    puzzleSolved = RecursiveFindAndPlace(nextPuzzlePlaces, &placedParts);
+
+    return puzzleSolved;
+}
+
+bool PuzzleSolverGrp3::RecursiveFindAndPlace(vector<pair<int,int>> nextPuzzlePlaces, vector<Part *>* placedParts)
+{
+    bool puzzleSolved = false;
+    int possiblePlace = 0;
+    vector<Part *>* blackList = 0;
+
+    while(possiblePlace < nextPuzzlePlaces.size())
     {
-        bool firstPartSet = false;
+        int spalte = nextPuzzlePlaces[possiblePlace].first;
+        int zeile = nextPuzzlePlaces[possiblePlace].second;
+        nextPuzzlePlaces.erase(nextPuzzlePlaces.begin());
+        Part* currentPart = 0;
+        bool PartSet = false;
         int numRotations = 0;
         int partIndex = 0;
         uint8_t partOrientation = 0;
+        int partsTried = 0;
 
-        // Setzen des ersten Bausteins --> Muss eine Ecke sein
-        while((!firstPartSet) && (numRotations < 4))
-        {
-            partIndex = GetIndexFromPart(m_corners_array[cornerIndex]);
-            partOrientation = m_part_array->at(partIndex).getConnections();
-            partOrientation = HelperFunctions::ContinuousShift(partOrientation, (numRotations * 2));
-            firstPartSet = PuzzleLogic_v2(partOrientation, 0, 0);
-            if(!firstPartSet)
+        while(!PartSet) {
+            // Ein passendes Teil setzen && Checken ob das Teil eh noch nicht gesetzt ist
+            if ((spalte == 0) || (spalte == (m_NumSpalten - 1)) || (zeile == 0) || (zeile == (m_NumZeilen - 1))) {
+                if ((spalte == zeile) || ((spalte == 0) && (zeile == (m_NumZeilen - 1))) ||
+                    ((spalte == (m_NumSpalten - 1) && (zeile == 0)) ||
+                    ((spalte == (m_NumSpalten - 1)) && (zeile == (m_NumZeilen - 1))))) {
+                    // Corner
+                    for (int index = partsTried; index < m_corners_array.size(); index++) {
+                        currentPart = m_corners_array.at(index);
+
+                        if (find(placedParts->begin(), placedParts->end(), currentPart) == placedParts->end()) {
+                            break;
+                        }
+                    }
+                } else {
+                    // Edge
+                    for (int index = partsTried; index < m_edges_array.size(); index++) {
+                        currentPart = m_edges_array.at(index);
+
+                        if (find(placedParts->begin(), placedParts->end(), currentPart) == placedParts->end()) {
+                            break;
+                        }
+                    }
+                }
+            } else {
+                // Inner
+                for (int index = partsTried; index < m_inners_array.size(); index++) {
+                    currentPart = m_inners_array.at(index);
+
+                    if (find(placedParts->begin(), placedParts->end(), currentPart) == placedParts->end()) {
+                        break;
+                    }
+                }
+            }
+
+            if(blackList != 0) {
+                if (find(blackList->begin(), blackList->end(), currentPart) != blackList->end()) {
+                    continue;
+                }
+            }
+
+            // Setzen des ersten Bausteins
+            numRotations = 0;
+            while ((!PartSet) && (numRotations < 4)) {
+                partIndex = GetIndexFromPart(currentPart);
+                partOrientation = m_part_array->at(partIndex).getConnections();
+                partOrientation = HelperFunctions::ContinuousShift(partOrientation, (numRotations * 2));
+                PartSet = PuzzleLogic_v2(partOrientation, spalte, zeile);
+                if (!PartSet) {
+                    numRotations++;
+                }
+            }
+
+            if(++partsTried > m_part_array->size())
             {
-                numRotations++;
+                return false;
             }
         }
 
+        // Neue nextPuzzlePlaces berechnen
+        if(spalte + 1 < m_NumSpalten)
+        {
+            if((find( nextPuzzlePlaces.begin(), nextPuzzlePlaces.end(), make_pair(spalte + 1, zeile))) == nextPuzzlePlaces.end())
+            {
+                nextPuzzlePlaces.push_back(make_pair(spalte + 1, zeile));
+            }
+        }
+        if(zeile + 1 < m_NumZeilen)
+        {
+            if((find( nextPuzzlePlaces.begin(), nextPuzzlePlaces.end(), make_pair(spalte, zeile + 1))) == nextPuzzlePlaces.end())
+            {
+                nextPuzzlePlaces.push_back(make_pair(spalte, zeile + 1));
+            }
+        }
 
+        // Ausgewähltes Teil in den tempPuzzleIntern Vector speichern
+        placedParts->push_back(currentPart);
 
-        vector<pair<int,int>> tempPuzzle;
-        tempPuzzle.push_back(make_pair(partIndex, partOrientation));
+        m_solutionVector[spalte][zeile].index = partIndex;
+        m_solutionVector[spalte][zeile].orientation = numRotations;
 
-        //Rekursive Logik zum Erkennen von möglichen Anbausteinen und testen des Steins mit den geringsten Möglichkeiten
-        puzzleSolved = RecursiveFindAndPlace(nextPuzzlePlaces, tempPuzzle);
+        // Eine Ebene tiefer in der rekursiven Funktion
+        puzzleSolved = RecursiveFindAndPlace(nextPuzzlePlaces, placedParts);
+
+        if(puzzleSolved == false)
+        {
+            m_solutionVector[spalte][zeile].index = -1;
+            m_solutionVector[spalte][zeile].orientation = 0;
+            nextPuzzlePlaces.insert (nextPuzzlePlaces.begin(), make_pair(spalte, zeile));
+            blackList->push_back(currentPart);
+        }
+        else
+        {
+            return true;
+        }
+
+        // Soll er überhaupt ein anderen Place probieren?
+        possiblePlace++;
+        /*
+        {
+            tempPuzzle.push_back(make_pair(partIndex, partOrientation));
+        }*/
     }
-
-    // Dann immer dort wo am meisten Möglichkeiten
 }
 
 bool PuzzleSolverGrp3::SolvePuzzleDave()
@@ -737,67 +842,6 @@ int PuzzleSolverGrp3::GetIndexFromPart(Part* part)
         }
     }
     return partIndex;
-}
-
-bool PuzzleSolverGrp3::RecursiveFindAndPlace(vector<pair<int,int>> nextPuzzlePlaces, vector<pair<int,int>>& tempPuzzle)
-{
-    vector<pair<int,int>> tempPuzzleIntern = tempPuzzle;
-    bool puzzleSolved = false;
-
-    for(int possiblePlace = 0; possiblePlace < nextPuzzlePlaces.size(); possiblePlace++)
-    {
-        int spalte = nextPuzzlePlaces[possiblePlace].first;
-        int zeile = nextPuzzlePlaces[possiblePlace].second;
-        Part* nextPart = 0;
-
-        // Ein passendes Teil setzen && Checken ob das Teil eh noch nicht gesetzt ist
-        if ((spalte == 0) || (spalte == m_solutionVector.size()) || (zeile == 0) || (zeile == m_solutionVector[0].size()))
-        {
-            if((spalte == zeile) || ((spalte == 0) && (zeile == m_solutionVector[0].size())) || ((spalte == m_solutionVector.size()) && (zeile == 0)))
-            {
-                // Corner
-            }
-            else
-            {
-                // Edge
-            }
-        }
-        else
-        {
-            // Inner
-        }
-
-        // Setzen des ersten Bausteins --> Muss eine Ecke sein
-        bool PartSet = false;
-        int numRotations = 0;
-        int partIndex = 0;
-        uint8_t partOrientation = 0;
-        while((!PartSet) && (numRotations < 4))
-        {
-            partIndex = GetIndexFromPart(nextPart);
-            partOrientation = m_part_array->at(partIndex).getConnections();
-            partOrientation = HelperFunctions::ContinuousShift(partOrientation, (numRotations * 2));
-            PartSet = PuzzleLogic_v2(partOrientation, 0, 0);
-            if(!PartSet)
-            {
-                numRotations++;
-            }
-        }
-
-        // Neue nextPuzzlePlaces berechnen
-
-        // Ausgewähltes Teil in den tempPuzzleIntern Vector speichern
-        //tempPuzzleIntern.push_back(make_pair(partIndex, partOrientation));
-
-        // Eine Ebene tiefer in der rekursiven Funktion
-        //puzzleSolved = RecursiveFindAndPlace(nextPuzzlePlaces, tempPuzzleIntern);
-
-        // Ausgewähltes Teil in den tempPuzzle Vector speichern
-        if(puzzleSolved == true)
-        {
-            //tempPuzzle.push_back(make_pair(partIndex, partOrientation));
-        }
-    }
 }
 
 bool PuzzleSolverGrp3::PuzzleLogic(uint8_t currentPart, int collumn, int row)
