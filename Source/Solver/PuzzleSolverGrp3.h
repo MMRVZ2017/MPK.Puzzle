@@ -27,7 +27,7 @@ private:
     bool PuzzleLogic_v2(uint8_t currentPart, int collumn, int row);
     uint8_t GetOrientationForSolutionMatrix(uint16_t index, uint8_t side, uint8_t currentPartNoseOnSide);
     int GetIndexFromPart(Part* part);
-    bool RecursiveFindAndPlace(vector<pair<int,int>> nextPuzzlePlaces, vector<Part *>* placedParts);
+    bool RecursiveFindAndPlace(vector<pair<int,int>> nextPuzzlePlaces, vector<Part *> placedParts);
     void InitializeVectors();
     void InitializeSolutionMatrix();
 

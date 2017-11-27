@@ -45,18 +45,30 @@ void PuzzleSolverGrp3::InitializeSolutionMatrix()
 {
     int numSpalten = 0;
     int numZeilen = 0;
-    for (int kanteHtemp = 1; kanteHtemp <= (m_edges_array.size() / 2) - 1; kanteHtemp++)
-    {
-        int kanteVtemp = (m_edges_array.size() / 2) - kanteHtemp;
 
-        if ((kanteHtemp * kanteVtemp) == m_inners_array.size()) // 884
-        {
-            if (kanteHtemp >= kanteVtemp)
+    if(m_edges_array.size() >= 4)
+    {
+        for (int kanteHtemp = 1; kanteHtemp <= (m_edges_array.size() / 2) - 1; kanteHtemp++) {
+            int kanteVtemp = (m_edges_array.size() / 2) - kanteHtemp;
+
+            if ((kanteHtemp * kanteVtemp) == m_inners_array.size()) // 884
             {
-                numSpalten = kanteHtemp + 2;
-                numZeilen = kanteVtemp + 2;
+                if (kanteHtemp >= kanteVtemp) {
+                    numSpalten = kanteHtemp + 2;
+                    numZeilen = kanteVtemp + 2;
+                }
             }
         }
+    }
+    else if(m_edges_array.size() >= 2)
+    {
+        numSpalten = 3;
+        numZeilen = 2;
+    }
+    else
+    {
+        numSpalten = 2;
+        numZeilen = 2;
     }
 
     m_NumSpalten = numSpalten;
@@ -230,16 +242,16 @@ bool PuzzleSolverGrp3::SolvePuzzle2()
     nextPuzzlePlaces.push_back(make_pair(0, 0));
 
     //Rekursive Logik zum Erkennen von möglichen Anbausteinen und testen des Steins mit den geringsten Möglichkeiten
-    puzzleSolved = RecursiveFindAndPlace(nextPuzzlePlaces, &placedParts);
+    puzzleSolved = RecursiveFindAndPlace(nextPuzzlePlaces, placedParts);
 
     return puzzleSolved;
 }
 
-bool PuzzleSolverGrp3::RecursiveFindAndPlace(vector<pair<int,int>> nextPuzzlePlaces, vector<Part *>* placedParts)
+bool PuzzleSolverGrp3::RecursiveFindAndPlace(vector<pair<int,int>> nextPuzzlePlaces, vector<Part *> placedParts)
 {
     bool puzzleSolved = false;
     int possiblePlace = 0;
-    vector<Part *>* blackList = 0;
+    vector<Part *> blackList;
 
     while(possiblePlace < nextPuzzlePlaces.size())
     {
@@ -256,14 +268,15 @@ bool PuzzleSolverGrp3::RecursiveFindAndPlace(vector<pair<int,int>> nextPuzzlePla
         while(!PartSet) {
             // Ein passendes Teil setzen && Checken ob das Teil eh noch nicht gesetzt ist
             if ((spalte == 0) || (spalte == (m_NumSpalten - 1)) || (zeile == 0) || (zeile == (m_NumZeilen - 1))) {
-                if ((spalte == zeile) || ((spalte == 0) && (zeile == (m_NumZeilen - 1))) ||
-                    ((spalte == (m_NumSpalten - 1) && (zeile == 0)) ||
-                    ((spalte == (m_NumSpalten - 1)) && (zeile == (m_NumZeilen - 1))))) {
+                if (((spalte == 0) && (zeile == 0))
+                    || ((spalte == 0) && (zeile == (m_NumZeilen - 1)))
+                    || ((spalte == (m_NumSpalten - 1) && (zeile == 0))
+                    || ((spalte == (m_NumSpalten - 1)) && (zeile == (m_NumZeilen - 1))))) {
                     // Corner
                     for (int index = partsTried; index < m_corners_array.size(); index++) {
                         currentPart = m_corners_array.at(index);
 
-                        if (find(placedParts->begin(), placedParts->end(), currentPart) == placedParts->end()) {
+                        if (find(placedParts.begin(), placedParts.end(), currentPart) == placedParts.end()) {
                             break;
                         }
                     }
@@ -272,7 +285,7 @@ bool PuzzleSolverGrp3::RecursiveFindAndPlace(vector<pair<int,int>> nextPuzzlePla
                     for (int index = partsTried; index < m_edges_array.size(); index++) {
                         currentPart = m_edges_array.at(index);
 
-                        if (find(placedParts->begin(), placedParts->end(), currentPart) == placedParts->end()) {
+                        if (find(placedParts.begin(), placedParts.end(), currentPart) == placedParts.end()) {
                             break;
                         }
                     }
@@ -282,19 +295,23 @@ bool PuzzleSolverGrp3::RecursiveFindAndPlace(vector<pair<int,int>> nextPuzzlePla
                 for (int index = partsTried; index < m_inners_array.size(); index++) {
                     currentPart = m_inners_array.at(index);
 
-                    if (find(placedParts->begin(), placedParts->end(), currentPart) == placedParts->end()) {
+                    if (find(placedParts.begin(), placedParts.end(), currentPart) == placedParts.end()) {
                         break;
                     }
                 }
             }
 
-            if(blackList != 0) {
-                if (find(blackList->begin(), blackList->end(), currentPart) != blackList->end()) {
-                    continue;
-                }
+            if(++partsTried > m_part_array->size())
+            {
+                return false;
             }
 
-            // Setzen des ersten Bausteins
+            if (find(blackList.begin(), blackList.end(), currentPart) != blackList.end())
+            {
+                continue;
+            }
+
+            // Setzen eines Bausteins
             numRotations = 0;
             while ((!PartSet) && (numRotations < 4)) {
                 partIndex = GetIndexFromPart(currentPart);
@@ -304,11 +321,6 @@ bool PuzzleSolverGrp3::RecursiveFindAndPlace(vector<pair<int,int>> nextPuzzlePla
                 if (!PartSet) {
                     numRotations++;
                 }
-            }
-
-            if(++partsTried > m_part_array->size())
-            {
-                return false;
             }
         }
 
@@ -329,20 +341,28 @@ bool PuzzleSolverGrp3::RecursiveFindAndPlace(vector<pair<int,int>> nextPuzzlePla
         }
 
         // Ausgewähltes Teil in den tempPuzzleIntern Vector speichern
-        placedParts->push_back(currentPart);
+        placedParts.push_back(currentPart);
 
         m_solutionVector[spalte][zeile].index = partIndex;
         m_solutionVector[spalte][zeile].orientation = numRotations;
 
         // Eine Ebene tiefer in der rekursiven Funktion
-        puzzleSolved = RecursiveFindAndPlace(nextPuzzlePlaces, placedParts);
+        if(nextPuzzlePlaces.size() > 0)
+        {
+            puzzleSolved = RecursiveFindAndPlace(nextPuzzlePlaces, placedParts);
+        }
+        else
+        {
+            return true;
+        }
 
         if(puzzleSolved == false)
         {
             m_solutionVector[spalte][zeile].index = -1;
             m_solutionVector[spalte][zeile].orientation = 0;
             nextPuzzlePlaces.insert (nextPuzzlePlaces.begin(), make_pair(spalte, zeile));
-            blackList->push_back(currentPart);
+            blackList.push_back(currentPart);
+            placedParts.pop_back();
         }
         else
         {
@@ -350,7 +370,7 @@ bool PuzzleSolverGrp3::RecursiveFindAndPlace(vector<pair<int,int>> nextPuzzlePla
         }
 
         // Soll er überhaupt ein anderen Place probieren?
-        possiblePlace++;
+        //possiblePlace++;
         /*
         {
             tempPuzzle.push_back(make_pair(partIndex, partOrientation));
@@ -986,11 +1006,6 @@ bool PuzzleSolverGrp3::PuzzleLogic_v2(uint8_t currentPart, int collumn, int row)
     bool rightSuitable = false;
     bool bottomSuitable = false;
     bool leftSuitable = false;
-
-    if(((row - 1) < 0) && ((collumn + 1) > (m_solutionVector.size() - 1)) || ((row + 1) > (m_solutionVector[0].size() - 1)) && ((collumn - 1) < 0))
-    {
-        //cout << "test";
-    }
 
     if((row - 1) < 0)
     {

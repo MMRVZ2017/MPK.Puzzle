@@ -7,7 +7,7 @@
 
 using namespace std;
 
-const uint8_t SPALTEN = 4;
+const uint8_t SPALTEN = 3;
 const uint8_t ZEILEN = 3;
 
 void MatrixAusgeben(vector <Part> part_array)
@@ -62,7 +62,7 @@ int main() {
     //bool puzzleSolved = pzlSolverGrp3.SolvePuzzleDave();
 
     // Ausgabe der fertigen Matrix
-    /*vector<vector<SolutionElement>>* solutionMatrix = pzlSolverGrp3.GetSolutionMatrix();
+    vector<vector<SolutionElement>>* solutionMatrix = pzlSolverGrp3.GetSolutionMatrix();
     for (uint32_t zeile = 0; zeile < (*solutionMatrix)[0].size(); zeile++)
     {
         for (uint32_t spalte = 0; spalte < (*solutionMatrix).size(); spalte++)
@@ -70,7 +70,7 @@ int main() {
             cout << bitset<8>(HelperFunctions::ContinuousShift(part_array[(*solutionMatrix)[spalte][zeile].index].getConnections(), ((*solutionMatrix)[spalte][zeile].orientation * 2))).to_string() << "||";
         }
         cout << endl;
-    }*/
+    }
 
     cin.get();
 
