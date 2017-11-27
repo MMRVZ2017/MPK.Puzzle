@@ -5,6 +5,8 @@
 #include <algorithm>
 #include "Creator/PuzzleCreator.h"
 #include "Solver/PuzzleSolverGrp3.h"
+#include "Helper/HelperFunctions.h"
+
 //teständerung
 using namespace std;
 
@@ -16,6 +18,7 @@ const uint8_t SPALTEN = 36;
 const uint8_t ZEILEN = 28;
 
 int main() {
+
     vector <Part> part_array(NR_PARTS);
     vector <Part *> corners_array(NR_CORNERS);
     vector <Part *> edges_array(NR_EDGES);
@@ -46,15 +49,16 @@ int main() {
         cout << "||" << bitset<8>(part_array[index].getConnections()).to_string();
     }*/
 
-    /*int anzEcken = 0;
+    int anzEcken = 0;
     int anzKanten = 0;
     int anzInner = 0;
-    cout << anzEcken << " " << anzKanten << " " << anzInner << endl;
+
+    //cout << anzEcken << " " << anzKanten << " " << anzInner << endl;
 
     anzEcken = corners_array.size();
     anzKanten = edges_array.size();
     anzInner = inners_array.size();
-    cout << anzEcken << " " << anzKanten << " " << anzInner << endl;
+    //cout << anzEcken << " " << anzKanten << " " << anzInner << endl;
 
     int kanteV = 0;
     int kanteH = 0;
@@ -64,14 +68,14 @@ int main() {
 
         if ((kanteH * kanteV) == anzInner) // 884
         {
-            cout << "Zeilen: " << kanteV + 2 << endl;
+            /*cout << "Zeilen: " << kanteV + 2 << endl;
             cout << "Spalten: " << kanteH + 2 << endl;
             cout << "Anzahl Kanten: " << kanteV * 2 + kanteH * 2 << endl; // 36*28 = 884
-            cout << "Matrixgroesse = " << (kanteV + 2)*(kanteH + 2) << endl;
+            cout << "Matrixgroesse = " << (kanteV + 2)*(kanteH + 2) << endl;*/
         }
-    }*/
+    }
 
-    PuzzleSolverGrp3 pzlSolverGrp3(part_array, corners_array, edges_array, inners_array);
+    PuzzleSolverGrp3 pzlSolverGrp3(&part_array, corners_array, edges_array, inners_array);
     pzlSolverGrp3.SolvePuzzle();
 
     cin.get();
