@@ -36,6 +36,7 @@ int32_t Path::solvePuzzle(int32_t limit) {
                 numGoBack++;
                 if(PRINT_MESSAGES) cout << "GO BACK FROM PART" << unsigned(goBackIdx) << endl;
 
+
                 // Put away the part and the constraints
                 goBack(goBackIdx);
 
@@ -92,28 +93,43 @@ void Path::goBack(uint16_t actStepIdx){     // Go Back from Index actStepIdx
     lastStep->printPossiblePartTypeArr();*/
 }
 
-bool Path::placePart(int16_t idx, int8_t state) {           // Idx of part to place; state == 0: just place it; state == 1: we are going back
+bool Path::placePart(int16_t idx, int8_t state) {           // Idx of part to place; state == 0: just place it; state == 1: we are going back TODO: remove state ?  (check first if redundant!)
     Step* myStep = getStep(idx);
     int8_t partType = -1;
-    int8_t orientation;
+    int8_t orientation = -1; //MEMO changed to -1
     int8_t actPartType = 0;
 
     // Look if there is already a part and store this information
     actPartType = myStep->getFittingPartTypeIdx();
+
+    // When backtracking
+    if (state == 1 || actPartType != -1) {
+        if (myStep->getOrientation() < 3 )                          // Other possible orientations left?
+            orientation = myConstr.check_constraints(myStep->getPosition(), actPartType, myStep->getOrientation()+1);
+        if (orientation != -1)                                      // Try new orientation
+        {
+            if(PRINT_MESSAGES) cout << "Trying new orientation" << "(Type: " << signed(actPartType) << ", old: "  << signed(myStep->getOrientation()) << ", new: " << signed(orientation) << ")" << endl;
+            myStep->setOrientation(orientation);                    // Set orientation of part
+            myConstr.set_constraints(myStep->getPosition(), actPartType, orientation);     // Set constraints
+            return true;
+        }
+        else                                                        // If either orientation is already 3 or no other possible orientation
+        {
+            if(PRINT_MESSAGES) cout << "No other orientations left" << endl;
+            if (!decNrUsedPartType(actPartType)) failed2++;         // Put it back into the box
+            myStep->setPossiblePartType(actPartType, 2);            // This part is not good in this position
+            myStep->setOrientation(0);                              // Reset orientation
+            myConstr.remove_constraints(myStep->getPosition());     // Reset constraints
+        }
+
+    }
+
 
     // Get a possible part
     partType = getNextPossiblePartTypeIdx(myStep);
     if (partType == -1){                                // No possible part left
         if(PRINT_MESSAGES) cout << "Keine Grundform mehr übrig, GROB -> Go Back" << endl;
         return false;
-    }
-
-    // When backtracking and there was a part: delete it
-    if (state == 1 || actPartType != -1) {
-        if (!decNrUsedPartType(actPartType)) failed2++;         // Put it back into the box
-        myStep->setPossiblePartType(actPartType, 2);            // This part is not good in this position TODO: Rotate first in this case?
-        myStep->setOrientation(0);                              // Reset orientation
-        myConstr.remove_constraints(myStep->getPosition());     // Reset constraints
     }
 
     // Try until one part fits:

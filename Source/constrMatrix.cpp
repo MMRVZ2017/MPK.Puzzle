@@ -74,10 +74,9 @@ int8_t ConstrMatrix::check_constraints (PuzzlePosition actPosition, int8_t partT
     uint8_t mask = get_constraints(actPosition.getRow(), actPosition.getCol());
 
     if(orientation != 0) rotate_part(part,orientation);
-
     for (; orientation < 4; orientation++){
         if ((mask & part) == 0b00000000) return orientation;
         else rotate_part(part,1);
     }
-    return -1;                                                                               //part did not fit -> return a none valid value
+    return -1;                                                                               //part did not fit
 }
