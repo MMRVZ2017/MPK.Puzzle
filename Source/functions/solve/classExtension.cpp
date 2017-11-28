@@ -59,6 +59,7 @@ bool Puzzle::testRotationPiece(unsigned int m, unsigned int n, PuzzlePiece& myPa
     {
         if(PlaceOfPartGood(m,n,myPart))
             return 1;
+        //cout << "was rotated in testRotationPiece" << endl;
         myPart.shift(1);
     }
 

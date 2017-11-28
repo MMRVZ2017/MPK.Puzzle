@@ -3,12 +3,10 @@ void status(vector<LogEntry>& log, vector<PuzzlePiece*>& p_Box, Puzzle& puzzleMa
 
 bool next(vector<LogEntry>& log, vector<PuzzlePiece*>& p_Box, Puzzle& puzzleMat)
 {
-	//status(log,p_Box,puzzleMat);
     //log not yet started
     if(!(log.size()))
     {   
-    	//cout << "creating new log" << endl;
-        log.push_back(LogEntry());
+    	log.push_back(LogEntry());
         log.back().myCoor = calculateFirstCoor(log, p_Box, puzzleMat);  
         solve(log, p_Box,puzzleMat); 
     }
@@ -28,10 +26,7 @@ bool next(vector<LogEntry>& log, vector<PuzzlePiece*>& p_Box, Puzzle& puzzleMat)
 
     //last log element is empty, backtrack
     else if(!(log.back().PieceCollector.size()))
-    {
-    	//cout << "backtracking" << endl;
         backtrack(log,p_Box,puzzleMat);
-    }
 
     //case last log element has multiple entries
     else if(log.back().PieceCollector.size() > 1)
@@ -39,14 +34,12 @@ bool next(vector<LogEntry>& log, vector<PuzzlePiece*>& p_Box, Puzzle& puzzleMat)
     	//is not yet max abstracted
         if(log.back().abstractionLevel < MAX_ABSTRAX)
         {
-        	//cout << "advancing abstraction layer" << endl;
-            log.back().advance();
+        	 log.back().advance();
             solve(log,p_Box,puzzleMat); 
         }
         //no more layers, pick first
         else
         {
-        	//cout << "setting first as solution" << endl;
         	log.back().advanceRandomed();
             setsolution(log,p_Box,puzzleMat);
         }
@@ -55,32 +48,18 @@ bool next(vector<LogEntry>& log, vector<PuzzlePiece*>& p_Box, Puzzle& puzzleMat)
     //case last log exactly one solution
     else if(log.back().PieceCollector.size() == 1)
     {  
-        //cout << "exactly one solution" << endl; 
         if(log.back().hasRandomed())
         {
 	    	if(log.back().abstractionLevel < MAX_ABSTRAX)
 	    	{
-	    		//cout << "advancing abstraction layer" << endl;
-	            log.back().advance();
+	    		log.back().advance();
 	            solve(log,p_Box,puzzleMat); 
 	    	}
 	    	else
-	    	{
-	    		//cout << "setting as solution bec fit" << endl;
-	            setsolution(log,p_Box,puzzleMat);
-	    	}
+	    		setsolution(log,p_Box,puzzleMat);
     	}
     	else
-    	{
-    		//cout << "setting as solution bec trivial" << endl;
-	        setsolution(log,p_Box,puzzleMat);
-    	}
-    }
-    //cout << "next" << endl;
-    if(log.back().myCoor.n>8)
-    {	
-        cout << "m: " << log.back().myCoor.m << "  n: " << log.back().myCoor.n << endl;
-    //	status(log,p_Box,puzzleMat);
+    		setsolution(log,p_Box,puzzleMat);
     }
     return 1;
 }
@@ -128,7 +107,6 @@ void solve(vector<LogEntry>& log, vector<PuzzlePiece*>& p_Box, Puzzle& puzzleMat
         default:
         break;
     }
-    //status(log,p_Box,puzzleMat);
 }
 
 void abstractionlayer0solver(vector<LogEntry>& log, vector<PuzzlePiece*>& p_Box, Puzzle& puzzleMat)
@@ -146,17 +124,15 @@ void abstractionlayer1solver(vector<LogEntry>& log, vector<PuzzlePiece*>& p_Box,
         (*(log.back().PieceCollector[i])).resetShift();
 		//TODO: change checker from checking every box piece to only checking the simplifyed version ob the box with abstraction layer one
 		if(!(puzzleMat.testRotationPiece(log.back().myCoor.m, log.back().myCoor.n, *(log.back().PieceCollector[i]))))
-		{
 			log.back().PieceCollector.erase(log.back().PieceCollector.begin()+i);
-		}
 		else
+        {
 			i++; //otherwise loop stops before end!
+            //set shift to 0 so that we have a defined starting position for all pieces
+            while(log.back().PieceCollector[i]->getShift())
+                log.back().PieceCollector[i]->shift(1);
+        }
 	}
-	//for(int i=0;i<log.back().PieceCollector.size();i++)
-	//{
-	//		(*(log.back().PieceCollector[i])).printPiece();
-	//		cout << endl;
-	//}
 }
 
 void setsolution(vector<LogEntry>& log, vector<PuzzlePiece*>& p_Box, Puzzle& puzzleMat)
@@ -184,68 +160,70 @@ void setsolution(vector<LogEntry>& log, vector<PuzzlePiece*>& p_Box, Puzzle& puz
 bool backtrack(vector<LogEntry>& log, vector<PuzzlePiece*>& p_Box, Puzzle& puzzleMat)
 {
     //following possibilities:
-        //last log entry empty
-            //delete last log + backtrack
-
+    //last log entry empty - delete last log + backtrack
 	if(!(log.back().PieceCollector.size()))
-	{
-		//cout << "none" << endl; 
+	{ 
 		puzzleMat.removePiece(log.back().myCoor.m, log.back().myCoor.n);
-		log.pop_back();   
-		//status(log,p_Box,puzzleMat);	
+		log.pop_back();   	
 		backtrack(log,p_Box,puzzleMat);
 		return 1;
 	}
 
-	//last log entry only one solution
-            //delete last logd put back into box + backtrack
+	//last log entry only one solution - delete last logd put back into box + backtrack
 	else if((log.back().PieceCollector.size())==1)
 	{
-        (*(log.back().PieceCollector[0])).shift(1);
-        if(puzzleMat.testRotationPiece(log.back().myCoor.m, log.back().myCoor.n, *(log.back().PieceCollector[0]), 4-(*(log.back().PieceCollector[0])).getShift()))
-            setsolution(log,p_Box,puzzleMat);
-        else
+       (log.back().PieceCollector[0])->shift(1);
+
+        while((log.back().PieceCollector[0])->getShift() !=0 && (log.back().PieceCollector[0])->getShift() !=3)
         {
-    		//cout << "one" << endl;
-    		p_Box.push_back(log.back().PieceCollector[0]);
-            //shuffleup
-            random_shuffle(p_Box.begin(),p_Box.end());
-    		puzzleMat.removePiece(log.back().myCoor.m, log.back().myCoor.n);
-    		log.pop_back(); 
-    		//cout << "removed" << endl;
-    		//status(log,p_Box,puzzleMat);  	
-    		backtrack(log,p_Box,puzzleMat);
+            log.back().PieceCollector[0]->shift(1);
+            if(puzzleMat.testRotationPiece(log.back().myCoor.m, log.back().myCoor.n, *(log.back().PieceCollector[0]), 1))
+            {
+                setsolution(log,p_Box,puzzleMat);
+                return 1;
+            }
         }
+
+		p_Box.push_back(log.back().PieceCollector[0]);
+        //shuffleup
+        random_shuffle(p_Box.begin(),p_Box.end());
+		puzzleMat.removePiece(log.back().myCoor.m, log.back().myCoor.n);
+		log.pop_back(); 
+		//cout << "removed" << endl;
+		//status(log,p_Box,puzzleMat);  	
+		backtrack(log,p_Box,puzzleMat);
+
 		return 1;
 	}
-        //last log entry multiple solutions (and current one was randomed)
-            //delete randomed piece from PieceCollector and go to next (which might random again depending on function)
+        
+    //last log entry multiple solutions (and current one was randomed) - delete randomed piece and go to next
 	else if((log.back().PieceCollector.size())>1)
 	{
 
         //check if piece has second rotation solution
-        (*(log.back().PieceCollector[0])).shift(1);
-        if(puzzleMat.testRotationPiece(log.back().myCoor.m, log.back().myCoor.n, *(log.back().PieceCollector[0]), 4-(*(log.back().PieceCollector[0])).getShift()))
-            setsolution(log,p_Box,puzzleMat);
-        else
+       (*(log.back().PieceCollector[0])).shift(1);
+
+         while((log.back().PieceCollector[0])->getShift() !=0 && (log.back().PieceCollector[0])->getShift() !=3)
         {
-
-            //cout << "multiple" << endl;
-            p_Box.push_back(log.back().PieceCollector[0]);
-            //shuffleup
-            random_shuffle(p_Box.begin(),p_Box.end());
-            log.back().PieceCollector.erase(log.back().PieceCollector.begin()); 
-            
-            if(log.back().PieceCollector.size()==1)
-                log.back().decreaseRandomed();
-            
-            //for abstraction layer 1 so that first rotation solution is set.
-            (*(log.back().PieceCollector[0])).resetShift();
-            //cout << "erased first element" << endl;
-            //status(log,p_Box,puzzleMat);
-            setsolution(log,p_Box,puzzleMat);
-
+            log.back().PieceCollector[0]->shift(1);
+            if(puzzleMat.testRotationPiece(log.back().myCoor.m, log.back().myCoor.n, *(log.back().PieceCollector[0]), 1))
+            {
+                setsolution(log,p_Box,puzzleMat);
+                return 1;
+            }
         }
+
+        p_Box.push_back(log.back().PieceCollector[0]);
+        //shuffleup
+        random_shuffle(p_Box.begin(),p_Box.end());
+        log.back().PieceCollector.erase(log.back().PieceCollector.begin()); 
+        
+        if(log.back().PieceCollector.size()==1)
+            log.back().decreaseRandomed();
+        
+        //for abstraction layer 1 so that first rotation solution is set.
+        (*(log.back().PieceCollector[0])).resetShift();
+        setsolution(log,p_Box,puzzleMat);
 
 		return 1;
 		//no need to remove from puzzle mat, as sersolution overwrites it anyway
@@ -270,7 +248,7 @@ void status(vector<LogEntry>& log, vector<PuzzlePiece*>& p_Box, Puzzle& puzzleMa
 			cout << "isset: 0" << endl;
 
 		//cout << "Abstraction: " << log[i].abstractionLevel << endl;
-		//cout << "m: " << log[i].myCoor.m << " n: " << log[i].myCoor.n << endl;
+		cout << "m: " << log[i].myCoor.m << " n: " << log[i].myCoor.n << endl;
 		/*for(int j=0;j<log[i].PieceCollector.size();j++)
 		{
 			(*(log[i].PieceCollector[j])).printPiece();
