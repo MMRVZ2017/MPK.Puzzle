@@ -174,6 +174,7 @@ bool backtrack(vector<LogEntry>& log, vector<PuzzlePiece*>& p_Box, Puzzle& puzzl
 	{
        (log.back().PieceCollector[0])->shift(1);
 
+       //check rotion
         while((log.back().PieceCollector[0])->getShift() !=0 && (log.back().PieceCollector[0])->getShift() !=3)
         {
             log.back().PieceCollector[0]->shift(1);

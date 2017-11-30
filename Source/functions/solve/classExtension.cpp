@@ -270,3 +270,15 @@ void numerateBox(vector<PuzzlePiece>& myBox)
 
     return;
 }
+
+std::vector<PuzzlePiece> convertPart2PuzzlePiece(std::vector<Part> simplePartBox)
+{
+	std::vector<PuzzlePiece> advancedPartBox;
+	for(int i=0;i<simplePartBox.size();i++)
+	{
+		PuzzlePiece tmpNewPiece(0);
+		tmpNewPiece.setConnections(simplePartBox[i].getConnections());
+		advancedPartBox.push_back(tmpNewPiece);
+	}
+	return advancedPartBox;
+}

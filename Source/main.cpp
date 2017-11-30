@@ -3,13 +3,13 @@
 
 
 #include "header.h"
-#include "../Codicil/test_puzzle_long40x40.h"
+//#include "../Codicil/test_puzzle_long40x40.h"
 
 
 int main()
 {
 
-	int cols=4, rows=4;
+	int cols=20, rows=20;
 	//some basic part stuff
 	vector<Part> myFirstPuzzle;
 	Part myFirstPart;
@@ -40,8 +40,6 @@ int main()
 	Puzzle puzzleMat(cols, rows);
 
 	//vector<vector<PuzzlePiece*>> ab1class = abstractionLayer1classify(log, p_myFirstBox,puzzleMat);
-	for(int i=0;i<myFirstBox.size();i++)
-		cout << (*p_myFirstBox[i]).getShift() << endl;
 	while(next(log, p_myFirstBox,puzzleMat));
 
 	puzzleMat.printPuzzle();
