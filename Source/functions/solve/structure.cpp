@@ -81,8 +81,6 @@ coor calculateNextCoor(vector<LogEntry>& log, vector<PuzzlePiece*>& p_Box, Puzzl
 	if(m<puzzleMat.getCols()-1) m++;
 	else if(n<puzzleMat.getRows()-1){ m=0; n++;}
 	else return coor();
-
-;
 	return	coor(m,n);
     //return nextCoor;
 }
@@ -146,6 +144,7 @@ void setsolution(vector<LogEntry>& log, vector<PuzzlePiece*>& p_Box, Puzzle& puz
     
     //turn piece until it fits and then set element into matrix
 	if(puzzleMat.testRotationPiece(log.back().myCoor.m, log.back().myCoor.n,*(log.back().PieceCollector[0])))	
+        //error if it turned
 		puzzleMat.setPiece(log.back().myCoor.m, log.back().myCoor.n, *(log.back().PieceCollector[0]));
 	else
 	{
