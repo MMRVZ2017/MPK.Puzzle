@@ -48,7 +48,7 @@ class Puzzle
     friend class randomBox;
 public:
     //constructor creates matrix with 00 outside and 11 inside
-    Puzzle(uint m = 7, uint n = 4): col(m), row(n)
+    Puzzle(unsigned int m = 7, unsigned int n = 4): col(m), row(n)
     {
         Matrix = new PuzzlePiece* [n+2];
         for(int i = 0;i<n+2;i++)
@@ -68,7 +68,7 @@ public:
         }
     }
 
-    bool setPiece(uint m,uint n,PuzzlePiece newPiece)
+    bool setPiece(unsigned int m,unsigned int n,PuzzlePiece newPiece)
     {
         if(PlaceOfPartGood(m,n,newPiece))
         {
@@ -79,16 +79,16 @@ public:
     }
 
     //removes piece and instead puts undefined piece
-    bool removePiece(uint m,uint n)
+    bool removePiece(unsigned int m,unsigned int n)
     {
         Matrix[n+1][m+1].setConnections(0b11111111);  
         return 1;
     }
 
     //getter
-    PuzzlePiece getPiece(uint m,uint n) { return Matrix[n+1][m+1]; }
-    uint getCols(){ return col; }
-    uint getRows(){ return row; }
+    PuzzlePiece getPiece(unsigned int m,unsigned int n) { return Matrix[n+1][m+1]; }
+    unsigned int getCols(){ return col; }
+    unsigned int getRows(){ return row; }
 
     //functtion definitions
     void printPuzzle();
@@ -101,8 +101,8 @@ public:
 
 
 private:
-    uint row;
-    uint col;
+    unsigned int row;
+    unsigned int col;
 
     PuzzlePiece** Matrix;
     
@@ -170,7 +170,7 @@ unsigned int PuzzlePiece::idcount(0);
 
 
 void printBox(vector<PuzzlePiece> myBox);
-vector<PuzzlePiece> createBox(uint m, uint n);
+vector<PuzzlePiece> createBox(unsigned int m, unsigned int n);
 void numerateBox(vector<PuzzlePiece>& myBox);
 
 bool next(vector<LogEntry>& log, vector<PuzzlePiece*>& p_Box, Puzzle& puzzleMat);

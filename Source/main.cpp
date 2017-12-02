@@ -9,7 +9,7 @@
 int main()
 {
 
-    int cols=20, rows=20;
+    int cols=10, rows=10;
     //some basic part stuff
     vector<Part> myFirstPuzzle;
     Part myFirstPart;

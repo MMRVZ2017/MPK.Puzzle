@@ -242,7 +242,7 @@ vector<PuzzlePiece> randomBox::shuffle()
 }
 
 //creates a random box size m, n, shuffles it, and then retuns it
-vector<PuzzlePiece> createBox(uint m, uint n)
+vector<PuzzlePiece> createBox(unsigned int m, unsigned int n)
 {
     randomBox myFirstPuzzleBox(m,n); 
     myFirstPuzzleBox.createRandomPuzzle(); 
