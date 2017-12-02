@@ -1,18 +1,4 @@
-/Applications/CLion.app/Contents/bin/cmake/bin/cmake -DCMAKE_BUILD_TYPE=Debug -G "CodeBlocks - Unix Makefiles" /Users/christoph/Documents/GitHub/MPK.Puzzle/Source
--- The C compiler identification is AppleClang 9.0.0.9000038
--- The CXX compiler identification is AppleClang 9.0.0.9000038
--- Check for working C compiler: /Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/cc
--- Check for working C compiler: /Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/cc -- works
--- Detecting C compiler ABI info
--- Detecting C compiler ABI info - done
--- Detecting C compile features
--- Detecting C compile features - done
--- Check for working CXX compiler: /Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/c++
--- Check for working CXX compiler: /Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/c++ -- works
--- Detecting CXX compiler ABI info
--- Detecting CXX compiler ABI info - done
--- Detecting CXX compile features
--- Detecting CXX compile features - done
+"C:\Program Files\JetBrains\CLion 2017.3\bin\cmake\bin\cmake.exe" -DCMAKE_BUILD_TYPE=Debug -G "CodeBlocks - MinGW Makefiles" "A:\University\FH_MSc\Semester 1\08_MPK\Projekt\Git\MPK.Puzzle\Source"
 -- Configuring done
 -- Generating done
--- Build files have been written to: /Users/christoph/Documents/GitHub/MPK.Puzzle/Source/cmake-build-debug
+-- Build files have been written to: A:/University/FH_MSc/Semester 1/08_MPK/Projekt/Git/MPK.Puzzle/Source/cmake-build-debug

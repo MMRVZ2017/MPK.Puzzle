@@ -1,7 +1,9 @@
 file(REMOVE_RECURSE
-  "CMakeFiles/Source.dir/main.cpp.o"
+  "CMakeFiles/Source.dir/main.cpp.obj"
   "Source.pdb"
-  "Source"
+  "Source.exe"
+  "Source.exe.manifest"
+  "libSource.dll.a"
 )
 
 # Per-language clean rules from dependency scanning.

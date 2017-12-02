@@ -33,5 +33,5 @@
 *.app
 
 # CLion folder
-Source/.idea/
-Source/cmake-build-debug/
+Source/.idea/*
+Source/cmake-build-debug/*

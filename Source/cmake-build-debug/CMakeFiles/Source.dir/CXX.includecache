@@ -6,15 +6,15 @@
 
 #IncludeRegexTransform: 
 
-/Users/christoph/Documents/GitHub/MPK.Puzzle/Source/functions/input/input.cpp
+A:/University/FH_MSc/Semester 1/08_MPK/Projekt/Git/MPK.Puzzle/Source/functions/input/input.cpp
 
-/Users/christoph/Documents/GitHub/MPK.Puzzle/Source/functions/output/output.cpp
+A:/University/FH_MSc/Semester 1/08_MPK/Projekt/Git/MPK.Puzzle/Source/functions/output/output.cpp
 
-/Users/christoph/Documents/GitHub/MPK.Puzzle/Source/functions/solve/classExtension.cpp
+A:/University/FH_MSc/Semester 1/08_MPK/Projekt/Git/MPK.Puzzle/Source/functions/solve/classExtension.cpp
 
-/Users/christoph/Documents/GitHub/MPK.Puzzle/Source/functions/solve/structure.cpp
+A:/University/FH_MSc/Semester 1/08_MPK/Projekt/Git/MPK.Puzzle/Source/functions/solve/structure.cpp
 
-/Users/christoph/Documents/GitHub/MPK.Puzzle/Source/header.h
+A:/University/FH_MSc/Semester 1/08_MPK/Projekt/Git/MPK.Puzzle/Source/header.h
 iostream
 -
 bitset
@@ -28,29 +28,29 @@ vector
 algorithm
 -
 header/input.h
-/Users/christoph/Documents/GitHub/MPK.Puzzle/Source/header/input.h
+A:/University/FH_MSc/Semester 1/08_MPK/Projekt/Git/MPK.Puzzle/Source/header/input.h
 header/solve.h
-/Users/christoph/Documents/GitHub/MPK.Puzzle/Source/header/solve.h
+A:/University/FH_MSc/Semester 1/08_MPK/Projekt/Git/MPK.Puzzle/Source/header/solve.h
 header/output.h
-/Users/christoph/Documents/GitHub/MPK.Puzzle/Source/header/output.h
+A:/University/FH_MSc/Semester 1/08_MPK/Projekt/Git/MPK.Puzzle/Source/header/output.h
 functions/input/input.cpp
-/Users/christoph/Documents/GitHub/MPK.Puzzle/Source/functions/input/input.cpp
+A:/University/FH_MSc/Semester 1/08_MPK/Projekt/Git/MPK.Puzzle/Source/functions/input/input.cpp
 functions/solve/classExtension.cpp
-/Users/christoph/Documents/GitHub/MPK.Puzzle/Source/functions/solve/classExtension.cpp
+A:/University/FH_MSc/Semester 1/08_MPK/Projekt/Git/MPK.Puzzle/Source/functions/solve/classExtension.cpp
 functions/solve/structure.cpp
-/Users/christoph/Documents/GitHub/MPK.Puzzle/Source/functions/solve/structure.cpp
+A:/University/FH_MSc/Semester 1/08_MPK/Projekt/Git/MPK.Puzzle/Source/functions/solve/structure.cpp
 functions/output/output.cpp
-/Users/christoph/Documents/GitHub/MPK.Puzzle/Source/functions/output/output.cpp
+A:/University/FH_MSc/Semester 1/08_MPK/Projekt/Git/MPK.Puzzle/Source/functions/output/output.cpp
 
-/Users/christoph/Documents/GitHub/MPK.Puzzle/Source/header/input.h
+A:/University/FH_MSc/Semester 1/08_MPK/Projekt/Git/MPK.Puzzle/Source/header/input.h
 stdint.h
 -
 
-/Users/christoph/Documents/GitHub/MPK.Puzzle/Source/header/output.h
+A:/University/FH_MSc/Semester 1/08_MPK/Projekt/Git/MPK.Puzzle/Source/header/output.h
 
-/Users/christoph/Documents/GitHub/MPK.Puzzle/Source/header/solve.h
+A:/University/FH_MSc/Semester 1/08_MPK/Projekt/Git/MPK.Puzzle/Source/header/solve.h
 
-/Users/christoph/Documents/GitHub/MPK.Puzzle/Source/main.cpp
+A:/University/FH_MSc/Semester 1/08_MPK/Projekt/Git/MPK.Puzzle/Source/main.cpp
 header.h
-/Users/christoph/Documents/GitHub/MPK.Puzzle/Source/header.h
+A:/University/FH_MSc/Semester 1/08_MPK/Projekt/Git/MPK.Puzzle/Source/header.h
 
