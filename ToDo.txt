@@ -1,0 +1,31 @@
+Easy Stuff:
+
+1, alle m,n übergaben in die coordinates (coor) class umwandeln
+2, "calculate first coor" in "calculate next coor" einfügen
+außerdem die beiden in "Next" in einer If erledigen wenn möglich
+3, das ganze in ein CLion Projekt umwandeln (angeblich schwer)
+
+
+Complicated Stuff:
+
+4, Set Solution Funktion muss überdacht werden
+
+Problem ist, dass die Puzzlesteine in der Liste nur als Pointer drinnen sind. also wenn dann das nächste Logelement diese Puzzlesteine verändert (verdreht zB), dann ändern sich auch die in der Liste aller anderen Logelemente.
+
+Das ist dann ein Problem, wenn wir backtracken und ein neues Teil aus der Liste herausnehmen (welches jetzt halt verdreht ist). Wir müssen daher wenn wir das neue Teil setzen, das Teil nochmal anschauen und herausfinden wie wir es drehen müssen, damit es passt.
+Das wird vielleicht bei anderen Abstraktionslayers sehr aufwendig
+
+Entweder:
+	Eine Lösung finden, dass wir uns die korrekten Orientierungen (und weitere Features) aller Puzzlesteine in jedem Logelement merken
+Oder:
+	Jedes mal wenn wir backtracken, checken wir das Teil nochmal durch, welche Orientierung die Beste ist. 
+
+Oder:
+	Teile sind "doppelt" im Log file. Jede richtige Orientierung ist einzeln abgespeichert. Das ist wahrscheinlich die eleganteste Antwort.
+
+
+
+5, Beim Backtracken wird das Teil momentan rotiert, um zu schauen, ob es eine weitere Orientierung gibt für die das Teil hinein passt. Hier muss irgendwie eine Schnittstelle gefunden werden, dass Abstraktionsebenen nur die möglichen Orientierung weiterprobieren. 
+
+Das "finden der zweitbesten Möglichkeit" muss außerdem in eine eigene Funktione gepackt werden. (außer wir speichern alle möglichen Posen einzeln im Log Element ab)
+
