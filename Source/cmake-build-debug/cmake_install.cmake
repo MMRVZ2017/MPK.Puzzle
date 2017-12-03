@@ -1,8 +1,8 @@
-# Install script for directory: A:/University/FH_MSc/Semester 1/08_MPK/Projekt/Git/MPK.Puzzle/Source
+# Install script for directory: /Users/christoph/Documents/GitHub/MPK.Puzzle/Source
 
 # Set the install prefix
 if(NOT DEFINED CMAKE_INSTALL_PREFIX)
-  set(CMAKE_INSTALL_PREFIX "C:/Program Files (x86)/Source")
+  set(CMAKE_INSTALL_PREFIX "/usr/local")
 endif()
 string(REGEX REPLACE "/$" "" CMAKE_INSTALL_PREFIX "${CMAKE_INSTALL_PREFIX}")
 
@@ -35,5 +35,5 @@ endif()
 
 string(REPLACE ";" "\n" CMAKE_INSTALL_MANIFEST_CONTENT
        "${CMAKE_INSTALL_MANIFEST_FILES}")
-file(WRITE "A:/University/FH_MSc/Semester 1/08_MPK/Projekt/Git/MPK.Puzzle/Source/cmake-build-debug/${CMAKE_INSTALL_MANIFEST}"
+file(WRITE "/Users/christoph/Documents/GitHub/MPK.Puzzle/Source/cmake-build-debug/${CMAKE_INSTALL_MANIFEST}"
      "${CMAKE_INSTALL_MANIFEST_CONTENT}")
