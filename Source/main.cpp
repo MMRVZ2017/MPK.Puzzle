@@ -4,18 +4,24 @@
 
 #include "header.h"
 //#include "../Codicil/test_puzzle_long40x40.h"
-
+#include "functions/AbstractionLayers/Layer1/AbstractionLayer_1.h"
+#include "functions/AbstractionLayers/Layer2/AbstractionLayer_2.h"
 
 int main()
 {
 
     int cols=10, rows=20;
     //some basic part stuff
-    vector<Part> myFirstPuzzle;
-    Part myFirstPart;
-    myFirstPart.setConnections(0b00101000);
+    vector<Part_v2> myFirstPuzzle;
+    Part_v2 myFirstPart;
+    //myFirstPart.setConnections(0b00101000);
     myFirstPuzzle.push_back(myFirstPart);
 
+    AbstractionLayer_1 test1(&myFirstPuzzle);
+    test1.Test();
+    //AbstractionLayer_2 test2(&myFirstPuzzle);
+
+    /*
     //some basic random puzzle stuff
     randomBox myRandomBox(cols,rows);
     myRandomBox.createRandomPuzzle();
@@ -43,4 +49,5 @@ int main()
     while(next(log, p_myFirstBox,puzzleMat));
 
     puzzleMat.printPuzzle();
+    */
 }

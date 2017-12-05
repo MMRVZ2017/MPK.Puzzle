@@ -1,3 +1,6 @@
+#ifndef SOURCE_HEADER_H
+#define SOURCE_HEADER_H
+
 #include <iostream>
 #include <bitset>
 #include <cstdlib>
@@ -17,3 +20,4 @@ using namespace std;
 #include "functions/solve/structure.cpp"
 #include "functions/output/output.cpp"
 
+#endif //SOURCE_HEADER
