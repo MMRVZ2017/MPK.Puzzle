@@ -35,10 +35,9 @@
 # CLion folder
 Source/.idea/*
 Source/cmake-build-debug/*
+Source/.DS_Store
+Source/CMakeLists.txt
 cmake-build-debug
 .idea
 .DS_Store
 
-Source/.idea/workspace.xml
-Source/.idea/workspace.xml
-Source/.idea/workspace.xml
