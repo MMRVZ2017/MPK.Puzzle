@@ -1,39 +1,22 @@
-#define MAX_ABSTRAX 1
-#define structdebug
-
-
 #include "header.h"
-//#include "../Codicil/test_puzzle_long40x40.h"
+
+int LogEntry::randomed(0);
+unsigned int PuzzlePiece::idcount(0);
 
 
 int main()
 {
 
-    int cols=10, rows=20;
-    //some basic part stuff
-    vector<Part> myFirstPuzzle;
-    Part myFirstPart;
-    myFirstPart.setConnections(0b00101000);
-    myFirstPuzzle.push_back(myFirstPart);
+    int cols=2, rows=3;
 
     //some basic random puzzle stuff
-    randomBox myRandomBox(cols,rows);
-    myRandomBox.createRandomPuzzle();
-    vector<PuzzlePiece> myFirstBox = myRandomBox.shuffle();
-
-    //undo everything and make this puzzle fucking imba hard!!!
-    //need 40x40 for this, so check your status
-
-    //makehard4040puzzle(myFirstBox);
+    vector<PuzzlePiece> myFirstBox = createBox(coor(cols,rows));
 
     //some advanced solver stuff
     vector<LogEntry> log;
     vector<PuzzlePiece*> p_myFirstBox;
 
     //BoxClassify myFirstBox();
-
-    cout << "original puzzle: " << endl;
-    myRandomBox.printPuzzle();
     cout << endl;
     for(int i=0;i<myFirstBox.size();i++)
         p_myFirstBox.push_back(&myFirstBox[i]);

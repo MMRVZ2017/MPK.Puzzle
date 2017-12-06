@@ -1,3 +1,5 @@
+#include "../../header.h"
+
 void status(vector<LogEntry>& log, vector<PuzzlePiece*>& p_Box, Puzzle& puzzleMat);
 
 
@@ -66,15 +68,6 @@ bool next(vector<LogEntry>& log, vector<PuzzlePiece*>& p_Box, Puzzle& puzzleMat)
     return 1;
 }
 
-/*
-coor calculateFirstCoor(vector<LogEntry>& log, vector<PuzzlePiece*>& p_Box, Puzzle& puzzleMat)
-{
-    //returns coor of first piece
-    coor firstCoor(0,0);
-    return firstCoor;
-}
-*/
-
 coor calculateNextCoor(vector<LogEntry>& log, vector<PuzzlePiece*>& p_Box, Puzzle& puzzleMat)
 {
     //level 1:
@@ -135,10 +128,10 @@ void abstractionlayer1solver(vector<LogEntry>& log, vector<PuzzlePiece*>& p_Box,
 			log.back().PieceCollector.erase(log.back().PieceCollector.begin()+i);
 		else
         {
-			i++; //otherwise loop stops before end!
             //set shift to 0 so that we have a defined starting position for all pieces
             while(log.back().PieceCollector[i]->getShift())
                 log.back().PieceCollector[i]->shift(1);
+            i++; //otherwise loop stops before end!
         }
 	}
 }

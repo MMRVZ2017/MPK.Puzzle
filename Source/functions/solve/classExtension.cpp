@@ -1,3 +1,4 @@
+#include "../../header.h"
 
 //shifts puzzle piece one to the right
 void PuzzlePiece::shift(unsigned int moves)
@@ -189,7 +190,8 @@ void Puzzle::printPuzzle()
 }
 
 //creates a legal puzzle out of random pieces
-void randomBox::createRandomPuzzle()
+
+void randomBox::createRandomAbstraction1()
 {
     PuzzlePiece temporaryRandomPiece(0);
     for(int i=0;i<getRows();i++)
@@ -200,21 +202,68 @@ void randomBox::createRandomPuzzle()
             //create random piece, set edges according to position and check if piece is good
             temporaryRandomPiece.randomCenterPiece();
             if(i==0)
-                temporaryRandomPiece.setConnections(0b00111111 & temporaryRandomPiece.getConnections());  
+                temporaryRandomPiece.setConnections(0b00111111 & temporaryRandomPiece.getConnections());
             if(i==getRows()-1)
-                temporaryRandomPiece.setConnections(0b11110011 & temporaryRandomPiece.getConnections());  
+                temporaryRandomPiece.setConnections(0b11110011 & temporaryRandomPiece.getConnections());
             if(j==0)
-                temporaryRandomPiece.setConnections(0b11111100 & temporaryRandomPiece.getConnections());  
+                temporaryRandomPiece.setConnections(0b11111100 & temporaryRandomPiece.getConnections());
             if(j==getCols()-1)
-                temporaryRandomPiece.setConnections(0b11001111 & temporaryRandomPiece.getConnections());  
+                temporaryRandomPiece.setConnections(0b11001111 & temporaryRandomPiece.getConnections());
 
             if(PlaceOfPartGood(j,i,temporaryRandomPiece))
             {
                 temporaryRandomPiece.assignIdentifier();
-                setPiece(j,i,temporaryRandomPiece);     
+                setPiece(j,i,temporaryRandomPiece);
                 j++;
-                Box.push_back(temporaryRandomPiece);
             }
+        }
+    }
+}
+
+void randomBox::createRandomAbstraction2()
+{
+    //get a picture
+    cv::Mat PuzzlePicture = cv::imread("../../Codicil/Images/Balloons.jpg");
+    if(! PuzzlePicture.data )
+    {
+        cout <<  "Could not open or find the image" << std::endl ;
+        return;
+    }
+    //split a picture into mxn pieces
+    cv::Size smallSize ((int)(PuzzlePicture.cols/getCols()) ,(int)(PuzzlePicture.rows/getRows()));
+    // get the image data
+
+    vector<cv::Mat> smallChannels;
+    unsigned int i=0,j=0;
+    for  ( int y=0; y<=PuzzlePicture.rows-smallSize.height; y += smallSize.height )
+    {
+
+        for  ( int x=0 ; x<=PuzzlePicture.cols-smallSize.width; x += smallSize.width )
+        {
+            //split into different ROIs
+            cv::Rect rect =   cv::Rect (x ,y , smallSize.width, smallSize.height );
+            cv::Mat tmpSmallPicture = cv::Mat(PuzzlePicture,rect);
+            cv::split(tmpSmallPicture, smallChannels);
+
+            //save color into individual PuzzlePieces in Matrix
+            PuzzlePiece tmpPiece = getPiece(j,i);
+            tmpPiece.r = cv::mean(smallChannels[0]).operator[](0);
+            tmpPiece.g = cv::mean(smallChannels[1]).operator[](0);
+            tmpPiece.b = cv::mean(smallChannels[2]).operator[](0);
+            setPiece(j,i,tmpPiece);
+            j++;
+        }
+        i++;
+        j=0;
+    }
+}
+
+void randomBox::putAllIntoBox() {
+    for (int i = 0; i < getRows(); i++)
+    {
+        for (int j = 0; j < getCols(); j++)
+        {
+            Box.push_back(getPiece(j,i));
         }
     }
 }
@@ -223,11 +272,11 @@ void randomBox::createRandomPuzzle()
 void randomBox::printBox()
 {
     shuffle();
-    for (vector<PuzzlePiece>::iterator i = Box.begin(); i != Box.end(); i++)    
+    for (vector<PuzzlePiece>::iterator i = Box.begin(); i != Box.end(); i++)
     {
         (*i).printPiece();
         cout << ' ';
-    }       
+    }
     cout << endl;
 }
 
@@ -235,29 +284,37 @@ void randomBox::printBox()
 vector<PuzzlePiece> randomBox::shuffle()
 {
     random_shuffle(Box.begin(),Box.end());
-    for (vector<PuzzlePiece>::iterator i = Box.begin(); i != Box.end(); i++)  
-        (*i).shift(rand()%4);
+    for (vector<PuzzlePiece>::iterator i = Box.begin(); i != Box.end(); i++)
+    {
+        i->shift(rand()%4);
+        i->resetShift();
+    }
+
     numerateBox(Box);
     return Box;
 }
 
 //creates a random box size m, n, shuffles it, and then retuns it
-vector<PuzzlePiece> createBox(unsigned int m, unsigned int n)
+vector<PuzzlePiece> createBox(coor myCoor)
 {
-    randomBox myFirstPuzzleBox(m,n); 
-    myFirstPuzzleBox.createRandomPuzzle(); 
-    return myFirstPuzzleBox.shuffle(); 
+    randomBox myFirstPuzzleBox(myCoor.m,myCoor.n);
+    myFirstPuzzleBox.createRandomAbstraction1();
+    myFirstPuzzleBox.createRandomAbstraction2();
+    myFirstPuzzleBox.putAllIntoBox();
+
+    myFirstPuzzleBox.printPuzzle();
+    return myFirstPuzzleBox.shuffle();
 }
 
 //prints contents of box
 void printBox(vector<PuzzlePiece> myBox)
 {
     cout << "current Box: " << endl;
-    for (vector<PuzzlePiece>::iterator i = myBox.begin(); i != myBox.end(); i++)    
+    for (vector<PuzzlePiece>::iterator i = myBox.begin(); i != myBox.end(); i++)
     {
         (*i).printPiece();
         cout << ' ';
-    }   
+    }
     cout << endl;
     return;
 }

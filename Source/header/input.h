@@ -3,6 +3,10 @@
 class Part
 {
 public:
+    double r;
+    double g;
+    double b;
+
     Part(): connections(0){}
     ~Part() {}
     uint8_t getConnections() const
@@ -13,4 +17,6 @@ public:
 
 private:
     uint8_t connections;
+
+
 };
