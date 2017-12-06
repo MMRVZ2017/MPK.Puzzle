@@ -131,7 +131,7 @@ void abstractionlayer1solver(vector<LogEntry>& log, vector<PuzzlePiece*>& p_Box,
 	{
         (*(log.back().PieceCollector[i])).resetShift();
 		//TODO: change checker from checking every box piece to only checking the simplifyed version ob the box with abstraction layer one
-		if(!(puzzleMat.testRotationPiece(log.back().myCoor.m, log.back().myCoor.n, *(log.back().PieceCollector[i]))))
+		if(!(puzzleMat.testRotationPiece(log.back().myCoor, *(log.back().PieceCollector[i]))))
 			log.back().PieceCollector.erase(log.back().PieceCollector.begin()+i);
 		else
         {
@@ -153,9 +153,10 @@ void setsolution(vector<LogEntry>& log, vector<PuzzlePiece*>& p_Box, Puzzle& puz
 			i++;
 
     //turn piece until it fits and then set element into matrix
-	if(puzzleMat.testRotationPiece(log.back().myCoor.m, log.back().myCoor.n,*(log.back().PieceCollector[0])))
+	if(puzzleMat.testRotationPiece(log.back().myCoor,*(log.back().PieceCollector[0])))
         //error if it turned
-		puzzleMat.setPiece(log.back().myCoor.m, log.back().myCoor.n, *(log.back().PieceCollector[0]));
+		//puzzleMat.setPiece(log.back().myCoor.m, log.back().myCoor.n, *(log.back().PieceCollector[0]));
+		puzzleMat.setPiece(log.back().myCoor, *(log.back().PieceCollector[0]));
 	else
 	{
 		cout << "fatal error, wrong piece saved" << endl;
@@ -172,7 +173,7 @@ bool backtrack(vector<LogEntry>& log, vector<PuzzlePiece*>& p_Box, Puzzle& puzzl
     //last log entry empty - delete last log + backtrack
 	if(!(log.back().PieceCollector.size()))
 	{
-		puzzleMat.removePiece(log.back().myCoor.m, log.back().myCoor.n);
+		puzzleMat.removePiece(log.back().myCoor);
 		log.pop_back();
 		backtrack(log,p_Box,puzzleMat);
 		return 1;
@@ -187,7 +188,7 @@ bool backtrack(vector<LogEntry>& log, vector<PuzzlePiece*>& p_Box, Puzzle& puzzl
         while((log.back().PieceCollector[0])->getShift() !=0 && (log.back().PieceCollector[0])->getShift() !=3)
         {
             log.back().PieceCollector[0]->shift(1);
-            if(puzzleMat.testRotationPiece(log.back().myCoor.m, log.back().myCoor.n, *(log.back().PieceCollector[0]), 1))
+            if(puzzleMat.testRotationPiece(log.back().myCoor, *(log.back().PieceCollector[0]), 1))
             {
                 setsolution(log,p_Box,puzzleMat);
                 return 1;
@@ -197,7 +198,7 @@ bool backtrack(vector<LogEntry>& log, vector<PuzzlePiece*>& p_Box, Puzzle& puzzl
 		p_Box.push_back(log.back().PieceCollector[0]);
         //shuffleup
         random_shuffle(p_Box.begin(),p_Box.end());
-		puzzleMat.removePiece(log.back().myCoor.m, log.back().myCoor.n);
+		puzzleMat.removePiece(log.back().myCoor);
 		log.pop_back();
 		//cout << "removed" << endl;
 		//status(log,p_Box,puzzleMat);
@@ -216,7 +217,7 @@ bool backtrack(vector<LogEntry>& log, vector<PuzzlePiece*>& p_Box, Puzzle& puzzl
          while((log.back().PieceCollector[0])->getShift() !=0 && (log.back().PieceCollector[0])->getShift() !=3)
         {
             log.back().PieceCollector[0]->shift(1);
-            if(puzzleMat.testRotationPiece(log.back().myCoor.m, log.back().myCoor.n, *(log.back().PieceCollector[0]), 1))
+            if(puzzleMat.testRotationPiece(log.back().myCoor, *(log.back().PieceCollector[0]), 1))
             {
                 setsolution(log,p_Box,puzzleMat);
                 return 1;

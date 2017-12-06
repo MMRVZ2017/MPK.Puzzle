@@ -37,13 +37,14 @@ void PuzzlePiece::randomCenterPiece()
 //use separator if you have to retract to a position
 //seperator may be bigger than box size, if all puzzle pieces have already been looked at.
 // it immediately retracts again then (returns -1)
-unsigned int Puzzle::tryAllPieces(unsigned int m, unsigned int n, vector<PuzzlePiece>& myBox, unsigned int separator)
+unsigned int Puzzle::tryAllPieces(coor myCoor, vector<PuzzlePiece>& myBox, unsigned int separator)
 {
     for(int i=separator; i<myBox.size();i++)
     {
-        if(testRotationPiece(m,n,myBox[i]))
+        if(testRotationPiece(myCoor,myBox[i]))
         {
-            setPiece(m,n,myBox[i]);
+            //setPiece(myCoor.m,myCoor.n,myBox[i]);
+            setPiece(myCoor,myBox[i]);
             myBox.erase(myBox.begin()+i);
             return i;
         }
@@ -53,11 +54,12 @@ unsigned int Puzzle::tryAllPieces(unsigned int m, unsigned int n, vector<PuzzleP
 }
 
 //tests the myPart in all 4 rotations at position m, n
-bool Puzzle::testRotationPiece(unsigned int m, unsigned int n, PuzzlePiece& myPart, int nrOfRotations)
+bool Puzzle::testRotationPiece(coor myCoor, PuzzlePiece& myPart, int nrOfRotations)
 {
     for(int rotation=0; rotation < nrOfRotations; rotation++)
     {
-        if(PlaceOfPartGood(m,n,myPart))
+        //coor myCoor(m,n);
+        if(PlaceOfPartGood(myCoor,myPart))
             return 1;
         //cout << "was rotated in testRotationPiece" << endl;
         myPart.shift(1);
@@ -69,7 +71,7 @@ bool Puzzle::testRotationPiece(unsigned int m, unsigned int n, PuzzlePiece& myPa
 
 //insterts piece at position in box according to boxidentifier and removes piece from puzzle
 //this returns the position after!! the puzzle piece was put back in! not the boxidentifier of the piece. look that up in other function.
-unsigned int Puzzle::putBackIntoBox(unsigned int m, unsigned int n, vector<PuzzlePiece>& myBox)
+unsigned int Puzzle::putBackIntoBox(coor myCoor, vector<PuzzlePiece>& myBox)
 {
 #ifdef debug
 cout << "putting back" << endl;
@@ -79,29 +81,29 @@ cout << endl;
 #endif
     for(int i = 0; i < myBox.size();i++)
     {
-        if(myBox[i].getBoxIdentifier()>getPiece(m,n).getBoxIdentifier())
+        if(myBox[i].getBoxIdentifier()>getPiece(myCoor.m,myCoor.n).getBoxIdentifier())
             {
-                myBox.insert(myBox.begin()+i,getPiece(m,n));
-                removePiece(m,n);
+                myBox.insert(myBox.begin()+i,getPiece(myCoor.m,myCoor.n));
+                removePiece(myCoor);
                 return i+1;
             }
     }
     //using push back, if the element was the last element in the vector chain
-    myBox.push_back(getPiece(m,n));
-    removePiece(m,n);
+    myBox.push_back(getPiece(myCoor.m,myCoor.n));
+    removePiece(myCoor);
     return myBox.size();
 }
 
 //checks if the myPart in its current orientation is legal in position m, n
-bool Puzzle::PlaceOfPartGood(unsigned int m,unsigned int n, PuzzlePiece& myPart)
+bool Puzzle::PlaceOfPartGood(coor myCoor, PuzzlePiece& myPart)
 {
        
     PuzzlePiece negativePart(0);
 
-    negativePart.setConnections(negativePart.getConnections() | (getPiece(m,n+1).getConnections() & 0b11000000));
-    negativePart.setConnections(negativePart.getConnections() | (getPiece(m-1,n).getConnections() & 0b00110000));
-    negativePart.setConnections(negativePart.getConnections() | (getPiece(m,n-1).getConnections() & 0b00001100));
-    negativePart.setConnections(negativePart.getConnections() | (getPiece(m+1,n).getConnections() & 0b00000011));
+    negativePart.setConnections(negativePart.getConnections() | (getPiece(myCoor.m,myCoor.n+1).getConnections() & 0b11000000));
+    negativePart.setConnections(negativePart.getConnections() | (getPiece(myCoor.m-1,myCoor.n).getConnections() & 0b00110000));
+    negativePart.setConnections(negativePart.getConnections() | (getPiece(myCoor.m,myCoor.n-1).getConnections() & 0b00001100));
+    negativePart.setConnections(negativePart.getConnections() | (getPiece(myCoor.m+1,myCoor.n).getConnections() & 0b00000011));
     negativePart.shift(2);
 
 
@@ -140,7 +142,7 @@ bool Puzzle::PlaceOfPartGood(unsigned int m,unsigned int n, PuzzlePiece& myPart)
 //TODO!!
 //simpler algorithm to the first placeofpartgood 
 //not yet functional!!!
-bool Puzzle::PlaceOfPart2Good(unsigned int m,unsigned int n, PuzzlePiece& myPart)
+bool Puzzle::PlaceOfPart2Good(coor myCoor, PuzzlePiece& myPart)
 {
         PuzzlePiece tmpPuzzlePiece = myPart;    
     
@@ -156,10 +158,10 @@ bool Puzzle::PlaceOfPart2Good(unsigned int m,unsigned int n, PuzzlePiece& myPart
         
     PuzzlePiece negativePart(0);
 
-    negativePart.setConnections(negativePart.getConnections() | (getPiece(m,n+1).getConnections() & 0b11000000));
-    negativePart.setConnections(negativePart.getConnections() | (getPiece(m-1,n).getConnections() & 0b00110000));
-    negativePart.setConnections(negativePart.getConnections() | (getPiece(m,n-1).getConnections() & 0b00001100));
-    negativePart.setConnections(negativePart.getConnections() | (getPiece(m+1,n).getConnections() & 0b00000011));
+    negativePart.setConnections(negativePart.getConnections() | (getPiece(myCoor.m,myCoor.n+1).getConnections() & 0b11000000));
+    negativePart.setConnections(negativePart.getConnections() | (getPiece(myCoor.m-1,myCoor.n).getConnections() & 0b00110000));
+    negativePart.setConnections(negativePart.getConnections() | (getPiece(myCoor.m,myCoor.n-1).getConnections() & 0b00001100));
+    negativePart.setConnections(negativePart.getConnections() | (getPiece(myCoor.m+1,myCoor.n).getConnections() & 0b00000011));
     
     negativePart.shift(2);
     
@@ -191,7 +193,9 @@ void Puzzle::printPuzzle()
 //creates a legal puzzle out of random pieces
 void randomBox::createRandomPuzzle()
 {
+    coor myCoor;
     PuzzlePiece temporaryRandomPiece(0);
+
     for(int i=0;i<getRows();i++)
     {
         for(int j = 0; j < getCols();)
@@ -206,12 +210,14 @@ void randomBox::createRandomPuzzle()
             if(j==0)
                 temporaryRandomPiece.setConnections(0b11111100 & temporaryRandomPiece.getConnections());  
             if(j==getCols()-1)
-                temporaryRandomPiece.setConnections(0b11001111 & temporaryRandomPiece.getConnections());  
+                temporaryRandomPiece.setConnections(0b11001111 & temporaryRandomPiece.getConnections());
 
-            if(PlaceOfPartGood(j,i,temporaryRandomPiece))
+            myCoor.m = j;
+            myCoor.n = i;
+            if(PlaceOfPartGood(myCoor,temporaryRandomPiece))
             {
                 temporaryRandomPiece.assignIdentifier();
-                setPiece(j,i,temporaryRandomPiece);     
+                setPiece(myCoor,temporaryRandomPiece);
                 j++;
                 Box.push_back(temporaryRandomPiece);
             }
@@ -242,9 +248,9 @@ vector<PuzzlePiece> randomBox::shuffle()
 }
 
 //creates a random box size m, n, shuffles it, and then retuns it
-vector<PuzzlePiece> createBox(unsigned int m, unsigned int n)
+vector<PuzzlePiece> createBox(coor myCoor)
 {
-    randomBox myFirstPuzzleBox(m,n); 
+    randomBox myFirstPuzzleBox(myCoor.m, myCoor.n);
     myFirstPuzzleBox.createRandomPuzzle(); 
     return myFirstPuzzleBox.shuffle(); 
 }

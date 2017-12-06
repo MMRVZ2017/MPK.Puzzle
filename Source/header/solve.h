@@ -1,5 +1,12 @@
-
 using namespace std;
+
+class coor
+{
+public:
+    int m, n;
+    coor(int newm=-1,int newn=-1): m(newm), n(newn)
+    {}
+};
 
 class PuzzlePiece: public Part
 {
@@ -68,36 +75,36 @@ public:
         }
     }
 
-    bool setPiece(unsigned int m,unsigned int n,PuzzlePiece newPiece)
+    bool setPiece(coor myCoor,PuzzlePiece newPiece) // 5th change: works
     {
-        if(PlaceOfPartGood(m,n,newPiece))
+        if(PlaceOfPartGood(myCoor,newPiece))
         {
-            Matrix[n+1][m+1] = newPiece;    
+            Matrix[myCoor.n+1][myCoor.m+1] = newPiece;
             return 1;
         }
         return 0;
     }
 
     //removes piece and instead puts undefined piece
-    bool removePiece(unsigned int m,unsigned int n)
+    bool removePiece(coor myCoor)   // 6th change: works
     {
-        Matrix[n+1][m+1].setConnections(0b11111111);  
+        Matrix[myCoor.n+1][myCoor.m+1].setConnections(0b11111111);
         return 1;
     }
 
     //getter
-    PuzzlePiece getPiece(unsigned int m,unsigned int n) { return Matrix[n+1][m+1]; }
+    PuzzlePiece getPiece(unsigned int m, unsigned int n) { return Matrix[n+1][m+1]; }    // 7th change: error m+1, n+1
     unsigned int getCols(){ return col; }
     unsigned int getRows(){ return row; }
 
     //functtion definitions
     void printPuzzle();
-    bool PlaceOfPartGood(unsigned int m, unsigned int n, PuzzlePiece& myPart);
-    bool PlaceOfPart2Good(unsigned int m,unsigned int n, PuzzlePiece& myPart);
+    bool PlaceOfPartGood(coor myCoor, PuzzlePiece& myPart); // 8th change: works
+    bool PlaceOfPart2Good(coor myCoor, PuzzlePiece& myPart); // 2nd change: works
 
-    bool testRotationPiece(unsigned int m, unsigned int n, PuzzlePiece& myPart, int nrOfRotations=4);
-    unsigned int tryAllPieces(unsigned int m, unsigned int n, vector<PuzzlePiece>& myBox, unsigned int separator);
-    unsigned int putBackIntoBox(unsigned int m, unsigned int n, vector<PuzzlePiece>& myBox);
+    bool testRotationPiece(coor myCoor, PuzzlePiece& myPart, int nrOfRotations=4); // 9th change: works
+    unsigned int tryAllPieces(coor myCoor, vector<PuzzlePiece>& myBox, unsigned int separator); // 3rd change: works
+    unsigned int putBackIntoBox(coor myCoor, vector<PuzzlePiece>& myBox); // 4th change: works
 
 
 private:
@@ -124,13 +131,6 @@ private:
 
 };
 
-class coor
-{
-public:
-    int m, n;
-    coor(int newm=-1,int newn=-1): m(newm), n(newn)
-    {}
-};
 
 class LogEntry
 {
@@ -170,7 +170,7 @@ unsigned int PuzzlePiece::idcount(0);
 
 
 void printBox(vector<PuzzlePiece> myBox);
-vector<PuzzlePiece> createBox(unsigned int m, unsigned int n);
+vector<PuzzlePiece> createBox(coor boxCoor); // 1st change: works
 void numerateBox(vector<PuzzlePiece>& myBox);
 
 bool next(vector<LogEntry>& log, vector<PuzzlePiece*>& p_Box, Puzzle& puzzleMat);
