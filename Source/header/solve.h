@@ -1,3 +1,8 @@
+#include <vector>
+#include <iostream>
+#include <opencv2/highgui/highgui.hpp>
+#include <opencv2/imgproc/imgproc.hpp>
+
 using namespace std;
 
 class coor
@@ -121,8 +126,10 @@ class randomBox: public Puzzle
 public:
 
     randomBox(unsigned int m, unsigned int n) : Puzzle(m,n) {srand(time(0));} //passed m n to puzzle constructor
-    
-    void createRandomPuzzle();
+
+    void createRandomAbstraction1();
+    void createRandomAbstraction2();
+    void putAllIntoBox();
     vector<PuzzlePiece> shuffle();
     void printBox();
 
@@ -157,24 +164,11 @@ private:
     static int randomed;
 };
 
-class BoxClassify
-{
-    vector<PuzzlePiece*> p_Box;
-    vector<vector<PuzzlePiece*>> ab1class;
-
-
-};
-
-int LogEntry::randomed(0);
-unsigned int PuzzlePiece::idcount(0);
-
-
 void printBox(vector<PuzzlePiece> myBox);
-vector<PuzzlePiece> createBox(coor boxCoor); // 1st change: works
+vector<PuzzlePiece> createBox(coor myCoor);
 void numerateBox(vector<PuzzlePiece>& myBox);
 
 bool next(vector<LogEntry>& log, vector<PuzzlePiece*>& p_Box, Puzzle& puzzleMat);
-coor calculateFirstCoor(vector<LogEntry>& log, vector<PuzzlePiece*>& p_Box, Puzzle& puzzleMat);
 coor calculateNextCoor(vector<LogEntry>& log, vector<PuzzlePiece*>& p_Box, Puzzle& puzzleMat);
 void solve(vector<LogEntry>& log, vector<PuzzlePiece*>& p_Box, Puzzle& puzzleMat);
 void abstractionlayer0solver(vector<LogEntry>& log, vector<PuzzlePiece*>& p_Box, Puzzle& puzzleMat);
