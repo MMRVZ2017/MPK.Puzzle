@@ -13,4 +13,4 @@ image of the completed puzzle.
  
 The images used for the display should be in images/input/input_display/ with filename convention: 0.jpg, 1.jpg, 2.jpg, ... ,1007.jpg
 
-Please beware that solution can only be displayed if there are enough images in the input_display directory. 
+Please beware solutionMx.columns * solutionMx.rows cannot be greater than 1008 
