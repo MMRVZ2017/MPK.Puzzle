@@ -82,6 +82,12 @@ Mat resultImage( vector<vector< SolutionElement>> solutionMx ){
             //cout<<"imageIndex: "<< imageNumber << endl;
 
             Mat img = readImage(imageNumber,"../images/input/input_display/");
+            int angle = solutionMx[i][j].orientation*90;
+            Point2f center;
+            center.x = img.cols/2;
+            center.y = img.rows/2;
+            Mat RotMatrix = getRotationMatrix2D(center,angle,1);
+            warpAffine(img,img,RotMatrix, img.size());
 //            imshow("readImg",img); // you can comment with Ctrl + / did you know? :D
 //            waitKey(0);
 
