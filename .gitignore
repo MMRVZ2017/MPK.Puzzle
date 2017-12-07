@@ -35,6 +35,7 @@
 # CLion folder
 Source/.idea/*
 Source/cmake-build-debug/*
+Source/cmake-build-release/*
 Source/.DS_Store
 Source/CMakeLists.txt
 cmake-build-debug

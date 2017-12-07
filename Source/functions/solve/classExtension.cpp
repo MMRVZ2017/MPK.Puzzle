@@ -219,12 +219,7 @@ void randomBox::createRandomAbstraction1()
             if(PlaceOfPartGood(myCoor,temporaryRandomPiece))
             {
                 temporaryRandomPiece.assignIdentifier();
-<<<<<<< HEAD
                 setPiece(myCoor,temporaryRandomPiece);
-/*=======
-                setPiece(j,i,temporaryRandomPiece);
->>>>>>> 9b282e83caf9aaacea107f878d2d6b3f413f286b
- */
                 j++;
             }
         }
@@ -261,7 +256,7 @@ void randomBox::createRandomAbstraction2()
             tmpPiece.r = cv::mean(smallChannels[0]).operator[](0);
             tmpPiece.g = cv::mean(smallChannels[1]).operator[](0);
             tmpPiece.b = cv::mean(smallChannels[2]).operator[](0);
-            setPiece(j,i,tmpPiece);
+            setPiece(coor(j,i),tmpPiece);
             j++;
         }
         i++;
