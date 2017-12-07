@@ -6,12 +6,12 @@
 Usage: 
 See instructions in CMakeLists.txt as well
 
-## Straighten.cpp
+## Source/Straighten.cpp
 
 
 Use straighten.cpp to process all of the raw images and write out segmented (background separated) and straightened images in Black&white (.jpg)
 or BGR+Alpha (.PNG) format.
-## Display.cpp
+## Source/Display.cpp
 
 
 Use Display.cpp to display the results of the SolutionMatrix by calling resultImage(solveMx) function. This function will return a Mat
