@@ -14,7 +14,6 @@
 #include <iostream>
 
 #include "../Source/header/preproc_base.h"
-//Constants:
 
 using namespace cv;
 
@@ -27,8 +26,6 @@ using std::endl;
 int noRows = 5;
 int noCols = 5;
 
-//typedefs:
-
 
 int main(){
 
@@ -38,8 +35,7 @@ int main(){
     vector<vector< SolutionElement>> solvedMx;
     solvedMx.resize(noRows);
     int index = 35; // random
-
-    //Making a random 5x5 solution matrix:
+    //Making a random 15x15 solution matrix: Any solution matrix can be used
     for(int i = 0; i<noRows;i++){
         for(int j = 0; j<noCols;j++){
             SolutionElement element;
@@ -47,7 +43,6 @@ int main(){
             element.orientation = 1;
             solvedMx[i].push_back(element);
             index++;
-            // cout<<"index: "<<index<<endl;
         }
     }
 
@@ -56,11 +51,13 @@ int main(){
     imshow("result",solvedImage);
     waitKey(0);
 
-
+    char outputFile1 [100];
+    sprintf(outputFile1,"../images/output/solution1.jpg");
+    imwrite(outputFile1,solvedImage);
     //Making another solution matrix:
     noRows = 3;
     noCols = 3;
-    vector<vector< SolutionElement>> solve3x3;
+    vector<vector< SolutionElement>> solve3x3; // This is the solutionmatrix that the solution groups will provide
     solve3x3.resize(noRows);
     for(size_t i = 0; i < solve3x3.size(); i++){
         for(int j = 0; j < noCols; j++){
@@ -72,7 +69,7 @@ int main(){
 
     }
     // result written by hand:
-    solve3x3[0][0].index = 11;
+    solve3x3[0][0].index = 11; // ../images/input_display/11.jpg
     solve3x3[0][1].index = 12;
     solve3x3[0][2].index = 13;
     solve3x3[1][0].index = 21;
@@ -82,15 +79,17 @@ int main(){
     solve3x3[2][1].index = 32;
     solve3x3[2][2].index = 33;
 
-
+    // Recycling the solvedImage object:
     solvedImage = Mat::zeros(solvedImage.size(), CV_8UC3);
+
+    // Displaying another solution:
     solvedImage = resultImage(solve3x3);
     imshow("result",solvedImage);
     waitKey(0);
 
-    char outputFile [100];
-    sprintf(outputFile,"../solution/solution.jpg");
-    imwrite(outputFile,solvedImage);
+    char outputFile2 [100];
+    sprintf(outputFile2,"../images/output/solution2.jpg");
+    imwrite(outputFile2,solvedImage);
 
 }
 
