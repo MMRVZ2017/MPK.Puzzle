@@ -1,11 +1,10 @@
 #define MAX_ABSTRAX 1
 #define structdebug
 
-
 #include "header.h"
 //#include "../Codicil/test_puzzle_long40x40.h"
 #include "functions/AbstractionLayers/Layer1/AbstractionLayer_1.h"
-#include "functions/AbstractionLayers/Layer2/AbstractionLayer_2.h"
+#include "header/Part.h"
 
 int main()
 {
@@ -17,8 +16,12 @@ int main()
     //myFirstPart.setConnections(0b00101000);
     myFirstPuzzle.push_back(myFirstPart);
 
-    AbstractionLayer_1 test1(&myFirstPuzzle);
-    test1.Test();
+    vector<Part_v2*> myFirstPuzzle2;
+    myFirstPuzzle2.push_back(&myFirstPart);
+
+    AbstractionLayer_1 test1;
+    test1.PreProcessing(&myFirstPuzzle2);
+    //test1.Test();
     //AbstractionLayer_2 test2(&myFirstPuzzle);
 
     /*

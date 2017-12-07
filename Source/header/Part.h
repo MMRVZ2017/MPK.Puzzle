@@ -16,9 +16,19 @@ public:
         return m_partID;
     }
 
-    void SetPartID(int partID)
+    void SetPartID(const int partID)
     {
         m_partID = partID;
+    }
+
+    uint8_t GetNumOfRotations () const
+    {
+        return m_numOfRotations;
+    }
+
+    void SetNumOfRotations(const uint8_t numOfRotations)
+    {
+        m_numOfRotations = numOfRotations;
     }
 
     AbstractionLayer_1_Properties m_test1;
@@ -26,6 +36,7 @@ public:
 
 private:
     int32_t m_partID;
+    uint8_t m_numOfRotations;
 };
 
 #endif //SOURCE_PART_H
