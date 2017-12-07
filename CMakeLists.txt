@@ -7,7 +7,7 @@ set(OpenCV_DIR "C:\\UOCV\\build")
 
 find_package(OpenCV REQUIRED)
 include_directories(${OpenCV_INCLUDE_DIRS}  )
-set(SOURCE_FILES Source/straighten.cpp Source/header/preproc_base.h Source/functions/preproc_base.cpp)
+set(SOURCE_FILES Source/display.cpp Source/header/preproc_base.h Source/functions/preproc_base.cpp)
 add_executable(MPK.Puzzle ${SOURCE_FILES})
 
 target_link_libraries( MPK.Puzzle ${OpenCV_LIBS} )
