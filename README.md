@@ -1,44 +1,23 @@
-# MPK.Puzzle
-MPK Projekt Puzzle Solver
+# MPK.Puzzle--Team6-Cntrl
+## Preprocessing and display algorithms
 
-Don't merge branch to master unless you are absolutely, 100% sure it works and you have discussed it with pm!
+### The headers and functions are stored at /header/preproce_base.h and /functions/preproc_base.cpp
+
+Usage: 
+See instructions in CMakeLists.txt as well
+
+## Source/Straighten.cpp
 
 
-# Current Todo
-Git for Puzzle solving project
+Use straighten.cpp to process all of the raw images and write out segmented (background separated) and straightened images in Black&white (.jpg)
+or BGR+Alpha (.PNG) format.
+## Source/Display.cpp
 
-1, Input:
 
-- Kontrolle, ob extrahierte Information rotationsinvariant ist
+Use Display.cpp to display the results of the SolutionMatrix by calling resultImage(solveMx) function. This function will return a Mat
+image of the completed puzzle.
+ 
+The images used for the display should be in ../images/input/input_display/ with filename convention: 0.jpg, 1.jpg, 2.jpg, ... ,1007.jpg
 
-- Information in definierte Schnittstelle übergeben
-
-- Farbdurchschnitt der einzelnen Puzzleteile extrahieren
-
-2, Solver
-
-- Puzzle Solver Abstraktion 1 fertig erstellen (Form)
-
-- Puzzle Solver Abstraktion 2 (Farbdurchschnitt) Konzept erstellen und programmieren
-
-- Random Algorithmus?
-
-3, Output
-
--visuelle Darstellung des Outputs der Matrix von Solver
-	hier soll das 'fertige' Puzzle dargestellt werden
-
-# Git intro
-0, read github tutorial
-
-1, Clone repository
-
-2, branch master into a team branch (named "Team"+[teamname])
-
-3, work only in this team branch or subbranches
-
-4, don't ever touch the master.
-
-Seriously. don't merge branch to master unless you are absolutely, 100% sure it works and you have discussed it with pm.
-
+Please beware solutionMx.columns * solutionMx.rows cannot be greater than 1008 
 
