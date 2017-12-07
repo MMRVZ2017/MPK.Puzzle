@@ -23,15 +23,12 @@ using std::cin;
 using std::vector;
 using std::endl;
 
-int noRows = 5;
-int noCols = 5;
-
 
 int main(){
 
 
-    noRows = 15;
-    noCols = 15;
+    int noRows = 15;
+    int noCols = 15;
     vector<vector< SolutionElement>> solvedMx;
     solvedMx.resize(noRows);
     int index = 35; // random
