@@ -78,6 +78,7 @@ int main(){
     solve3x3[2][1].index = 32;
     solve3x3[2][2].index = 33;
 
+    // Set piece orientations:
     solve3x3[0][0].orientation = 0;
     solve3x3[0][0].orientation = 0;
     solve3x3[0][1].orientation = 0;
