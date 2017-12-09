@@ -810,6 +810,13 @@ int findmax(std::vector<int> vals){
     return max;
 }
 
+double findmax(std::vector<double> vals){
+    double max=vals[0];
+    for(size_t i=0;i<vals.size();i++)
+        if(max<vals[i]) max=vals[i];
+    return max;
+}
+
 float findmax(std::vector<float> vals){
     float max=vals[0];
     for(size_t i=0;i<vals.size();i++)

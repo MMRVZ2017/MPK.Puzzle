@@ -82,7 +82,7 @@ int main(){
     solve3x3[0][0].orientation = 0;
     solve3x3[0][0].orientation = 0;
     solve3x3[0][1].orientation = 0;
-    solve3x3[0][2].orientation = 1; // just for demonstration
+    solve3x3[0][2].orientation = 0; // just for demonstration
     solve3x3[1][0].orientation = 0;
     solve3x3[1][1].orientation = 0;
     solve3x3[1][2].orientation = 0;
