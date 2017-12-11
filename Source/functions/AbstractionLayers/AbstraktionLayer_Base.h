@@ -7,17 +7,22 @@
 
 #include <map>
 #include "../../header/Part.h"
+#include <vector>
 
-typedef vector<map<Part_v2*, int>> propabilityVector;
+using namespace std;
+
+typedef vector<map<Part_v2*, float>> propabilityVector;
 
 template<typename T>
 class AbstraktionLayer_Base
 {
 public:
     virtual void PreProcessing(vector<Part_v2*>* partArray) = 0;
-    virtual propabilityVector EvaluetePropability (propabilityVector inputVector) = 0;
+    virtual propabilityVector EvaluetePropability (coor constraintCoordinate, propabilityVector inputVector) = 0;
+    virtual bool SetConstraintOnPosition(coor constraintCoordinate, T constraint) = 0;
+    virtual bool RemoveConstraintOnPosition(coor constraintCoordinate) = 0;
 
-    void InitialiseConstraintMatrixSize(int32_t collumns, int32_t rows)
+    virtual void InitialiseConstraintMatrixSize(int32_t collumns, int32_t rows)
     {
         m_constraintMatrix = vector<vector<T>>(collumns, vector<T>(rows));
     }

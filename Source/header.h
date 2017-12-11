@@ -8,7 +8,6 @@
 #include <vector>
 #include <algorithm> 
 
-
 using namespace std;
 
 #include "header/input.h"

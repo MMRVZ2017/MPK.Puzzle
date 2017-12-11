@@ -3,7 +3,6 @@
 
 #include <stdint.h>
 #include "../functions/AbstractionLayers/Layer1/AbstractionLayer_1_Properties.h"
-#include "../functions/AbstractionLayers/Layer2/AbstractionLayer_2_Properties.h"
 
 class Part_v2
 {
@@ -16,7 +15,7 @@ public:
         return m_partID;
     }
 
-    void SetPartID(const int partID)
+    void SetPartID(const int32_t partID)
     {
         m_partID = partID;
     }
@@ -32,7 +31,6 @@ public:
     }
 
     AbstractionLayer_1_Properties m_test1;
-    AbstractionLayer_2_Properties m_test2;
 
 private:
     int32_t m_partID;
