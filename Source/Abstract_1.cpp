@@ -30,27 +30,65 @@ using std::endl;
 vector<double> differentiate(vector<double> input, int windowSize);
 vector<double> movingAverage(vector<double> input, int windowSize);
 double avg (vector<double> input);
+double pointLength(Point2d point);
+RotatedRect getBaseRect(const Mat &);
+Mat drawRect(const RotatedRect& rectangle, Mat src);
+double lineFitNess(Vec4d lin, vector<Point> points, Point cPoint);
 int main() {
-    for(int i = 12;i<30;i++){
-        Mat image = readImage(i, "../images/output/blackAndWhite/output_BB/");
+    for(int i = 0;i<1008;i++){
+        cout<<"i: "<<i<<endl;
+        Mat image = readImage(i, "../images/output/blackAndWhite/output_VZ/");
+        imshow("image",image);
+        Mat segmentCheck = segment(image);
+        int nonZeros =  countNonZero(segmentCheck);
+        cout<<nonZeros<<endl;
+        if(nonZeros>4000){
+        }
+        else{
+            continue;
+        }
+
+
         //<editor-fold desc="Contour closing">
         Mat gray;
+        int morph_size;
+        Mat element;
         cvtColor(image, gray, CV_BGR2GRAY);
+        Contour_t c; Hierarchy_t h;
+        findContours(gray,c,h,CV_RETR_EXTERNAL,CV_CHAIN_APPROX_NONE);
+        double mSize = c.size()/30;
+//
+//        int morph_size =int(round(mSize));
+//        cout<<"msize: "<<morph_size<<endl;
+//        Mat element = getStructuringElement( MORPH_RECT, Size( 2*morph_size + 1, 2*morph_size+1 ), Point( morph_size, morph_size ) );
+//        morphologyEx(gray,gray,MORPH_CLOSE,element);
+//        morphologyEx(gray,gray,MORPH_CLOSE,element);
+//        morph_size = int(round(mSize)/50);
+//        element = getStructuringElement( MORPH_RECT, Size( 2*morph_size + 1, 2*morph_size+1 ),Point(morph_size, morph_size ));
+//        morphologyEx(gray,gray,MORPH_OPEN,element);
+//        morphologyEx(gray,gray,MORPH_OPEN,element);
+//        gray =  drawLargestContour(gray,0,true);
+
+
         Mat canny;
         Canny(gray,canny,100,200,3);
-       // imshow("Canny",canny);
-        int morph_size = 4;
-        Mat element = getStructuringElement( MORPH_ELLIPSE, Size( 2*morph_size + 1, 2*morph_size+1 ), Point( morph_size, morph_size ) );
+        imshow("Canny",canny);
+        morph_size = 4;
+        element = getStructuringElement( MORPH_ELLIPSE, Size( 2*morph_size + 1, 2*morph_size+1 ), Point( morph_size, morph_size ) );
         //image = drawLargestContour(image,0,true);
         morphologyEx(canny,canny,MORPH_CLOSE,element);
         //imshow("Canny closed",canny);
-        canny = drawLargestContour(canny,2,true);
+        canny = drawLargestContour(canny,0,true);
         //imshow("Canny approx",canny);
+        //further simplification
+
         cvtColor(canny,image,CV_GRAY2BGR);
-        Contour_t contours;
-        Hierarchy_t hierarchy;
+
         //</editor-fold>
         //<editor-fold desc="Finding centroid of image">
+        Contour_t contours;
+        Hierarchy_t hierarchy;
+
         findContours(canny,contours,hierarchy,CV_RETR_EXTERNAL,CV_CHAIN_APPROX_NONE);
 
         int index = getLongestContourIndex(contours);
@@ -61,6 +99,7 @@ int main() {
         circle(image, centroid, 4, Scalar(255,0,255), 2, 8);
         imshow("rect: ",image);
         //</editor-fold>
+
         //<editor-fold desc="Find edge points in polar coordinate system">
         vector<double> lx;
         for(size_t j = 0; j<contours[index].size();j++){
@@ -96,24 +135,13 @@ int main() {
                     t++;
                 }
             }
-            // Doesn'r have to be done for all 360
-            // Find the contour point closest to the edge point
-            // Only finds one point
-            double min_diff = 3000.0;
-            Point2f contour2Edge;
-            cout<<"original edge P: " <<edgeP<<endl;
-
-            //cout<<contours[index]<<endl;
-            //cout<<contours[index].size();
-
-            //cout<<edgeP<<endl;
 
             double edgeDist = sqrt((edgeP.x-centroid.x)*(edgeP.x-centroid.x)+(edgeP.y-centroid.y)*(edgeP.y-centroid.y));
             l_alpha.push_back(edgeDist);
             edge_alpha.push_back(edgeP);
             //line(image,centroid,endP,Scalar(0,255,255),1);
             //line(image,edgeP,endP,Scalar(255,200,100),1);
-            circle(image,edgeP,2,Scalar(0,255,0),1);
+           // circle(image,edgeP,2,Scalar(0,255,0),1);
             //TODO edgeP_(alpha) vector
 
         }
@@ -137,13 +165,15 @@ int main() {
             }
         }
         //</editor-fold>
+        // for moving average:
+        //TODO make windowSize adaptive:
+        int windowSize = 7;
 
-        int windowSize = 20;
         vector<double>mAvg = movingAverage(infiniteAlpha, windowSize);
-        startIndex-=windowSize;
-        vector<double> diff_l = differentiate(mAvg,2);
-        vector<double> diff2_l = differentiate(diff_l,2);
-        // LETS FIND THOSE CORNERS:
+        cout<<"mAvg.size: "<<mAvg.size()<<endl;
+        vector<double> diff_l = differentiate(mAvg,3);
+        vector<double> diff2_l = differentiate(diff_l,3);
+        cout<<"diff_l.size: "<<diff_l.size()<<endl;
         vector<Point> convexPoints;
         vector<Point> concavePoints;
         vector<Point> inPoints;
@@ -153,21 +183,29 @@ int main() {
         double avgSlope = avg(diff_l);
         double avgDist = avg(mAvg);
         cout<<endl;
+        //<editor-fold desc="Point sorting ( convex or concave">
         for(int j = startIndex; j < diff_l.size()-startIndex; j++){
-            int ind = j - startIndex-windowSize/2; // maybe shouldn't: -windowSize
+            int ind = j - startIndex; // maybe shouldn't: -windowSize
+           // cout<<"ind: "<<ind<<endl;
             // if the sign changes from - to + or + to - (discrete nullposition)
-            if(diff_l[j+1]*diff_l[j-1] < 0){ // if nullposition
+            if(diff_l[j+1]*diff_l[j-1] < 0) { // if nullposition
+                double middleIndex = 0.0;
+                while (diff_l[j + middleIndex+ 1] * diff_l[j + middleIndex - 1] < 0) {
+                    middleIndex++;
+                }
+                ind += int(round(middleIndex / 2));
+
                 // Upward slope: concave
-                if(diff2_l[j]>0) {
-                   // must be inPoint or other concave -- purple:
-                   circle(image, edge_alpha[ind], 3, Scalar(255, 0, 255), 3);
+                if (diff2_l[j] > 0) {
+                    // must be inPoint or other concave -- purple:
+                    circle(image, edge_alpha[ind], 3, Scalar(255, 0, 255), 3);
                     concavePoints.push_back(edge_alpha[ind]);
 
-                }
-                else // downward slope: convex
+                } else // downward slope: convex
                 {  // corner or outPoint, blue:
                     circle(image, edge_alpha[ind], 3, Scalar(255, 100, 0), 3);
                     convexPoints.push_back(edge_alpha[ind]);
+                    cout<<"edge_alpha(ind): "<<edge_alpha[ind]<<endl;
                     /*
                     int wind=3;
                     double sum = 0;
@@ -187,46 +225,131 @@ int main() {
                        // circle(image, edge_alpha[ind], 3, Scalar(0, 255, 255), 3);
                        */
                 }
-                j++;
+                j+=middleIndex;
 
-            }
 
+            }// end of nullstelles
         }// End of points sorting
+        //</editor-fold>
+
+        // line fitting
+        vector<double> lineFits;
         vector<int> indexes;
-        for(int o = 0; o<convexPoints.size(); o++){
+        for(int o = 0; o<convexPoints.size(); o++){ // Examining each convex Point
             Point cPoint = convexPoints[o];
+           // cout<<"cPoint: "<<cPoint<<endl;
             int cIndex = -1;
-            for(size_t k = 0; k<contours[index].size();k++){
+            float minDiff = 1000.0;
+            for(int k = 0; k<contours[index].size();k++){
 
                 // cout<<contours[index][k]<<endl;
-               Point contour2Edge = Point2f(contours[index][k].x-cPoint.x, contours[index][k].y-cPoint.y);
-                double distDiff =  sqrt((contour2Edge.x)*(contour2Edge.x)+(contour2Edge.y)*(contour2Edge.y));
+                Point2f contour2Edge = Point2f(contours[index][k].x-float(cPoint.x), contours[index][k].y-float(cPoint.y));
+                float distDiff =  sqrt((contour2Edge.x)*(contour2Edge.x)+(contour2Edge.y)*(contour2Edge.y));
                 //cout<<"distDiff: "<<distDiff<<endl;
                 // cout<<"min_diff: "<<min_diff<<endl;
-                if(distDiff==0){
-                    cPoint.x = contours[index][k].x;
-                    cPoint.y = contours[index][k].y;
-                    index = k;
+                if(distDiff<minDiff){
+                    minDiff = distDiff;
+                    cIndex = k;
                 }
-
-                // examine contour region and categorize
-
 
                 indexes.push_back(cIndex);
 
             }
-        }
+            //cout<<"cindex: "<< cIndex<<endl;
+            vector<Point> neighbours;
+            vector<Point> rightNeighbours;
+            vector<Point> leftNeighbours;
+            Vec4d lin;
+            Vec4d linR, linL;
+            double wSize = contours[index].size()/35;
+            //<editor-fold desc="Find neighbouring points">
+            auto wind = int(round(wSize)); // 30
+            for(int u = -wind; u<wind; u++){
+                int origInd = cIndex+u;
+                int contInd = 0;
+               // cout<<"origInd: "<<origInd<<endl;
+                int det = contours[index].size()-1;
+                if(origInd > det){ // go around
+                    contInd = origInd-contours[index].size();
+                }
+                else if(origInd<0){
+                    contInd = contours[index].size()+origInd;
+                }
+                else{
+                    contInd = origInd;
+                }
+                if(u<0){
+                    leftNeighbours.push_back(contours[index][contInd]);
+                }
+                else{
+                    rightNeighbours.push_back(contours[index][contInd]);
+                }
+                neighbours.push_back(contours[index][contInd]);
+            }
+            //</editor-fold>
+           // cout<<"neighbours: "<<neighbours<<endl;
 
 
+            fitLine(neighbours,lin,CV_DIST_L2,0,0.01,0.01);
+            fitLine(rightNeighbours,linR,CV_DIST_L2,0,0.01,0.01);
+            fitLine(leftNeighbours,linL,CV_DIST_L2,0,0.01,0.01);
 
+            Point2d PointR = Point2d(linR[2]-cPoint.x,linR[3]-cPoint.y);
+            Point2d PointL = Point2d(linL[2]-cPoint.x,linL[3]-cPoint.y);
 
+            double cos_alpha = (PointR.x)*(PointL.x)+(PointR.y)*(PointL.y)/(pointLength(PointL))*(pointLength(PointR));
+            if(cos_alpha==0)
+                cos_alpha = 0.001;
+           // cout<<lin<<endl;
+            //<editor-fold desc="display the line">
+            Vec4i displayLine;
+            displayLine[0] = int(round(lin[0]*wind+cPoint.x));
+            displayLine[1] = int(round(lin[1]*wind+cPoint.y));
+            displayLine[2] = int(round(cPoint.x)-lin[0]*wind);
+            displayLine[3] = int(round(cPoint.y)-lin[1]*wind);
+            line(image,Point(displayLine[2],displayLine[3]),Point(displayLine[0],displayLine[1]),Scalar(0,255,200),2);
+            vector<double> dist2Lins;
+            //</editor-fold>
 
+            double lineFitness = lineFitNess(lin,neighbours,cPoint);
+            lineFitness = lineFitNess(linL,leftNeighbours,cPoint)+lineFitNess(linR,rightNeighbours,cPoint);
+            lineFitness = 1/cos_alpha;
+            //double lineFitness = findmax(dist2Lins);
+            lineFits.push_back(lineFitness);
+            // examine contour region and categorize
 
+        }// End of line fitting to convex points
+        vector<Point> sortedConvex;
+        if(convexPoints.size()>4){
+            while(!lineFits.empty()){
+                // float minLength =  findmin(lengths); // ascending order
+                double maxLength =  findmin(lineFits); // descending order
+                for(size_t a = 0;a<convexPoints.size(); a++){
+                    if(lineFits[a]==maxLength){
+                        lineFits.erase(lineFits.begin()+ a);
+                        sortedConvex.push_back(convexPoints[a]);
+                        convexPoints.erase(convexPoints.begin() + a);
+                    }
+                }
+            }
+            for(int j = 4; j<sortedConvex.size();j++){
+                char str[200];
+                sprintf(str," dist %d",j);
+                cout<<str<<endl;
+                putText(image, str, sortedConvex[j], FONT_HERSHEY_PLAIN, 1,  Scalar(0,0,255,255));
+                circle(image,sortedConvex[j],20,Scalar(0,0,255),2);
+            }
 
-
+        }// end if (more than 4 convex points)
 
 
         imshow("possible corners", image);
+        char outputFile [100];
+        sprintf(outputFile,"../images/output/Abstract1/%d.jpg",i);
+        imwrite(outputFile,image);
+
+
+
 
 
 
@@ -276,20 +399,97 @@ vector<double> differentiate(vector<double> input, int windowSize){
 }
 
 vector<double> movingAverage(vector<double> input, int windowSize){
+    //windowSize must be odd!
     double runningTotal = 0.0;
     int inputS = input.size();
     vector <double> movingAverage;
     for(size_t i = 0; i < input.size(); i++)
     {
+        runningTotal = 0;   // add
+        if(i >= windowSize && i+windowSize<input.size())
+            for(int j = i-windowSize; j<=i+windowSize;j++){
+                runningTotal+=input[j];
+            }
 
-        runningTotal += input[i];   // add
-        if(i >= windowSize)
-            runningTotal -= input[i - windowSize];   // subtract
-
-        if(i >= (windowSize - 1)) {// output moving average
-           // cout << "Your SMA: " << runningTotal / (double) windowSize;
-            movingAverage.push_back((runningTotal / (double) windowSize));
-        }
+//        if(i >= (windowSize - 1)) {// output moving average
+//           // cout << "Your SMA: " << runningTotal / (double) windowSize;
+//
+//        }
+        movingAverage.push_back((runningTotal /( (double)( 2*windowSize+1))));
     }
     return movingAverage;
+}
+
+RotatedRect getBaseRect(const Mat& src){
+    Mat gray = src.clone();
+    Contour_t contours;
+    Hierarchy_t hierarchy;
+    double mSize = 0;
+    findContours(gray,contours,hierarchy,CV_RETR_EXTERNAL,CV_CHAIN_APPROX_NONE);
+    mSize = contours.size()/4;
+
+    auto morph_size =int(round(mSize));
+    cout<<"msize: "<<morph_size<<endl;
+    Mat element = getStructuringElement( MORPH_RECT, Size( 2*morph_size + 1, 2*morph_size+1 ), Point( morph_size, morph_size ) );
+    morphologyEx(gray,gray,MORPH_CLOSE,element);
+    morphologyEx(gray,gray,MORPH_CLOSE,element);
+    morph_size = int(round(mSize)*1);
+
+    element = getStructuringElement( MORPH_RECT, Size( 2*morph_size + 1, 2*morph_size+1 ),Point(morph_size, morph_size ));
+    morphologyEx(gray,gray,MORPH_OPEN,element);
+    morphologyEx(gray,gray,MORPH_OPEN,element);
+    morph_size = int(round(mSize/3));
+    element = getStructuringElement( MORPH_RECT, Size( 2*morph_size + 1, 2*morph_size+1 ),Point(morph_size, morph_size ));
+    morphologyEx(gray,gray,MORPH_ERODE,element);
+    //imshow("gray",gray);
+    gray  = drawLargestContour(gray,10,true);
+    //imshow("polyapprox",gray);
+    Mat canny;
+    Canny(gray,canny,100,200,3);
+    imshow("Canny",canny);
+    findContours(canny,contours,hierarchy,CV_RETR_EXTERNAL,CV_CHAIN_APPROX_SIMPLE);
+    int index = getLongestContourIndex(contours);
+    RotatedRect rectangle = minAreaRect(contours[index]);
+    return rectangle;
+
+}
+double lineFitNess(Vec4d lin, vector<Point> points, Point cPoint){
+    vector<double> dist2Lins;
+    double sumD = 0.0;
+    for(int a = 0; a<points.size();a++){
+
+        double x_0 = double( cPoint.x);
+        double y_0 = double( cPoint.y);
+        double x_p = double(points[a].x-x_0);
+        double y_p = double( points[a].y-y_0);
+        double v_x =  double(lin[0]);
+        double v_y =  double(lin[1]);
+
+        // cout<<"x0: "<<x_0<<" y0: "<< y_0<<"x_p: "<< x_p << " y_p" << y_p<<" vx: "<<v_x<<" vy: "<<v_y<<endl;
+        double dist2Lin = -(x_p-x_0)*(y_0+v_y)+(y_p-y_0)*(x_0+v_x);
+        dist2Lin = sqrt(pow(  x_p*(1-pow(v_x,2) -v_x*v_y*y_p) , 2 ) + pow(  y_p*(1-pow(v_y,2))-v_x*v_y*x_p  ,2));
+        //  cout<<"dist2Lin: "<<dist2Lin<<endl;// értelmetlen
+        dist2Lins.push_back(dist2Lin);
+        sumD += abs(dist2Lin);
+
+    }
+    double lineFitness = sumD / (double)points.size();
+    return lineFitness;
+}
+
+double pointLength(Point2d point){
+    double length = sqrt((point.x)*(point.x)+(point.y)*(point.y));
+    return length;
+}
+
+Mat drawRect(const RotatedRect& rectangle,  Mat src){
+    //Mat image = Mat::zeros(src.size(), CV_8UC3);
+    Point2f vtx[4];
+    rectangle.points(vtx);
+    for(int j = 0; j < 4; j++ ) {
+        line(src, vtx[j], vtx[(j + 1) % 4], Scalar(0, 255, 0), 1, LINE_AA);
+    }
+    line(src,vtx[0], vtx[2],Scalar(0, 255, 0), 1, LINE_AA); // diagonal
+    line(src,vtx[1], vtx[3],Scalar(0, 255, 0), 1, LINE_AA); // diagonal
+    return src;
 }
