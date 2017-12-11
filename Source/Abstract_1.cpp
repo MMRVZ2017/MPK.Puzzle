@@ -343,7 +343,7 @@ int main() {
         }// end if (more than 4 convex points)
 
 
-        imshow("possible corners", image);
+        imshow("possible corners",  image);
         char outputFile [100];
         sprintf(outputFile,"../images/output/Abstract1/%d.jpg",i);
         imwrite(outputFile,image);
