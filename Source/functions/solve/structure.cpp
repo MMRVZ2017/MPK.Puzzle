@@ -5,50 +5,21 @@ void status(vector<LogEntry>& log, vector<PuzzlePiece*>& p_Box, Puzzle& puzzleMa
 
 bool next(vector<LogEntry>& log, vector<PuzzlePiece*>& p_Box, Puzzle& puzzleMat)
 {
-    //log not yet started
-    /*
-    if(!(log.size()))
-    {
-    	log.push_back(LogEntry());
-        log.back().myCoor = calculateNextCoor(log, p_Box, puzzleMat);
-        solve(log, p_Box,puzzleMat);
-    }
-     */
-
-    //last log element is set, create new log element
+    //last log element is set, create new log element or log not yet started
     if(!(log.size()) || log.back().isSet())
     {
-    	if(!(p_Box.size()))
-    	{
-	    	cout << "box done" << endl;
-	   		return 0;
-    	}
-	    log.push_back(LogEntry());
-   	 	log.back().myCoor = calculateNextCoor(log, p_Box, puzzleMat);
-    	solve(log, p_Box,puzzleMat);
+    	if(!(p_Box.size())) return 0; //puzzle solved
+    	else createNextLogElement();   
     }
-
     //last log element is empty, backtrack
-    else if(!(log.back().PieceCollector.size()))
-        backtrack(log,p_Box,puzzleMat);
-
+    else if(!(log.back().PieceCollector.size())) backtrack(log,p_Box,puzzleMat);
     //case last log element has multiple entries
     else if(log.back().PieceCollector.size() > 1)
     {
-    	//is not yet max abstracted
-        if(log.back().abstractionLevel < MAX_ABSTRAX)
-        {
-        	 log.back().advance();
-            solve(log,p_Box,puzzleMat);
-        }
-        //no more layers, pick first
-        else
-        {
-        	log.back().advanceRandomed();
-            setsolution(log,p_Box,puzzleMat);
-        }
+			//moreLayers is 0, setbest is 1
+    	if(SetBestorMoreLayers()) 	setsolution(log,p_Box,puzzleMat);
+    	else 						solve(log,p_Box,puzzleMat);
     }
-
     //case last log exactly one solution
     else if(log.back().PieceCollector.size() == 1)
     {
@@ -66,6 +37,15 @@ bool next(vector<LogEntry>& log, vector<PuzzlePiece*>& p_Box, Puzzle& puzzleMat)
     		setsolution(log,p_Box,puzzleMat);
     }
     return 1;
+}
+
+void createNextLogElement(vector<LogEntry>& log, vector<PuzzlePiece*>& p_Box, Puzzle& puzzleMat)
+{
+	log.push_back(LogEntry());
+   	log.back().myCoor = calculateNextCoor(log, p_Box, puzzleMat);
+   	getLayerDestructionPowerfromSurrounding();
+    solve(log, p_Box,puzzleMat);
+
 }
 
 coor calculateNextCoor(vector<LogEntry>& log, vector<PuzzlePiece*>& p_Box, Puzzle& puzzleMat)
@@ -90,24 +70,24 @@ coor calculateNextCoor(vector<LogEntry>& log, vector<PuzzlePiece*>& p_Box, Puzzl
 
 void solve(vector<LogEntry>& log, vector<PuzzlePiece*>& p_Box, Puzzle& puzzleMat)
 {
+	getNextHighestLayerworth(puzzleMat); //sets in abstractionLevel
 	//status(log,p_Box,puzzleMat);
     switch(log.back().abstractionLevel)
     {
-        //abstraction layer = 0
-    		//go to abstraction layer 0 solver
-        case 0:
-        abstractionlayer0solver(log,p_Box,puzzleMat);
+        case 0:  abstractionlayer0solver(log,p_Box,puzzleMat);
         break;
-
-        //abstraction layer = 1
-            //go to abstraction layer 1 solver
-        case 1:
-        abstractionlayer1solver(log,p_Box,puzzleMat);
+        case 1:  abstractionlayer1solver(log,p_Box,puzzleMat);
         break;
 
         default:
         break;
     }
+
+    capLogElements(log);
+    calculateWorth(log);
+    calculateTrueDestructionPower(log,puzzleMat);
+    calculateNewCombinedProbablility(log);
+
 }
 
 void abstractionlayer0solver(vector<LogEntry>& log, vector<PuzzlePiece*>& p_Box, Puzzle& puzzleMat)
@@ -138,6 +118,9 @@ void abstractionlayer1solver(vector<LogEntry>& log, vector<PuzzlePiece*>& p_Box,
 
 void setsolution(vector<LogEntry>& log, vector<PuzzlePiece*>& p_Box, Puzzle& puzzleMat)
 {
+	//advance number of randomed part count
+	if(log.back().PieceCollector.size()>1) log.back().advanceRandomed();
+	
 	//remove first element in last logelement from box
 	for(int i=0;i<p_Box.size();)
 		if(p_Box[i]==log.back().PieceCollector[0])
