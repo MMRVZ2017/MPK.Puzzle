@@ -3,7 +3,8 @@
 #include <cstdlib>
 #include <time.h>
 #include <vector>
-#include <algorithm> 
+#include <algorithm>
+#include <random>
 
 #define MAX_ABSTRAX 1
 #define structdebug

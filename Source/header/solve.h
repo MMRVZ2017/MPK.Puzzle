@@ -176,4 +176,4 @@ void abstractionlayer1solver(vector<LogEntry>& log, vector<PuzzlePiece*>& p_Box,
 void setsolution(vector<LogEntry>& log, vector<PuzzlePiece*>& p_Box, Puzzle& puzzleMat);
 bool backtrack(vector<LogEntry>& log, vector<PuzzlePiece*>& p_Box, Puzzle& puzzleMat);
 
-
+void createNextLogElement(vector<LogEntry>& log, vector<PuzzlePiece*>& p_Box, Puzzle& puzzleMat);

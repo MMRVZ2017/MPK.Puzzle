@@ -7,7 +7,7 @@ unsigned int PuzzlePiece::idcount(0);
 int main()
 {
 
-    int cols=2, rows=3;
+    unsigned int cols=2, rows=3;
 
     //some basic random puzzle stuff
     vector<PuzzlePiece> myFirstBox = createBox(coor(cols,rows));
@@ -18,12 +18,13 @@ int main()
 
     //BoxClassify myFirstBox();
     cout << endl;
-    for(int i=0;i<myFirstBox.size();i++)
-        p_myFirstBox.push_back(&myFirstBox[i]);
+    for(auto &i:myFirstBox)
+        p_myFirstBox.push_back(&i);
+
     Puzzle puzzleMat(cols, rows);
 
     //vector<vector<PuzzlePiece*>> ab1class = abstractionLayer1classify(log, p_myFirstBox,puzzleMat);
-    while(next(log, p_myFirstBox,puzzleMat));
+    //while(next(log, p_myFirstBox,puzzleMat));
 
     puzzleMat.printPuzzle();
 }

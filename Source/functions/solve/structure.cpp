@@ -8,8 +8,8 @@ bool next(vector<LogEntry>& log, vector<PuzzlePiece*>& p_Box, Puzzle& puzzleMat)
     //last log element is set, create new log element or log not yet started
     if(!(log.size()) || log.back().isSet())
     {
-    	if(!(p_Box.size())) return 0; //puzzle solved
-    	else createNextLogElement();   
+    	if(!(p_Box.size())) return false; //puzzle solved
+    	else createNextLogElement(log,p_Box,puzzleMat);
     }
     //last log element is empty, backtrack
     else if(!(log.back().PieceCollector.size())) backtrack(log,p_Box,puzzleMat);
@@ -33,15 +33,15 @@ bool next(vector<LogEntry>& log, vector<PuzzlePiece*>& p_Box, Puzzle& puzzleMat)
 	    	else
 	    		setsolution(log,p_Box,puzzleMat);
     	}
-    	else
+        else
     		setsolution(log,p_Box,puzzleMat);
     }
-    return 1;
+    return true;
 }
 
 void createNextLogElement(vector<LogEntry>& log, vector<PuzzlePiece*>& p_Box, Puzzle& puzzleMat)
 {
-	log.push_back(LogEntry());
+	log.emplace_back(LogEntry());
    	log.back().myCoor = calculateNextCoor(log, p_Box, puzzleMat);
    	getLayerDestructionPowerfromSurrounding();
     solve(log, p_Box,puzzleMat);
@@ -54,7 +54,7 @@ coor calculateNextCoor(vector<LogEntry>& log, vector<PuzzlePiece*>& p_Box, Puzzl
         //go left to right, then increase current row
 
     if (log.size() == 1)
-        return coor(0,0);
+        return {0,0};
 
 
 	int m= log.rbegin()[1].myCoor.m;
@@ -63,8 +63,8 @@ coor calculateNextCoor(vector<LogEntry>& log, vector<PuzzlePiece*>& p_Box, Puzzl
 
 	if(m<puzzleMat.getCols()-1) m++;
 	else if(n<puzzleMat.getRows()-1){ m=0; n++;}
-	else return coor();
-	return	coor(m,n);
+	else return {};
+	return	{m,n};
     //return nextCoor;
 }
 
@@ -93,8 +93,8 @@ void solve(vector<LogEntry>& log, vector<PuzzlePiece*>& p_Box, Puzzle& puzzleMat
 void abstractionlayer0solver(vector<LogEntry>& log, vector<PuzzlePiece*>& p_Box, Puzzle& puzzleMat)
 {
     //throw all remaining puzzle pieces into newest log
-    for(int i=0;i<p_Box.size();i++)
-    	log.back().PieceCollector.push_back(p_Box[i]);
+    for(auto i:p_Box)
+    	log.back().PieceCollector.push_back(i);
 }
 
 void abstractionlayer1solver(vector<LogEntry>& log, vector<PuzzlePiece*>& p_Box, Puzzle& puzzleMat)
@@ -152,7 +152,7 @@ bool backtrack(vector<LogEntry>& log, vector<PuzzlePiece*>& p_Box, Puzzle& puzzl
 		puzzleMat.removePiece(log.back().myCoor);
 		log.pop_back();
 		backtrack(log,p_Box,puzzleMat);
-		return 1;
+		return true;
 	}
 
 	//last log entry only one solution - delete last logd put back into box + backtrack
@@ -167,20 +167,22 @@ bool backtrack(vector<LogEntry>& log, vector<PuzzlePiece*>& p_Box, Puzzle& puzzl
             if(puzzleMat.testRotationPiece(log.back().myCoor, *(log.back().PieceCollector[0]), 1))
             {
                 setsolution(log,p_Box,puzzleMat);
-                return 1;
+                return true;
             }
         }
 
 		p_Box.push_back(log.back().PieceCollector[0]);
         //shuffleup
-        random_shuffle(p_Box.begin(),p_Box.end());
+        std::random_device rd;
+        std::mt19937 g(rd());
+        std::shuffle(p_Box.begin(),p_Box.end(),g);
 		puzzleMat.removePiece(log.back().myCoor);
 		log.pop_back();
 		//cout << "removed" << endl;
 		//status(log,p_Box,puzzleMat);
 		backtrack(log,p_Box,puzzleMat);
 
-		return 1;
+		return true;
 	}
 
     //last log entry multiple solutions (and current one was randomed) - delete randomed piece and go to next
@@ -196,13 +198,15 @@ bool backtrack(vector<LogEntry>& log, vector<PuzzlePiece*>& p_Box, Puzzle& puzzl
             if(puzzleMat.testRotationPiece(log.back().myCoor, *(log.back().PieceCollector[0]), 1))
             {
                 setsolution(log,p_Box,puzzleMat);
-                return 1;
+                return true;
             }
         }
 
         p_Box.push_back(log.back().PieceCollector[0]);
         //shuffleup
-        random_shuffle(p_Box.begin(),p_Box.end());
+        std::random_device rd;
+        std::mt19937 g(rd());
+        std::shuffle(p_Box.begin(),p_Box.end(),g);
         log.back().PieceCollector.erase(log.back().PieceCollector.begin());
 
         if(log.back().PieceCollector.size()==1)
@@ -212,11 +216,11 @@ bool backtrack(vector<LogEntry>& log, vector<PuzzlePiece*>& p_Box, Puzzle& puzzl
         (*(log.back().PieceCollector[0])).resetShift();
         setsolution(log,p_Box,puzzleMat);
 
-		return 1;
-		//no need to remove from puzzle mat, as sersolution overwrites it anyway
+		return true;
+		//no need to remove from puzzle mat, as setsolution overwrites it anyway
 	}
 	else
-		return 0;
+		return false;
 
 }
 
@@ -233,26 +237,26 @@ void status(vector<LogEntry>& log, vector<PuzzlePiece*>& p_Box, Puzzle& puzzleMa
 			cout << "isset: 1" << endl;
 		else
 			cout << "isset: 0" << endl;
-
-		//cout << "Abstraction: " << log[i].abstractionLevel << endl;
 		cout << "m: " << log[i].myCoor.m << " n: " << log[i].myCoor.n << endl;
-		/*for(int j=0;j<log[i].PieceCollector.size();j++)
-		{
-			(*(log[i].PieceCollector[j])).printPiece();
-			cout << endl;
-		}*/
 	}
 
 	cout << endl;
 	cout << "Box:" << endl;
 	cout << "size:  " << p_Box.size() << endl;
-	for(vector<PuzzlePiece*>::iterator i = p_Box.begin();i!=p_Box.end();i++)
+	for(auto i:p_Box)
 	{
-		(*(*i)).printPiece();
+		i->printPiece();
 		cout << endl;
 	}
 
 	cout << "Puzzle:" << endl;
 	puzzleMat.printPuzzle();
 	cout << "----------------------------" << endl;
+}
+
+void calculateTrueDestructionPower(vector<LogEntry>& log, Puzzle& puzzleMat, float Layerworth)
+{
+	//hier muss noch rein, wo die zeit der Abstractionlevels gespeichter wird
+	float destructionPower=sqrt(Layerworth * log.back().abstractionLevel);
+	puzzleMat.setdestructionPower(log.back().myCoor,log.back().abstractionLevel,destructionPower);
 }

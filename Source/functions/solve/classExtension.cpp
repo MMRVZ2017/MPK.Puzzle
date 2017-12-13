@@ -34,26 +34,6 @@ void PuzzlePiece::randomCenterPiece()
         setConnections(getConnections() | 0b00000010);
 }
 
-//tries all pieces in box from separator to end and places fitting into matrix. removes fitting piece
-//use separator if you have to retract to a position
-//seperator may be bigger than box size, if all puzzle pieces have already been looked at.
-// it immediately retracts again then (returns -1)
-unsigned int Puzzle::tryAllPieces(coor myCoor, vector<PuzzlePiece>& myBox, unsigned int separator)
-{
-    for(int i=separator; i<myBox.size();i++)
-    {
-        if(testRotationPiece(myCoor,myBox[i]))
-        {
-            //setPiece(myCoor.m,myCoor.n,myBox[i]);
-            setPiece(myCoor,myBox[i]);
-            myBox.erase(myBox.begin()+i);
-            return i;
-        }
-    }
-
-    return -1;
-}
-
 //tests the myPart in all 4 rotations at position m, n
 bool Puzzle::testRotationPiece(coor myCoor, PuzzlePiece& myPart, int nrOfRotations)
 {
@@ -61,13 +41,13 @@ bool Puzzle::testRotationPiece(coor myCoor, PuzzlePiece& myPart, int nrOfRotatio
     {
         //coor myCoor(m,n);
         if(PlaceOfPartGood(myCoor,myPart))
-            return 1;
+            return true;
         //cout << "was rotated in testRotationPiece" << endl;
         myPart.shift(1);
     }
 
         //cout << "Was a bad part" << endl;
-    return 0;
+    return false;
 }
 
 //insterts piece at position in box according to boxidentifier and removes piece from puzzle
@@ -129,13 +109,13 @@ bool Puzzle::PlaceOfPartGood(coor myCoor, PuzzlePiece& myPart)
         //cout << "good Part: ";
         //myPart.printPiece();
         //cout << endl;       
-        return 1;
+        return true;
     }
     //cout << "bad Part: ";
     //myPart.printPiece();
     //cout << endl;       
 
-    return 0;
+    return false;
 
 }
 
@@ -169,9 +149,9 @@ bool Puzzle::PlaceOfPart2Good(coor myCoor, PuzzlePiece& myPart)
     //check tmp part with environment
     if(((negativePart.getConnections() & 0b11000000) == (tmpPuzzlePiece.getConnections() & 0b11000000)) && ((negativePart.getConnections() & 0b00110000) == (tmpPuzzlePiece.getConnections ()& 0b00110000)) && 
             ((negativePart.getConnections() & 0b00001100) == (tmpPuzzlePiece.getConnections() & 0b00001100)) && ((negativePart.getConnections() & 0b00000011) == (tmpPuzzlePiece.getConnections() & 0b00000011)))
-        return 1;
+        return true;
     
-    return 0;
+    return false;
 
 }
 
@@ -278,9 +258,9 @@ void randomBox::putAllIntoBox() {
 void randomBox::printBox()
 {
     shuffle();
-    for (vector<PuzzlePiece>::iterator i = Box.begin(); i != Box.end(); i++)
+    for (auto i:Box)
     {
-        (*i).printPiece();
+        i.printPiece();
         cout << ' ';
     }
     cout << endl;
@@ -290,10 +270,10 @@ void randomBox::printBox()
 vector<PuzzlePiece> randomBox::shuffle()
 {
     random_shuffle(Box.begin(),Box.end());
-    for (vector<PuzzlePiece>::iterator i = Box.begin(); i != Box.end(); i++)
+    for (auto &i:Box)
     {
-        i->shift(rand()%4);
-        i->resetShift();
+        i.shift(rand()%4);
+        i.resetShift();
     }
 
     numerateBox(Box);
@@ -303,13 +283,6 @@ vector<PuzzlePiece> randomBox::shuffle()
 //creates a random box size m, n, shuffles it, and then retuns it
 vector<PuzzlePiece> createBox(coor myCoor)
 {
-    /*
-<<<<<<< HEAD
-    randomBox myFirstPuzzleBox(myCoor.m, myCoor.n);
-    myFirstPuzzleBox.createRandomPuzzle();
-    return myFirstPuzzleBox.shuffle();
-=======
-    */
     randomBox myFirstPuzzleBox(myCoor.m,myCoor.n);
     myFirstPuzzleBox.createRandomAbstraction1();
     myFirstPuzzleBox.createRandomAbstraction2();
@@ -317,20 +290,18 @@ vector<PuzzlePiece> createBox(coor myCoor)
 
     myFirstPuzzleBox.printPuzzle();
     return myFirstPuzzleBox.shuffle();
-//>>>>>>> 9b282e83caf9aaacea107f878d2d6b3f413f286b
 }
 
 //prints contents of box
 void printBox(vector<PuzzlePiece> myBox)
 {
     cout << "current Box: " << endl;
-    for (vector<PuzzlePiece>::iterator i = myBox.begin(); i != myBox.end(); i++)
+    for (auto &i:myBox)
     {
-        (*i).printPiece();
+        i.printPiece();
         cout << ' ';
     }
     cout << endl;
-    return;
 }
 
 //gives every element in box a box identifier.
@@ -339,16 +310,15 @@ void numerateBox(vector<PuzzlePiece>& myBox)
     for(int i = 0; i< myBox.size();i++)
         myBox[i].setBoxIdentifier(i);
 
-    return;
 }
 
 std::vector<PuzzlePiece> convertPart2PuzzlePiece(std::vector<Part> simplePartBox)
 {
 	std::vector<PuzzlePiece> advancedPartBox;
-	for(int i=0;i<simplePartBox.size();i++)
+	for(auto const &i:simplePartBox)
 	{
 		PuzzlePiece tmpNewPiece(0);
-		tmpNewPiece.setConnections(simplePartBox[i].getConnections());
+		tmpNewPiece.setConnections(i.getConnections());
 		advancedPartBox.push_back(tmpNewPiece);
 	}
 	return advancedPartBox;
