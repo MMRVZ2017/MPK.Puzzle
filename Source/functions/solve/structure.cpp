@@ -273,3 +273,88 @@ void status(vector<LogEntry>& log, vector<PuzzlePiece*>& p_Box, Puzzle& puzzleMa
 	puzzleMat.printPuzzle();
 	cout << "----------------------------" << endl;
 }
+
+bool setBestOrMoreLayers(vector<LogEntry>& log)
+{
+	int countBest = 0;
+	float tempBest = 0.0;
+
+	// count how many Pieces are greater than the threshold value
+	for(int i = 0; i < log.PieceCollector.size(); i++)
+	{
+		// check Probability of current Puzzle Piece in this vector
+		if (*(log.back().PieceCollector[i]) >= 0.90) // 0.90 as threshold
+		{
+			countBest++;
+		}
+		else
+		{
+			if (*(log.back().PieceCollector[i]) > tempBest)
+			{
+				tempBest = *log.back().PieceCollector[i];
+			}
+		}
+	}
+
+	// return true if only one piece is left
+	if (1 == countBest)
+	{
+		return true;
+	}
+	//else if (countBest > 1 && countBest < 10)	// TODO: add possible constraints
+	else
+	{
+		return false;
+	}
+}
+
+void calculateNewCombinedProbabilityForPuzzlePiecesArithmetic(vector<LogEntry>& log)
+{
+	float totalValue = 0.0;
+
+	for(int i = 0; i < log.PieceCollector.size(); i++)
+	{
+		// sum Probability of current Puzzle Piece in PieceCollector vector
+		totalValue += *(log.back().PieceCollector[i]);
+	}
+
+	return totalValue / i;
+}
+
+void calculateNewCombinedProbabilityForPuzzlePiecesTopK(vector<LogEntry>& log, int executedLayers)
+{
+	float TopK[executedLayers][2] = {0.0};	// in Log speichern?
+	float sumTopK[executedLayers] = {0.0};
+	float HighestProbability = 0.0;
+
+	// searching for Top2 probability values in PieceCollector for each layer
+	for (int currentLayer = 0; currentLayer < executedLayers; currentLayer++)
+	{
+		// searching for Top2 probabilities in currentLayer
+		for(int i = 0; i < log.PieceCollector.size() && log.back().abstractionLevel == currentLayer; i++)
+		{
+			if (*(log.back().PieceCollector[i]) > TopK[currentLayer][0])
+			{
+				TopK[currentLayer][0] = *log.back().PieceCollector[i];
+			}
+			else if (*(log.back().PieceCollector[i]) > TopK[currentLayer][1])
+			{
+				TopK[currentLayer][1] = *log.back().PieceCollector[i];
+			}
+			else
+			{
+				// Spezialfall fuer 0 Ueberlegen
+			}
+		}
+		sumTopK[currentLayer] = TopK[currentLayer][0] + TopK[currentLayer][1];
+	}
+
+	// searching for highest probability for designated Position
+	for (int currentLayer = 0; currentLayer < executedLayers; currentLayer++)
+	{
+		if (sumTopK[currentLayer+1] > sumTopK[currentLayer])
+		{
+			HighestProbability = sumTopK[currentLayer+1];
+		}
+	}
+}
