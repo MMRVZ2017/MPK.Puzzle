@@ -1,7 +1,3 @@
-//
-// Created by mpapa on 05.12.2017.
-//
-
 #ifndef SOURCE_ABSTRAKTIONLAYER_BASE_H
 #define SOURCE_ABSTRAKTIONLAYER_BASE_H
 
@@ -13,21 +9,61 @@ using namespace std;
 
 typedef vector<map<Part_v2*, float>> propabilityVector;
 
+/*
+ * Die Logik mit der Template-Basisklasse und den abgeleiteten Layern kam mit der Idee, dass die Layer
+ * nicht auf die Layer-Eigenschaften der anderen Layer zugreifen können, da die mit friend geschützt sind.
+ * Ansonsten könnte man auch verschiedene Objekte der Template Basisklasse erstellen
+ */
+/**
+ * @brief       template base class for all different layers
+ * @tparam T    template parameter which should be the property class of the layer
+ */
 template<typename T>
 class AbstraktionLayer_Base
 {
 public:
-    virtual void PreProcessing(vector<Part_v2*>* partArray) = 0;
-    virtual propabilityVector EvaluetePropability (coor constraintCoordinate, propabilityVector inputVector) = 0;
-    virtual bool SetConstraintOnPosition(coor constraintCoordinate, T constraint) = 0;
-    virtual bool RemoveConstraintOnPosition(coor constraintCoordinate) = 0;
+    /**
+     * @brief   pure virtual method for the pre processing of the layer
+     * @param   [in] partArray - References of all Parts, in which the properties of the Layer will be written
+     */
+    virtual void PreProcessing(const vector<Part_v2*>* partArray) = 0;
 
-    virtual void InitialiseConstraintMatrixSize(int32_t collumns, int32_t rows)
+    /**
+     * @brief   pure virtual method for the propability evaluation of the layer
+     * @param   [in] constraintCoordinate - Coordinate where the propabilities should evaluate for each given part
+     * @param   [in] inputVector - References of all parts with the propability of the last Layer
+     * @return  References of all parts with their propability to fit in the given coordinate
+     */
+    virtual propabilityVector EvaluetePropability (const coor constraintCoordinate, const propabilityVector inputVector) = 0;
+
+    /**
+     * @brief   pure virtual method which sets the constraint on the given Coordinate in the m_constraintMatrix
+     *          This function will be called from main for all layers
+     * @param   [in] constraintCoordinate - Coordinate where the constraint should be placed
+     * @param   [in] constraint - constraint which should be placed
+     * @return  Boolean if the constraint was set or a failure happened
+     */
+    virtual bool SetConstraintOnPosition(const coor constraintCoordinate, const T constraint) = 0;
+
+    /**
+     * @brief   pure virtual method which remove the constraint on the given Coordinate of the m_constraintMatrix
+     *          This function will be called from main for all layers
+     * @param   [in] constraintCoordinate - Coordinate where the constraint should be removed
+     * @return  Boolean if the remove was successfull or failed
+     */
+    virtual bool RemoveConstraintOnPosition(const coor constraintCoordinate) = 0;
+
+    /**
+     * @brief   virtual method to initialise the m_constraintMatrix to a given size
+     * @param   [in] collumns - Wished collumns of the m_constraintMatrix
+     * @param   [in] rows - Wished rows of the m_constraintMatrix
+     */
+    virtual void InitialiseConstraintMatrixSize(const int32_t collumns, const int32_t rows)
     {
         m_constraintMatrix = vector<vector<T>>(collumns, vector<T>(rows));
     }
 
-    vector<vector<T>> m_constraintMatrix;
+    vector<vector<T>> m_constraintMatrix; //!<-- Matrix where the constraints of the layer will be saved
 };
 
 

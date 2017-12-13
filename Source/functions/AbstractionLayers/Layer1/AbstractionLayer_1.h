@@ -14,10 +14,10 @@
 class AbstractionLayer_1 : public AbstraktionLayer_Base<AbstractionLayer_1_Properties>
 {
 public:
-    void PreProcessing(vector<Part_v2*>* partArray);
-    propabilityVector EvaluetePropability (coor constraintCoordinate, propabilityVector inputVector);
-    bool SetConstraintOnPosition(coor constraintCoordinate, AbstractionLayer_1_Properties constraint);
-    bool RemoveConstraintOnPosition(coor constraintCoordinate);
+    void PreProcessing(const vector<Part_v2*>* partArray);
+    propabilityVector EvaluetePropability (const coor constraintCoordinate, const propabilityVector inputVector);
+    bool SetConstraintOnPosition(const coor constraintCoordinate, const AbstractionLayer_1_Properties constraint);
+    bool RemoveConstraintOnPosition(const coor constraintCoordinate);
 
 private:
 };
