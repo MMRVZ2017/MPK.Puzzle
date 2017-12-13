@@ -68,6 +68,65 @@ coor calculateNextCoor(vector<LogEntry>& log, vector<PuzzlePiece*>& p_Box, Puzzl
     //return nextCoor;
 }
 
+
+
+// PART RAUER_WEIDINGER
+void sort()
+{
+
+
+}
+
+void cut()
+{
+
+
+}
+
+
+
+void capLogElements(vector<LogEntry>& log)
+{
+    // Till Now only ground structure -> incorrect variable ans vector names
+    double limit = 0.6;
+    double diff = 0;
+    double maxdiff = 0;
+    int vectorsizeBefore = 0;
+    int vectorsizeAfter = 0;
+    double destroyed = 0; // destroyed parts in %
+    double worth = 0;
+
+    vectorsizeBefore = vector.size();
+
+    sort(); // Sort the vector after probabilities
+    vector<LogEntry>::iterator idxcut = log.end();
+
+    while(part.probability > limit)
+    {
+        part.next;
+    }
+    while(part[i] != last)
+    {
+        diff = part[i] - part[i+1];
+        if(diff > maxdiff)
+        {
+            maxdiff = diff;
+            idxcut = i;
+        }
+        i++;
+    }
+    cut();
+
+    vectorsizeAfter = vector.size();
+
+    destroyed = (vectorsizeBefore - vectorsizeAfter) / vectorsizeBefore;
+
+    worth = sqrt(destroyed*maxdiff);
+
+
+    //return worth;
+}
+
 void solve(vector<LogEntry>& log, vector<PuzzlePiece*>& p_Box, Puzzle& puzzleMat)
 {
 	getNextHighestLayerworth(puzzleMat); //sets in abstractionLevel
@@ -256,3 +315,14 @@ void status(vector<LogEntry>& log, vector<PuzzlePiece*>& p_Box, Puzzle& puzzleMa
 	puzzleMat.printPuzzle();
 	cout << "----------------------------" << endl;
 }
+
+
+
+
+
+
+
+
+
+
+
