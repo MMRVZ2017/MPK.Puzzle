@@ -7,7 +7,7 @@ unsigned int PuzzlePiece::idcount(0);
 int main()
 {
 
-    unsigned int cols=2, rows=3;
+    unsigned int cols=5, rows=6;
 
     //some basic random puzzle stuff
     vector<PuzzlePiece> myFirstBox = createBox(coor(cols,rows));

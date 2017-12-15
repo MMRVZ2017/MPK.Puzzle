@@ -8,8 +8,8 @@ using namespace std;
 class coor
 {
 public:
-    int m, n;
-    coor(int newm=-1,int newn=-1): m(newm), n(newn)
+    unsigned int col, row;
+    coor(int newcol=-1,int newrow=-1): col(newcol), row(newrow)
     {}
 };
 
@@ -84,7 +84,7 @@ public:
     {
         if(PlaceOfPartGood(myCoor,newPiece))
         {
-            Matrix[myCoor.n+1][myCoor.m+1] = newPiece;
+            Matrix[myCoor.row+1][myCoor.col+1] = newPiece;
             return 1;
         }
         return 0;
@@ -93,7 +93,7 @@ public:
     //removes piece and instead puts undefined piece
     bool removePiece(coor myCoor)   // 6th change: works
     {
-        Matrix[myCoor.n+1][myCoor.m+1].setConnections(0b11111111);
+        Matrix[myCoor.row+1][myCoor.col+1].setConnections(0b11111111);
         return 1;
     }
 

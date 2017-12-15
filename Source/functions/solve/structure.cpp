@@ -17,8 +17,8 @@ bool next(vector<LogEntry>& log, vector<PuzzlePiece*>& p_Box, Puzzle& puzzleMat)
     else if(log.back().PieceCollector.size() > 1)
     {
 			//moreLayers is 0, setbest is 1
-    	if(SetBestorMoreLayers()) 	setsolution(log,p_Box,puzzleMat);
-    	else 						solve(log,p_Box,puzzleMat);
+    	//if(SetBestorMoreLayers()) 	setsolution(log,p_Box,puzzleMat);
+    	//else 						solve(log,p_Box,puzzleMat);
     }
     //case last log exactly one solution
     else if(log.back().PieceCollector.size() == 1)
@@ -43,7 +43,7 @@ void createNextLogElement(vector<LogEntry>& log, vector<PuzzlePiece*>& p_Box, Pu
 {
 	log.emplace_back(LogEntry());
    	log.back().myCoor = calculateNextCoor(log, p_Box, puzzleMat);
-   	getLayerDestructionPowerfromSurrounding();
+   	//getLayerDestructionPowerfromSurrounding();
     solve(log, p_Box,puzzleMat);
 
 }
@@ -57,8 +57,8 @@ coor calculateNextCoor(vector<LogEntry>& log, vector<PuzzlePiece*>& p_Box, Puzzl
         return {0,0};
 
 
-	int m= log.rbegin()[1].myCoor.m;
-	int n= log.rbegin()[1].myCoor.n;
+	int m= log.rbegin()[1].myCoor.col;
+	int n= log.rbegin()[1].myCoor.row;
 
 
 	if(m<puzzleMat.getCols()-1) m++;
@@ -70,7 +70,7 @@ coor calculateNextCoor(vector<LogEntry>& log, vector<PuzzlePiece*>& p_Box, Puzzl
 
 void solve(vector<LogEntry>& log, vector<PuzzlePiece*>& p_Box, Puzzle& puzzleMat)
 {
-	getNextHighestLayerworth(puzzleMat); //sets in abstractionLevel
+	//getNextHighestLayerworth(puzzleMat); //sets in abstractionLevel
 	//status(log,p_Box,puzzleMat);
     switch(log.back().abstractionLevel)
     {
@@ -83,10 +83,10 @@ void solve(vector<LogEntry>& log, vector<PuzzlePiece*>& p_Box, Puzzle& puzzleMat
         break;
     }
 
-    capLogElements(log);
-    calculateWorth(log);
-    calculateTrueDestructionPower(log,puzzleMat);
-    calculateNewCombinedProbablility(log);
+    //capLogElements(log);
+    //calculateWorth(log);
+    //calculateTrueDestructionPower(log,puzzleMat);
+    //calculateNewCombinedProbablility(log);
 
 }
 
@@ -237,7 +237,7 @@ void status(vector<LogEntry>& log, vector<PuzzlePiece*>& p_Box, Puzzle& puzzleMa
 			cout << "isset: 1" << endl;
 		else
 			cout << "isset: 0" << endl;
-		cout << "m: " << log[i].myCoor.m << " n: " << log[i].myCoor.n << endl;
+		cout << "col: " << log[i].myCoor.col<< " row: " << log[i].myCoor.row << endl;
 	}
 
 	cout << endl;
@@ -258,5 +258,5 @@ void calculateTrueDestructionPower(vector<LogEntry>& log, Puzzle& puzzleMat, flo
 {
 	//hier muss noch rein, wo die zeit der Abstractionlevels gespeichter wird
 	float destructionPower=sqrt(Layerworth * log.back().abstractionLevel);
-	puzzleMat.setdestructionPower(log.back().myCoor,log.back().abstractionLevel,destructionPower);
+	//puzzleMat.setdestructionPower(log.back().myCoor,log.back().abstractionLevel,destructionPower);
 }

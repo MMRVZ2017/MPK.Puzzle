@@ -14,24 +14,24 @@ void PuzzlePiece::randomCenterPiece()
     setConnections(0b00000000);
 
     if(rand()%2)
-        setConnections(getConnections() | 0b01000000);
+        setConnections(getConnections() | (uint8_t)0b01000000);
     else
-        setConnections(getConnections() | 0b10000000);
+        setConnections(getConnections() | (uint8_t)0b10000000);
 
     if(rand()%2)
-        setConnections(getConnections() | 0b00010000);
+        setConnections(getConnections() | (uint8_t)0b00010000);
     else
-        setConnections(getConnections() | 0b00100000);
+        setConnections(getConnections() | (uint8_t)0b00100000);
 
     if(rand()%2)
-        setConnections(getConnections() | 0b00000100);
+        setConnections(getConnections() | (uint8_t)0b00000100);
     else
-        setConnections(getConnections() | 0b00001000);
+        setConnections(getConnections() | (uint8_t)0b00001000);
 
     if(rand()%2)
-        setConnections(getConnections() | 0b00000001);
+        setConnections(getConnections() | (uint8_t)0b00000001);
     else
-        setConnections(getConnections() | 0b00000010);
+        setConnections(getConnections() | (uint8_t)0b00000010);
 }
 
 //tests the myPart in all 4 rotations at position m, n
@@ -60,17 +60,17 @@ cout << "Old Box: ";
 printBox(myBox);
 cout << endl;
 #endif
-    for(int i = 0; i < myBox.size();i++)
+    for(unsigned int i = 0; i < myBox.size();i++)
     {
-        if(myBox[i].getBoxIdentifier()>getPiece(myCoor.m,myCoor.n).getBoxIdentifier())
+        if(myBox[i].getBoxIdentifier()>getPiece(myCoor.col,myCoor.row).getBoxIdentifier())
             {
-                myBox.insert(myBox.begin()+i,getPiece(myCoor.m,myCoor.n));
+                myBox.insert(myBox.begin()+i,getPiece(myCoor.col,myCoor.row));
                 removePiece(myCoor);
                 return i+1;
             }
     }
     //using push back, if the element was the last element in the vector chain
-    myBox.push_back(getPiece(myCoor.m,myCoor.n));
+    myBox.push_back(getPiece(myCoor.col,myCoor.row));
     removePiece(myCoor);
     return myBox.size();
 }
@@ -81,29 +81,29 @@ bool Puzzle::PlaceOfPartGood(coor myCoor, PuzzlePiece& myPart)
        
     PuzzlePiece negativePart(0);
 
-    negativePart.setConnections(negativePart.getConnections() | (getPiece(myCoor.m,myCoor.n+1).getConnections() & 0b11000000));
-    negativePart.setConnections(negativePart.getConnections() | (getPiece(myCoor.m-1,myCoor.n).getConnections() & 0b00110000));
-    negativePart.setConnections(negativePart.getConnections() | (getPiece(myCoor.m,myCoor.n-1).getConnections() & 0b00001100));
-    negativePart.setConnections(negativePart.getConnections() | (getPiece(myCoor.m+1,myCoor.n).getConnections() & 0b00000011));
+    negativePart.setConnections(negativePart.getConnections() | (getPiece(myCoor.col,myCoor.row+1).getConnections() & (uint8_t)0b11000000));
+    negativePart.setConnections(negativePart.getConnections() | (getPiece(myCoor.col-1,myCoor.row).getConnections() & (uint8_t)0b00110000));
+    negativePart.setConnections(negativePart.getConnections() | (getPiece(myCoor.col,myCoor.row-1).getConnections() & (uint8_t)0b00001100));
+    negativePart.setConnections(negativePart.getConnections() | (getPiece(myCoor.col+1,myCoor.row).getConnections() & (uint8_t)0b00000011));
     negativePart.shift(2);
 
 
-    if  ( 
+    if  (
           (    ((((negativePart.getConnections() & 0b11000000) ^  (myPart.getConnections() & 0b11000000))  != 0b00000000)                  && (((myPart.getConnections() & 0b11000000) != 0b00000000) && (negativePart.getConnections() & 0b11000000) != 0b00000000))
             || ((((negativePart.getConnections() & 0b11000000) == 0b11000000) || ((myPart.getConnections() &  0b11000000) == 0b11000000))  && (((myPart.getConnections() & 0b11000000) != 0b00000000) && (negativePart.getConnections() & 0b11000000) != 0b00000000))
-            ||  (((negativePart.getConnections() & 0b11000000) == 0b00000000) && ((myPart.getConnections() &  0b11000000) == 0b00000000))  ) 
+            ||  (((negativePart.getConnections() & 0b11000000) == 0b00000000) && ((myPart.getConnections() &  0b11000000) == 0b00000000))  )
         &&
           (    ((((negativePart.getConnections() & 0b00110000) ^ (myPart.getConnections() & 0b00110000))  != 0b00000000)                   && (((myPart.getConnections() & 0b00110000) != 0b00000000) && (negativePart.getConnections() & 0b00110000) != 0b00000000))
             || ((((negativePart.getConnections() & 0b00110000) == 0b00110000) || ((myPart.getConnections() &  0b00110000) == 0b00110000))  && (((myPart.getConnections() & 0b00110000) != 0b00000000) && (negativePart.getConnections() & 0b00110000) != 0b00000000))
-            ||  (((negativePart.getConnections() & 0b00110000) == 0b00000000) && ((myPart.getConnections() &  0b00110000) == 0b00000000))  ) 
+            ||  (((negativePart.getConnections() & 0b00110000) == 0b00000000) && ((myPart.getConnections() &  0b00110000) == 0b00000000))  )
         &&
           (    ((((negativePart.getConnections() & 0b00001100) ^  (myPart.getConnections() & 0b00001100))  != 0b00000000)                  && (((myPart.getConnections() & 0b00001100) != 0b00000000) && (negativePart.getConnections() & 0b00001100) != 0b00000000))
             || ((((negativePart.getConnections() & 0b00001100) == 0b00001100) || ((myPart.getConnections() &  0b00001100) == 0b00001100))  && (((myPart.getConnections() & 0b00001100) != 0b00000000) && (negativePart.getConnections() & 0b00001100) != 0b00000000))
-            ||  (((negativePart.getConnections() & 0b00001100) == 0b00000000) && ((myPart.getConnections() &  0b00001100) == 0b00000000))  ) 
+            ||  (((negativePart.getConnections() & 0b00001100) == 0b00000000) && ((myPart.getConnections() &  0b00001100) == 0b00000000))  )
         &&
           (    ((((negativePart.getConnections() & 0b00000011) ^  (myPart.getConnections() & 0b00000011))  != 0b00000000)                  && (((myPart.getConnections() & 0b00000011) != 0b00000000) && (negativePart.getConnections() & 0b00000011) != 0b00000000))
             || ((((negativePart.getConnections() & 0b00000011) == 0b00000011) || ((myPart.getConnections() &  0b00000011) == 0b00000011))  && (((myPart.getConnections() & 0b00000011) != 0b00000000) && (negativePart.getConnections() & 0b00000011) != 0b00000000))
-            ||  (((negativePart.getConnections() & 0b00000011) == 0b00000000) && ((myPart.getConnections() &  0b00000011) == 0b00000000))  )    
+            ||  (((negativePart.getConnections() & 0b00000011) == 0b00000000) && ((myPart.getConnections() &  0b00000011) == 0b00000000))  )
         )
     {    
         //cout << "good Part: ";
@@ -118,43 +118,6 @@ bool Puzzle::PlaceOfPartGood(coor myCoor, PuzzlePiece& myPart)
     return false;
 
 }
-
-
-//TODO!!
-//simpler algorithm to the first placeofpartgood 
-//not yet functional!!!
-bool Puzzle::PlaceOfPart2Good(coor myCoor, PuzzlePiece& myPart)
-{
-        PuzzlePiece tmpPuzzlePiece = myPart;    
-    
-    //make tmp a negative part
-    if(((tmpPuzzlePiece.getConnections() & 0b11000000) != 0b11000000) || ((tmpPuzzlePiece.getConnections() & 0b11000000) != 0b00000000))
-        tmpPuzzlePiece.setConnections(tmpPuzzlePiece.getConnections() ^ 0b11000000);
-    if(((tmpPuzzlePiece.getConnections() & 0b00110000) != 0b00110000) || ((tmpPuzzlePiece.getConnections() & 0b00110000) != 0b00000000))
-        tmpPuzzlePiece.setConnections(tmpPuzzlePiece.getConnections() ^ 0b00110000);
-    if(((tmpPuzzlePiece.getConnections() & 0b00001100) != 0b00001100)|| ((tmpPuzzlePiece.getConnections() & 0b00001100) != 0b00000000))
-        tmpPuzzlePiece.setConnections(tmpPuzzlePiece.getConnections() ^ 0b00001100);
-    if(((tmpPuzzlePiece.getConnections() & 0b00000011) != 0b00000011) || ((tmpPuzzlePiece.getConnections() & 0b00000011) != 0b00000000))
-        tmpPuzzlePiece.setConnections(tmpPuzzlePiece.getConnections() ^ 0b00000011);
-        
-    PuzzlePiece negativePart(0);
-
-    negativePart.setConnections(negativePart.getConnections() | (getPiece(myCoor.m,myCoor.n+1).getConnections() & 0b11000000));
-    negativePart.setConnections(negativePart.getConnections() | (getPiece(myCoor.m-1,myCoor.n).getConnections() & 0b00110000));
-    negativePart.setConnections(negativePart.getConnections() | (getPiece(myCoor.m,myCoor.n-1).getConnections() & 0b00001100));
-    negativePart.setConnections(negativePart.getConnections() | (getPiece(myCoor.m+1,myCoor.n).getConnections() & 0b00000011));
-    
-    negativePart.shift(2);
-    
-    //check tmp part with environment
-    if(((negativePart.getConnections() & 0b11000000) == (tmpPuzzlePiece.getConnections() & 0b11000000)) && ((negativePart.getConnections() & 0b00110000) == (tmpPuzzlePiece.getConnections ()& 0b00110000)) && 
-            ((negativePart.getConnections() & 0b00001100) == (tmpPuzzlePiece.getConnections() & 0b00001100)) && ((negativePart.getConnections() & 0b00000011) == (tmpPuzzlePiece.getConnections() & 0b00000011)))
-        return true;
-    
-    return false;
-
-}
-
 //prints the true puzzle (without 0 edges)
 void Puzzle::printPuzzle()
 {
@@ -178,24 +141,24 @@ void randomBox::createRandomAbstraction1()
     coor myCoor;
     PuzzlePiece temporaryRandomPiece(0);
 
-    for(int i=0;i<getRows();i++)
+    for(unsigned int i=0;i<getRows();i++)
     {
-        for(int j = 0; j < getCols();)
+        for(unsigned int j = 0; j < getCols();)
         {
 
             //create random piece, set edges according to position and check if piece is good
             temporaryRandomPiece.randomCenterPiece();
             if(i==0)
-                temporaryRandomPiece.setConnections(0b00111111 & temporaryRandomPiece.getConnections());
+                temporaryRandomPiece.setConnections((uint8_t)0b00111111 & temporaryRandomPiece.getConnections());
             if(i==getRows()-1)
-                temporaryRandomPiece.setConnections(0b11110011 & temporaryRandomPiece.getConnections());
+                temporaryRandomPiece.setConnections((uint8_t)0b11110011 & temporaryRandomPiece.getConnections());
             if(j==0)
-                temporaryRandomPiece.setConnections(0b11111100 & temporaryRandomPiece.getConnections());
+                temporaryRandomPiece.setConnections((uint8_t)0b11111100 & temporaryRandomPiece.getConnections());
             if(j==getCols()-1)
-                temporaryRandomPiece.setConnections(0b11001111 & temporaryRandomPiece.getConnections());
+                temporaryRandomPiece.setConnections((uint8_t)0b11001111 & temporaryRandomPiece.getConnections());
 
-            myCoor.m = j;
-            myCoor.n = i;
+            myCoor.col = j;
+            myCoor.row = i;
             if(PlaceOfPartGood(myCoor,temporaryRandomPiece))
             {
                 temporaryRandomPiece.assignIdentifier();
@@ -245,9 +208,9 @@ void randomBox::createRandomAbstraction2()
 }
 
 void randomBox::putAllIntoBox() {
-    for (int i = 0; i < getRows(); i++)
+    for (unsigned int i = 0; i < getRows(); i++)
     {
-        for (int j = 0; j < getCols(); j++)
+        for (unsigned int j = 0; j < getCols(); j++)
         {
             Box.push_back(getPiece(j,i));
         }
@@ -283,7 +246,7 @@ vector<PuzzlePiece> randomBox::shuffle()
 //creates a random box size m, n, shuffles it, and then retuns it
 vector<PuzzlePiece> createBox(coor myCoor)
 {
-    randomBox myFirstPuzzleBox(myCoor.m,myCoor.n);
+    randomBox myFirstPuzzleBox(myCoor.col,myCoor.row);
     myFirstPuzzleBox.createRandomAbstraction1();
     myFirstPuzzleBox.createRandomAbstraction2();
     myFirstPuzzleBox.putAllIntoBox();
