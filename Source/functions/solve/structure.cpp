@@ -83,10 +83,10 @@ void solve(vector<LogEntry>& log, vector<PuzzlePiece*>& p_Box, Puzzle& puzzleMat
         break;
     }
 
-    capLogElements(log);
-    calculateWorth(log);
-    calculateTrueDestructionPower(log,puzzleMat);
-    calculateNewCombinedProbablility(log);
+    //capLogElements(log);
+    //calculateWorth(log);
+    //calculateTrueDestructionPower(log,puzzleMat);
+    //calculateNewCombinedProbablility(log);
 
 }
 
