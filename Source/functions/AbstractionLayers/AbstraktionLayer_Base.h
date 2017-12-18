@@ -3,11 +3,10 @@
 
 #include <map>
 #include "../../header/Part.h"
-#include <vector>
 
 using namespace std;
 
-typedef vector<map<Part_v2*, float>> propabilityVector;
+typedef map<Part_v2*, float> qualityVector;
 
 /*
  * Die Logik mit der Template-Basisklasse und den abgeleiteten Layern kam mit der Idee, dass die Layer
@@ -29,12 +28,12 @@ public:
     virtual void PreProcessing(const vector<Part_v2*>* partArray) = 0;
 
     /**
-     * @brief   pure virtual method for the propability evaluation of the layer
-     * @param   [in] constraintCoordinate - Coordinate where the propabilities should evaluate for each given part
-     * @param   [in] inputVector - References of all parts with the propability of the last Layer
-     * @return  References of all parts with their propability to fit in the given coordinate
+     * @brief   pure virtual method for the quality evaluation of the layer
+     * @param   [in] constraintCoordinate - Coordinate where the quality should evaluate for each given part
+     * @param   [in/out] qualityVector - References of all parts with the quality of their quality to fit in the given coordinate
+     * @return  Boolean if the quality was calculated right or not
      */
-    virtual propabilityVector EvaluetePropability (const coor constraintCoordinate, const propabilityVector inputVector) = 0;
+    virtual bool EvalueteQuality (const coor constraintCoordinate, qualityVector& qVector) = 0;
 
     /**
      * @brief   pure virtual method which sets the constraint on the given Coordinate in the m_constraintMatrix

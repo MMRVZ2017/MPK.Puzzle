@@ -15,7 +15,7 @@ void AbstractionLayer_1::PreProcessing(const vector<Part_v2*>* partArray)
     std::cout << partArray->at(0)->GetPartID() << endl << bitset<8>(m_constraintMatrix[0][0].m_connections).to_string() << endl;
 }
 
-propabilityVector AbstractionLayer_1::EvaluetePropability (const coor constraintCoordinate, const propabilityVector inputVector)
+bool AbstractionLayer_1::EvalueteQuality (const coor constraintCoordinate, qualityVector& qVector)
 {
 
 }
