@@ -24,7 +24,7 @@ int main()
     Puzzle puzzleMat(cols, rows);
 
     //vector<vector<PuzzlePiece*>> ab1class = abstractionLayer1classify(log, p_myFirstBox,puzzleMat);
-    //while(next(log, p_myFirstBox,puzzleMat));
+    while(next(log, p_myFirstBox,puzzleMat));
 
     puzzleMat.printPuzzle();
 }
