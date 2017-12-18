@@ -18,7 +18,8 @@ public:
     bool EvalueteQuality (const coor constraintCoordinate, qualityVector& qVector);
     bool SetConstraintOnPosition(const coor constraintCoordinate, const AbstractionLayer_1_Properties constraint);
     bool RemoveConstraintOnPosition(const coor constraintCoordinate);
-
+    bool PlaceOfPartGood(coor myCoor, uint8_t& myPart);
+    void shift(uint8_t& Part, int shifts);
     void setEdgeZero();
 
 

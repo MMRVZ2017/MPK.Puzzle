@@ -1,5 +1,6 @@
 #include <vector>
 #include <iostream>
+#include "input.h"
 #include <opencv2/highgui/highgui.hpp>
 #include <opencv2/imgproc/imgproc.hpp>
 
