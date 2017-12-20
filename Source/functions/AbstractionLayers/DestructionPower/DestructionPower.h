@@ -9,6 +9,7 @@
 #define DESTRUCTION_COUNT 1
 
 #include "../AbstraktionLayer_Base.h"
+#include "DestructionPower_Properties.h"
 #include <vector>
 #include <iostream>
 #include <bitset>

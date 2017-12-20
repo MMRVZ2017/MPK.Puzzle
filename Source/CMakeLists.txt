@@ -10,7 +10,6 @@ set(SOURCE_FILES
         functions/solve/classExtension.cpp
         functions/solve/structure.cpp
         functions/AbstractionLayers/AbstraktionLayer_Base.h
-        functions/AbstractionLayers/DestructionPower/DestructionPower.cpp
         )
 add_executable(PuzzleSolver ${SOURCE_FILES})
 include_directories(${OpenCV_INCLUDE_DIRS})

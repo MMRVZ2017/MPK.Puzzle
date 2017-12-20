@@ -11,9 +11,6 @@
 
 using namespace std;
 
-
-#include "header/input.h"
-
 /**
  * IMPORTANT: Each new layer must be included there, to avoid compile errors
  */
