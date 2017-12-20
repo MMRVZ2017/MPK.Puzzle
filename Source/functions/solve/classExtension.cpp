@@ -1,7 +1,5 @@
 #include "../../header.h"
 
-
-
 //use this in second abstraction layer maybe ey?
 void createRandomAbstraction2()
 {

@@ -1,7 +1,7 @@
 #include <stdint.h>
 
-class AbstractionLayer_1_Properties;
-class DestructionPower_Properties;
+#include "../functions/AbstractionLayers/Layer1/AbstractionLayer_1_Properties.h"
+#include "../functions/AbstractionLayers/DestructionPower/DestructionPower_Properties.h"
 class Part
 {
 public:

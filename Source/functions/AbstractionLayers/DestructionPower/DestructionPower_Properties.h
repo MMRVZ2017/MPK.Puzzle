@@ -44,4 +44,4 @@ map<int,float> DestructionPower_Properties::create_SpeedTable()
     return m;
 }
 
-#endif //SOURCE_ABSTRACTIONLAYER_1_PROPERTIES_H
+#endif //SOURCE_DESTRUCTIONPOWER_PROPERTIES_H
