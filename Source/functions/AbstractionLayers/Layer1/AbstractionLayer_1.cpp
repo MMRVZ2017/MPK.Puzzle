@@ -12,7 +12,7 @@ void AbstractionLayer_1::PreProcessing(const vector<Part*>* partArray)
 }
 
 //it through qualityVector and removes all that do not trigger PlaceOfPartGood
-bool AbstractionLayer_1::EvalueteQuality (const coor constraintCoordinate, qualityVector& qVector)
+bool AbstractionLayer_1::EvaluateQuality (const coor constraintCoordinate, qualityVector& qVector)
 {
     for(auto it = qualityVector.begin();it!=qualityVector.end();it++)
     {

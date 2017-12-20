@@ -5,27 +5,25 @@
 #ifndef SOURCE_ABSTRACTIONLAYER_1_H
 #define SOURCE_ABSTRACTIONLAYER_1_H
 
+#define DESTRUCTION_INIT 0.5
+#define DESTRUCTION_COUNT 1
+
 #include "../AbstraktionLayer_Base.h"
-#include "AbstractionLayer_1_Properties.h"
+#include "DestructionPower_Properties.h"
 #include <vector>
 #include <iostream>
 #include <bitset>
 #include <random>
 
-class AbstractionLayer_1 : public AbstraktionLayer_Base<AbstractionLayer_1_Properties>
+class DestructionPower : public AbstraktionLayer_Base<DestructionPower_Properties>
 {
 public:
     void PreProcessing(const vector<Part*>* partArray);//override
     bool EvaluateQuality (const coor constraintCoordinate, qualityVector& qVector);
     bool SetConstraintOnPosition(const coor constraintCoordinate, const AbstractionLayer_1_Properties constraint);
     bool RemoveConstraintOnPosition(const coor constraintCoordinate);
-    bool PlaceOfPartGood(coor myCoor, uint8_t& myPart);
-    void shift(uint8_t& Part, int shifts);
-    void setEdgeZero();
 
-
-    bool CreateRandomPuzzle();
-    qualityVector returnInBox(vector<Part>& PuzzleBox);
+    void DestructionOfSurrounding(const coor constraintCoordinate);
 
 private:
 };

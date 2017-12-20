@@ -35,7 +35,7 @@ public:
      * @param   [in/out] qualityVector - References of all parts with the quality of their quality to fit in the given coordinate
      * @return  Boolean if the quality was calculated right or not
      */
-    virtual bool EvalueteQuality (const coor constraintCoordinate, qualityVector& qVector) = 0;
+    virtual bool EvaluateQuality (const coor constraintCoordinate, qualityVector& qVector) = 0;
 
     /**
      * @brief   pure virtual method which sets the constraint on the given Coordinate in the m_constraintMatrix

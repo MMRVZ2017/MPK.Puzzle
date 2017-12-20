@@ -3,7 +3,7 @@
 
 #include <stdint.h>
 #include "../functions/AbstractionLayers/Layer1/AbstractionLayer_1_Properties.h"
-
+#include "../functions/AbstractionLayers/DestructionPower/DestructionPower_Properties.h"
 class Part
 {
 public:
@@ -31,6 +31,7 @@ public:
     }
 
     AbstractionLayer_1_Properties m_test1;
+    DestructionPower_Properties m_destruction;
 
 private:
     int32_t m_partID;
