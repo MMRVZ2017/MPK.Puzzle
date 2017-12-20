@@ -1,3 +1,6 @@
+#ifndef SOURCE_SOLVE_H
+#define SOURCE_SOLVE_H
+
 #include <vector>
 #include <iostream>
 #include "input.h"
@@ -39,10 +42,12 @@ private:
     static int randomed;
 };
 
-bool next(vector<LogEntry>& log, vector<PuzzlePiece*>& p_Box, Puzzle& puzzleMat);
-coor calculateNextCoor(vector<LogEntry>& log, vector<PuzzlePiece*>& p_Box, Puzzle& puzzleMat);
-void solve(vector<LogEntry>& log, vector<PuzzlePiece*>& p_Box, Puzzle& puzzleMat);
-void setsolution(vector<LogEntry>& log, vector<PuzzlePiece*>& p_Box, Puzzle& puzzleMat);
-bool backtrack(vector<LogEntry>& log, vector<PuzzlePiece*>& p_Box, puzzleMat);
+bool next(vector<LogEntry>& log, vector<Part*>& p_Box, Puzzle& puzzleMat);
+coor calculateNextCoor(vector<LogEntry>& log, vector<Part*>& p_Box, Puzzle& puzzleMat);
+void solve(vector<LogEntry>& log, vector<Part*>& p_Box, Puzzle& puzzleMat);
+void setsolution(vector<LogEntry>& log, vector<Part*>& p_Box, Puzzle& puzzleMat);
+bool backtrack(vector<LogEntry>& log, vector<Part*>& p_Box, puzzleMat);
 
-void createNextLogElement(vector<LogEntry>& log, vector<PuzzlePiece*>& p_Box, Puzzle& puzzleMat);
+void createNextLogElement(vector<LogEntry>& log, vector<Part*>& p_Box, Puzzle& puzzleMat);
+
+#endif //SOURCE_SOLVE_H

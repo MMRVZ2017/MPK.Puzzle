@@ -106,7 +106,7 @@ void AbstractionLayer_1::setEdgeZero()
 bool AbstractionLayer_1::PlaceOfPartGood(coor myCoor, uint8_t& myPart)
 {
 
-    uint8_t negativePart(0)=0b00000000;
+    uint8_t negativePart = 0b00000000;
 
     negativePart or_eq (m_constraintMatrix[myCoor.col][myCoor.row+1].m_connections & 0b11000000);
     negativePart or_eq (m_constraintMatrix[myCoor.col-1][myCoor.row].m_connections & 0b00110000);
