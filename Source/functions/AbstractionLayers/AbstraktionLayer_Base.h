@@ -4,7 +4,6 @@
 #include <map>
 #include <vector>
 #include "../../header/solve.h"
-#include "../../header/input.h"
 
 using namespace std;
 

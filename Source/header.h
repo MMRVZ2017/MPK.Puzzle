@@ -14,6 +14,7 @@ using namespace std;
 /**
  * IMPORTANT: Each new layer must be included there, to avoid compile errors
  */
-#include "functions/AbstractionLayers/Layer1/AbstractionLayer_1.cpp"
+#include "functions/AbstractionLayers/Layer1/AbstractionLayer_1.h"
+#include "functions/AbstractionLayers/DestructionPower/DestructionPower.h"
 
 #include "header/solve.h"

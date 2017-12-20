@@ -4,6 +4,7 @@
 #include <stdint.h>
 #include "../functions/AbstractionLayers/Layer1/AbstractionLayer_1_Properties.h"
 #include "../functions/AbstractionLayers/DestructionPower/DestructionPower_Properties.h"
+
 class Part
 {
 public:

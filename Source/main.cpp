@@ -1,8 +1,8 @@
 #include "header.h"
+#include "header/input.h"
 
 int LogEntry::randomed(0);
 unsigned int PuzzlePiece::idcount(0);
-
 
 int main()
 {

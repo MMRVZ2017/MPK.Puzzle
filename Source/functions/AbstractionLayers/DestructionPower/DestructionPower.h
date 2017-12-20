@@ -15,7 +15,7 @@
 #include <bitset>
 #include <random>
 
-class DestructionPower : public AbstraktionLayer_Base <DestructionPower_Properties>
+class DestructionPower : public AbstraktionLayer_Base<DestructionPower_Properties>
 {
 public:
     void PreProcessing(const vector<Part*>* partArray);//override

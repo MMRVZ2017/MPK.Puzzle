@@ -5,8 +5,6 @@
 #ifndef SOURCE_DESTRUCTIONPOWER_PROPERTIES_H
 #define SOURCE_DESTRUCTIONPOWER_PROPERTIES_H
 
-
-
 #include <stdint.h>
 #include "DestructionPower.h"
 
@@ -32,4 +30,4 @@ private:
 };
 
 
-#endif //SOURCE_ABSTRACTIONLAYER_1_PROPERTIES_H
+#endif //SOURCE_DESTRUCTIONPOWER_PROPERTIES_H
