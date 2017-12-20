@@ -10,11 +10,11 @@ int main()
     unsigned int cols=5, rows=6;
 
     //some basic random puzzle stuff
-    vector<PuzzlePiece> myFirstBox = createBox(coor(cols,rows));
+    vector<Part> myFirstBox = createBox(coor(cols,rows));
 
     //some advanced solver stuff
     vector<LogEntry> log;
-    vector<PuzzlePiece*> p_myFirstBox;
+    vector<Part*> p_myFirstBox;
 
     //BoxClassify myFirstBox();
     cout << endl;

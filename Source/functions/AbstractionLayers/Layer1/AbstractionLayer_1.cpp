@@ -40,6 +40,7 @@ bool AbstractionLayer_1::CreateRandomPuzzle()
     for(int col=1;col<m_constraintMatrix.size()-1;col++){
         for(int row=1;row<m_constraintMatrix[col].size()-1;)
         {
+            //create random piece
             uint8_t tempPiece = 0b00000000;
             if(simple_rand()%2)
                 tempPiece|=0b01000000;
@@ -61,6 +62,17 @@ bool AbstractionLayer_1::CreateRandomPuzzle()
             else
                 tempPiece|=0b00000010;
 
+            //set edges and corners to 00
+            if(row==1)
+                tempPiece and_eq (uint8_t)0b00111111;
+            if(row==m_constraintMatrix[col].size())
+                tempPiece and_eq (uint8_t)0b11110011;
+            if(col==1)
+                tempPiece and_eq (uint8_t)0b11111100;
+            if(col==m_constraintMatrix.size()-1)
+                tempPiece and_eq (uint8_t)0b11001111;
+
+            //set piece if piece good
             if(PlaceOfPartGood(coor(col,row),tempPiece))
                 row++;
         }
