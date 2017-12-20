@@ -14,11 +14,11 @@ void AbstractionLayer_1::PreProcessing(const vector<Part*>* partArray)
 //it through qualityVector and removes all that do not trigger PlaceOfPartGood
 bool AbstractionLayer_1::EvalueteQuality (const coor constraintCoordinate, qualityVector& qVector)
 {
-    for(auto it = qualityVector.begin();it!=qualityVector.end();it++)
+    for(auto it = qVector.begin(); it != qVector.end(); it++)
     {
-        if(PlaceOfPartGood(constraintCoordinate,it->first->m_test1.m_connections))
+        if(PlaceOfPartGood(constraintCoordinate, it->first->m_test1.m_connections))
             continue;
-        qualityVector.erase(it++);
+        qVector.erase(it++);
     }
 }
 
