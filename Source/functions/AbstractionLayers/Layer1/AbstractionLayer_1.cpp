@@ -11,49 +11,52 @@ void AbstractionLayer_1::PreProcessing(const vector<Part*>* partArray)
     setEdgeZero();
 }
 
+//it through qualityVector and removes all that do not trigger PlaceOfPartGood
 bool AbstractionLayer_1::EvalueteQuality (const coor constraintCoordinate, qualityVector& qVector)
 {
-    for(int i=0;i<qVector.size();i++)
+    for(auto it = qualityVector.begin();it!=qualityVector.end();it++)
     {
-        if(PlaceOfPartGood(constraintCoordinate, qVector[i].Part))
-            qVector[i].setQuality(1);
-        else
-            qVector[i].setQuality(0);
+        if(PlaceOfPartGood(constraintCoordinate,it->first->m_test1.m_connections))
+            continue;
+        qualityVector.erase(it++);
     }
 }
 
 bool AbstractionLayer_1::SetConstraintOnPosition(const coor constraintCoordinate, const AbstractionLayer_1_Properties constraint)
 {
-    m_constraintMatrix[constraintCoordinate.col][constraintCoordinate.row]=
+    m_constraintMatrix[constraintCoordinate.col][constraintCoordinate.row].m_connections=constraint.m_connections;
 }
 
 bool AbstractionLayer_1::RemoveConstraintOnPosition(const coor constraintCoordinate)
 {
-
+    m_constraintMatrix[constraintCoordinate.col][constraintCoordinate.row].m_connections=0b11111111;
 }
 
 bool AbstractionLayer_1::CreateRandomPuzzle()
 {
+    std:: minstd_rand simple_rand;
+    simple_rand.seed((unsigned int)"dumbo");
+
     for(int col=1;col<m_constraintMatrix.size()-1;col++){
         for(int row=1;row<m_constraintMatrix[col].size()-1;)
         {
             uint8_t tempPiece = 0b00000000;
-            if(rand()%2)
+            if(simple_rand()%2)
                 tempPiece|=0b01000000;
             else
                 tempPiece|=0b10000000;
 
-            if(rand()%2)
+            if(simple_rand()%2)
                 tempPiece|=0b00010000;
             else
                 tempPiece|=0b00100000;
 
-            if(rand()%2)
+            if(simple_rand()%2)
                 tempPiece|=0b00000100;
             else
                 tempPiece|=0b00001000;
 
-            if(rand()%2)
+            if(simple_rand()%2)
                 tempPiece|=0b00000001;
             else
                 tempPiece|=0b00000010;
@@ -62,6 +65,20 @@ bool AbstractionLayer_1::CreateRandomPuzzle()
                 row++;
         }
     }
+
+}
+
+//puts all pieces of the current constraint matrix into a puzzlebox
+qualityVector AbstractionLayer_1::returnInBox(vector<Part>& PuzzleBox)
+{
+    if(!(PuzzleBox.size()))
+        for(int i = 0; i< (m_constraintMatrix.size()-2)*(m_constraintMatrix[0].size()-2);i++)
+            PuzzleBox.emplace_back(Part());
+
+    int i=0;
+    for(int col=1;col<m_constraintMatrix.size()-1;col++)
+        for(int row=1;row<m_constraintMatrix[col].size()-1;row++)
+            PuzzleBox[i++].m_test1.m_connections=m_constraintMatrix[col][row].m_connections;
 
 }
 

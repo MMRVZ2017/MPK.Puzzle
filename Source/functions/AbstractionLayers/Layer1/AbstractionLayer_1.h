@@ -10,11 +10,12 @@
 #include <vector>
 #include <iostream>
 #include <bitset>
+#include <random>
 
 class AbstractionLayer_1 : public AbstraktionLayer_Base<AbstractionLayer_1_Properties>
 {
 public:
-    void PreProcessing(const vector<Part*>* partArray);
+    void PreProcessing(const vector<Part*>* partArray);//override
     bool EvalueteQuality (const coor constraintCoordinate, qualityVector& qVector);
     bool SetConstraintOnPosition(const coor constraintCoordinate, const AbstractionLayer_1_Properties constraint);
     bool RemoveConstraintOnPosition(const coor constraintCoordinate);
@@ -24,6 +25,7 @@ public:
 
 
     bool CreateRandomPuzzle();
+    qualityVector returnInBox(vector<Part>& PuzzleBox);
 
 private:
 };
