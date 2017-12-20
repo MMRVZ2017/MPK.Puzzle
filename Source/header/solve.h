@@ -1,3 +1,6 @@
+#ifndef SOURCE_SOLVE_H
+#define SOURCE_SOLVE_H
+
 #include <vector>
 #include <iostream>
 #include "input.h"
@@ -46,3 +49,5 @@ void setsolution(vector<LogEntry>& log, vector<Part*>& p_Box, Puzzle& puzzleMat)
 bool backtrack(vector<LogEntry>& log, vector<Part*>& p_Box, puzzleMat);
 
 void createNextLogElement(vector<LogEntry>& log, vector<Part*>& p_Box, Puzzle& puzzleMat);
+
+#endif //SOURCE_SOLVE_H
