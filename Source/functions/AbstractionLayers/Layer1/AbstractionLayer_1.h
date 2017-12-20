@@ -6,7 +6,6 @@
 #define SOURCE_ABSTRACTIONLAYER_1_H
 
 #include "../AbstraktionLayer_Base.h"
-#include "AbstractionLayer_1_Properties.h"
 #include <vector>
 #include <iostream>
 #include <bitset>

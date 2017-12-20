@@ -1,9 +1,7 @@
-#ifndef SOURCE_PART_H
-#define SOURCE_PART_H
-
 #include <stdint.h>
-#include "../functions/AbstractionLayers/Layer1/AbstractionLayer_1_Properties.h"
-#include "../functions/AbstractionLayers/DestructionPower/DestructionPower_Properties.h"
+
+class AbstractionLayer_1_Properties;
+class DestructionPower_Properties;
 class Part
 {
 public:
@@ -37,5 +35,3 @@ private:
     int32_t m_partID;
     uint8_t m_numOfRotations;
 };
-
-#endif //SOURCE_PART_H

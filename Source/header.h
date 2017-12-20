@@ -11,9 +11,5 @@
 
 using namespace std;
 
-/**
- * IMPORTANT: Each new layer must be included there, to avoid compile errors
- */
-#include "functions/AbstractionLayers/Layer1/AbstractionLayer_1.cpp"
-
+#include "header/input.h"
 #include "header/solve.h"
