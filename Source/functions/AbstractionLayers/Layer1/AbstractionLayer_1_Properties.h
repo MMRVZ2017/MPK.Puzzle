@@ -6,7 +6,6 @@
 #define SOURCE_ABSTRACTIONLAYER_1_PROPERTIES_H
 
 #include <stdint.h>
-#include "AbstractionLayer_1.h"
 
 class AbstractionLayer_1_Properties
 {

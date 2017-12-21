@@ -3,6 +3,8 @@
 //
 
 #include "AbstractionLayer_1.h"
+#include "../../../header.h"
+
 #include <iostream>
 
 void AbstractionLayer_1::PreProcessing(const vector<Part*>* partArray)
@@ -16,7 +18,7 @@ bool AbstractionLayer_1::EvaluateQuality (const coor constraintCoordinate, quali
 {
     for(auto it = qVector.begin(); it != qVector.end(); it++)
     {
-        if(PlaceOfPartGood(constraintCoordinate, it->first->m_test1.m_connections))
+        if(PlaceOfPartGood(constraintCoordinate, it->first->myLayers->m_test1.m_connections))
             continue;
         qVector.erase(it++);
     }
@@ -90,7 +92,7 @@ qualityVector AbstractionLayer_1::returnInBox(vector<Part>& PuzzleBox)
     int i=0;
     for(int col=1;col<m_constraintMatrix.size()-1;col++)
         for(int row=1;row<m_constraintMatrix[col].size()-1;row++)
-            PuzzleBox[i++].m_test1.m_connections=m_constraintMatrix[col][row].m_connections;
+            PuzzleBox[i++].myLayers->m_test1.m_connections=m_constraintMatrix[col][row].m_connections;
 
 }
 
@@ -106,7 +108,7 @@ void AbstractionLayer_1::setEdgeZero()
 bool AbstractionLayer_1::PlaceOfPartGood(coor myCoor, uint8_t& myPart)
 {
 
-    uint8_t negativePart(0)=0b00000000;
+    uint8_t negativePart=0b00000000;
 
     negativePart or_eq (m_constraintMatrix[myCoor.col][myCoor.row+1].m_connections & 0b11000000);
     negativePart or_eq (m_constraintMatrix[myCoor.col-1][myCoor.row].m_connections & 0b00110000);

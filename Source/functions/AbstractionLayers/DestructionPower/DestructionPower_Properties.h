@@ -1,47 +1,29 @@
 //
 // Created by mpapa on 05.12.2017.
 //
+#pragma once
 
-#ifndef SOURCE_DESTRUCTIONPOWER_PROPERTIES_H
-#define SOURCE_DESTRUCTIONPOWER_PROPERTIES_H
-
+#define DESTRUCTION_INIT 0.5
 #include <stdint.h>
-#include "DestructionPower.h"
+#include <map>
+#include <vector>
+
+using namespace std;
 
 class DestructionPower_Properties
 {
 public:
-    DestructionPower_Properties()
-    {
-        for(int i=0;i<sizeof(DestructionArray);i++)
-            DestructionArray[i]=(SpeedTable[i]*DESTRUCTION_INIT);
-
-        setSpeedTable();
-
-    }
+    explicit DestructionPower_Properties();
     map<int,float> getSpeedTable()
     {
         return SpeedTable;
     }
-    void setSpeedTable()
-    { SpeedTable=create_SpeedTable();}
+    void setSpeedTable();
 
 private:
 
-    static map<int,float> create_SpeedTable();
     static map<int,float> SpeedTable;
-
-    float DestructionArray[DESTRUCTION_COUNT];
-
+    vector<float> DestructionArray;
     friend class DestructionPower;
 
 };
-
-map<int,float> DestructionPower_Properties::create_SpeedTable()
-{
-    map<int, float> m;
-    m[1] = 0.001;
-    return m;
-}
-
-#endif //SOURCE_DESTRUCTIONPOWER_PROPERTIES_H

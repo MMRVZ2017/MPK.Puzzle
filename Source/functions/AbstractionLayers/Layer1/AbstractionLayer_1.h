@@ -5,14 +5,15 @@
 #ifndef SOURCE_ABSTRACTIONLAYER_1_H
 #define SOURCE_ABSTRACTIONLAYER_1_H
 
-#include "../AbstraktionLayer_Base.h"
 #include "AbstractionLayer_1_Properties.h"
+#include "../AbstraktionLayer_Base.h"
+
 #include <vector>
 #include <iostream>
 #include <bitset>
 #include <random>
 
-class AbstractionLayer_1 : public AbstraktionLayer_Base<AbstractionLayer_1_Properties>
+class AbstractionLayer_1 : public AbstractionLayer_Base<AbstractionLayer_1_Properties>
 {
 public:
     void PreProcessing(const vector<Part*>* partArray);//override

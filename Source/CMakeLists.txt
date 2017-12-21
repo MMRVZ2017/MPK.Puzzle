@@ -7,10 +7,14 @@ set(CMAKE_CXX_STANDARD 11)
 set(SOURCE_FILES
         main.cpp
         header.h
-        functions/solve/classExtension.cpp
         functions/solve/structure.cpp
+
         functions/AbstractionLayers/AbstraktionLayer_Base.h
-        )
+        functions/AbstractionLayers/Layer1/AbstractionLayer_1.cpp
+        functions/AbstractionLayers/DestructionPower/DestructionPower.cpp
+        header/solve.h
+        header/input.h
+        functions/solve/puzzleExtension.cpp)
 add_executable(PuzzleSolver ${SOURCE_FILES})
 include_directories(${OpenCV_INCLUDE_DIRS})
 target_link_libraries(PuzzleSolver ${OpenCV_LIBS})

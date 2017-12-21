@@ -1,3 +1,7 @@
+//
+// Created by mpapa on 05.12.2017.
+//
+
 #ifndef SOURCE_SOLVE_H
 #define SOURCE_SOLVE_H
 
@@ -6,17 +10,11 @@
 #include <opencv2/highgui/highgui.hpp>
 #include <opencv2/imgproc/imgproc.hpp>
 
-class Part;
+#include "../functions/AbstractionLayers/Layer1/AbstractionLayer_1.h"
+#include "../functions/AbstractionLayers/DestructionPower/DestructionPower.h"
+
 
 using namespace std;
-
-class coor
-{
-public:
-    unsigned int col, row;
-    coor(int newcol=-1,int newrow=-1): col(newcol), row(newrow)
-    {}
-};
 
 class LogEntry
 {
@@ -34,7 +32,7 @@ public:
 
     LogEntry()
     {
-        myCoor = coor();
+        myCoor = coor(0,0);
         abstractionLevel=0;
         set=0;
     }
@@ -43,11 +41,47 @@ private:
     static int randomed;
 };
 
+class Puzzle
+{
+public:
+    Puzzle(unsigned int newcols,unsigned int newrows):rows(newrows),cols(newcols){}
+
+    coor getSizeAsCoor()
+    {return {cols,rows};}
+
+    DestructionPower* dp;
+    AbstractionLayer_1* a1;
+
+    void removeConstrains(coor removeCoordinates);
+    void printPuzzle();
+
+    void createRandomBox(){createRandomPuzzle();putIntoBox();shuffle();}
+    void createRandomPuzzle(){a1->CreateRandomPuzzle();}
+    void putIntoBox();
+    void shuffle();
+
+    vector<Part> myBox;
+    vector<Part*> p_myBox;
+
+private:
+
+    unsigned int rows;
+    unsigned int cols;
+};
+
+class LayerContainer
+{
+public:
+    AbstractionLayer_1_Properties m_test1;
+    DestructionPower_Properties m_destruction;
+};
+
+
 bool next(vector<LogEntry>& log, vector<Part*>& p_Box, Puzzle& puzzleMat);
 coor calculateNextCoor(vector<LogEntry>& log, vector<Part*>& p_Box, Puzzle& puzzleMat);
 void solve(vector<LogEntry>& log, vector<Part*>& p_Box, Puzzle& puzzleMat);
 void setsolution(vector<LogEntry>& log, vector<Part*>& p_Box, Puzzle& puzzleMat);
-bool backtrack(vector<LogEntry>& log, vector<Part*>& p_Box, puzzleMat);
+bool backtrack(vector<LogEntry>& log, vector<Part*>& p_Box, Puzzle& puzzleMat);
 
 void createNextLogElement(vector<LogEntry>& log, vector<Part*>& p_Box, Puzzle& puzzleMat);
 

@@ -1,3 +1,6 @@
+#ifndef HEADER_H
+#define HEADER_H
+
 #include <iostream>
 #include <bitset>
 #include <cstdlib>
@@ -6,14 +9,9 @@
 #include <algorithm>
 #include <random>
 
-#define MAX_ABSTRAX 1
-#define structdebug
-
 using namespace std;
 
-/**
- * IMPORTANT: Each new layer must be included there, to avoid compile errors
- */
-#include "functions/AbstractionLayers/Layer1/AbstractionLayer_1.h"
-#include "functions/AbstractionLayers/DestructionPower/DestructionPower.h"
+#include "header/input.h"
 #include "header/solve.h"
+
+#endif //HEADER_H

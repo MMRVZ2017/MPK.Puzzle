@@ -3,7 +3,13 @@
 //
 
 #include "DestructionPower.h"
-#include <iostream>
+
+
+map<int,float> DestructionPower_Properties::SpeedTable =
+        {
+                {1,0.001}
+        };
+
 
 void DestructionPower::PreProcessing(const vector<Part*>* partArray)
 {
@@ -31,14 +37,18 @@ void DestructionPower::DestructionOfSurrounding(const coor constraintCoordinate)
         if(constraintCoordinate.row > 0)
         {
             divisor++;
-            newDestructionArray[i] += m_constraintMatrix[constraintCoordinate.col][constraintCoordinate.row-1].m_destruction.DestructionArray[i];
+            newDestructionArray[i] += m_constraintMatrix[constraintCoordinate.col][constraintCoordinate.row-1].DestructionArray[i];
         }
         if(constraintCoordinate.col > 0)
         {
             divisor++;
-            newDestructionArray[i] += m_constraintMatrix[constraintCoordinate.col-1][constraintCoordinate.row].m_destruction.DestructionArray[i];
+            newDestructionArray[i] += m_constraintMatrix[constraintCoordinate.col-1][constraintCoordinate.row].DestructionArray[i];
         }
         if(divisor)
             newDestructionArray[i] /=divisor;
     }
+}
+DestructionPower_Properties::DestructionPower_Properties() {
+    for(int i=0;i<sizeof(DestructionArray);i++)
+        DestructionArray.emplace_back(DestructionPower_Properties::SpeedTable[i]*DESTRUCTION_INIT);
 }

@@ -3,7 +3,7 @@
 
 #include <map>
 #include <vector>
-#include "../../header/solve.h"
+#include "../../header/input.h"
 
 using namespace std;
 
@@ -19,7 +19,7 @@ typedef map<Part*, float> qualityVector;
  * @tparam T    template parameter which should be the property class of the layer
  */
 template<typename T>
-class AbstraktionLayer_Base
+class AbstractionLayer_Base
 {
 public:
     /**
@@ -63,7 +63,7 @@ public:
         m_constraintMatrix = vector<vector<T>>(collumns, vector<T>(rows));
     }
 
-    vector<vector<T>> m_constraintMatrix; //!<-- Matrix where the constraints of the layer will be saved
+    vector<vector<T>> m_constraintMatrix{}; //!<-- Matrix where the constraints of the layer will be saved
 };
 
 
