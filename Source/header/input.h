@@ -2,11 +2,9 @@
 // Created by mpapa on 05.12.2017.
 //
 
-#ifndef SOURCE_INPUT_H
-#define SOURCE_INPUT_H
+#pragma once
 
-
-#include <stdint.h>
+#include <cstdint>
 
 #include "../functions/AbstractionLayers/Layer1/AbstractionLayer_1_Properties.h"
 #include "../functions/AbstractionLayers/DestructionPower/DestructionPower_Properties.h"
@@ -16,8 +14,9 @@ class LayerContainer;
 class Part
 {
 public:
-    Part() : m_partID(0) {}
-    ~Part() {}
+    Part() : m_partID(0), m_numOfRotations(0)
+    {}
+    ~Part() = default;
 
     int32_t GetPartID () const
     {
@@ -50,8 +49,6 @@ class coor
 {
 public:
     unsigned int col, row;
-    coor(unsigned int newcol=-1,unsigned int newrow=-1): col(newcol), row(newrow)
+    coor (unsigned int newcol,unsigned int newrow): col(newcol), row(newrow)
     {}
 };
-
-#endif //SOURCE_INPUT_H

@@ -14,10 +14,7 @@ class DestructionPower_Properties
 {
 public:
     explicit DestructionPower_Properties();
-    map<int,float> getSpeedTable()
-    {
-        return SpeedTable;
-    }
+    map<int,float> getSpeedTable() {return SpeedTable;}
     void setSpeedTable();
 
 private:

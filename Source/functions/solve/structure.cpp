@@ -40,7 +40,7 @@ bool next(vector<LogEntry>& log, vector<Part*>& p_Box,Puzzle& puzzleMat)
 
 void createNextLogElement(vector<LogEntry>& log, vector<Part*>& p_Box, Puzzle& puzzleMat)
 {
-	log.emplace_back(LogEntry());
+	log.emplace_back(LogEntry(coor(0, 0)));
    	log.back().myCoor = calculateNextCoor(log, p_Box,puzzleMat);
    	//getLayerDestructionPowerfromSurrounding();
     solve(log, p_Box,puzzleMat);
@@ -62,7 +62,6 @@ coor calculateNextCoor(vector<LogEntry>& log, vector<Part*>& p_Box, Puzzle& puzz
 
 	if(m<puzzleMat.getSizeAsCoor().col-1) m++;
 	else if(n<puzzleMat.getSizeAsCoor().row-1){ m=0; n++;}
-	else return {};
 	return	{m,n};
     //return nextCoor;
 }

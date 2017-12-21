@@ -1,6 +1,4 @@
-#ifndef HEADER_H
-#define HEADER_H
-
+#pragma once
 #include <iostream>
 #include <bitset>
 #include <cstdlib>
@@ -13,5 +11,3 @@ using namespace std;
 
 #include "header/input.h"
 #include "header/solve.h"
-
-#endif //HEADER_H

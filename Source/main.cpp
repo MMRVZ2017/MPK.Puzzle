@@ -16,6 +16,7 @@ int main()
     vector<Part*> p_myFirstBox;
 
     Puzzle puzzleMat(cols, rows);
+    puzzleMat.createRandomBox();
 
     //vector<vector<PuzzlePiece*>> ab1class = abstractionLayer1classify(log, p_myFirstBox,puzzleMat);
     while(next(log, puzzleMat.p_myBox,puzzleMat));

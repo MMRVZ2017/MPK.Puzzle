@@ -2,8 +2,7 @@
 // Created by mpapa on 05.12.2017.
 //
 
-#ifndef SOURCE_DESTRUCTIONPOWER_H
-#define SOURCE_DESTRUCTIONPOWER_H
+#pragma once
 
 #define DESTRUCTION_COUNT 1
 
@@ -27,5 +26,3 @@ public:
 
 private:
 };
-
-#endif //SOURCE_DESTRUCTIONPOWER_H

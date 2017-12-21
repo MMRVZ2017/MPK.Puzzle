@@ -38,17 +38,3 @@ void createRandomAbstraction2()
         j=0;
     }
 }
-
-//shuffles around a box, randomizing pieces and orientation
-vector<Part> randomBox::shuffle()
-{
-    random_shuffle(Box.begin(),Box.end());
-    for (auto &i:Box)
-    {
-        i.shift(rand()%4);
-        i.resetShift();
-    }
-
-    numerateBox(Box);
-    return Box;
-}

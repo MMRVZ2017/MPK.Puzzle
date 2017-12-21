@@ -1,10 +1,7 @@
 //
 // Created by mpapa on 05.12.2017.
 //
-
-#ifndef SOURCE_SOLVE_H
-#define SOURCE_SOLVE_H
-
+#pragma once
 #include <vector>
 #include <iostream>
 #include <opencv2/highgui/highgui.hpp>
@@ -30,11 +27,9 @@ public:
     void decreaseRandomed() { randomed--;}
     int hasRandomed(){return randomed;}
 
-    LogEntry()
-    {
-        myCoor = coor(0,0);
+    LogEntry(coor newCoor = coor(0,0)): myCoor(newCoor){
         abstractionLevel=0;
-        set=0;
+        set=false;
     }
 private:
     bool set;
@@ -56,7 +51,7 @@ public:
     void printPuzzle();
 
     void createRandomBox(){createRandomPuzzle();putIntoBox();shuffle();}
-    void createRandomPuzzle(){a1->CreateRandomPuzzle();}
+    void createRandomPuzzle();
     void putIntoBox();
     void shuffle();
 
@@ -85,4 +80,3 @@ bool backtrack(vector<LogEntry>& log, vector<Part*>& p_Box, Puzzle& puzzleMat);
 
 void createNextLogElement(vector<LogEntry>& log, vector<Part*>& p_Box, Puzzle& puzzleMat);
 
-#endif //SOURCE_SOLVE_H
