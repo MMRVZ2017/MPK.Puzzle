@@ -17,4 +17,7 @@ private:
 };
 
 
+
+
+
 #endif //SOURCE_ABSTRACTIONLAYER_1_PROPERTIES_H

@@ -38,7 +38,8 @@ public:
         m_numOfRotations = numOfRotations;
     }
 
-    LayerContainer* myLayers;
+    AbstractionLayer_1_Properties m_test1;
+    DestructionPower_Properties m_destruction;
 private:
     int32_t m_partID;
     uint8_t m_numOfRotations;

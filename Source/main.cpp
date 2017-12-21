@@ -13,7 +13,6 @@ int main()
 
     //some advanced solver stuff
     vector<LogEntry> log;
-    vector<Part*> p_myFirstBox;
 
     Puzzle puzzleMat(cols, rows);
     puzzleMat.createRandomBox();

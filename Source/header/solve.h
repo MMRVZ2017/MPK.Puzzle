@@ -50,10 +50,11 @@ public:
     void removeConstrains(coor removeCoordinates);
     void printPuzzle();
 
-    void createRandomBox(){createRandomPuzzle();putIntoBox();shuffle();}
+    void createRandomBox(){createRandomPuzzle();putIntoBox();shuffle();createp_box();}
     void createRandomPuzzle();
     void putIntoBox();
     void shuffle();
+    void createp_box();
 
     vector<Part> myBox;
     vector<Part*> p_myBox;
@@ -63,14 +64,6 @@ private:
     unsigned int rows;
     unsigned int cols;
 };
-
-class LayerContainer
-{
-public:
-    AbstractionLayer_1_Properties m_test1;
-    DestructionPower_Properties m_destruction;
-};
-
 
 bool next(vector<LogEntry>& log, vector<Part*>& p_Box, Puzzle& puzzleMat);
 coor calculateNextCoor(vector<LogEntry>& log, vector<Part*>& p_Box, Puzzle& puzzleMat);
