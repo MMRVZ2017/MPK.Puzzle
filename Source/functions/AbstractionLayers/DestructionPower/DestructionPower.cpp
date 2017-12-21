@@ -4,7 +4,7 @@
 
 #include "DestructionPower.h"
 
-
+//TODO! Add more layers here!
 map<int,float> DestructionPower_Properties::SpeedTable =
         {
                 {1,0.001}
@@ -48,7 +48,13 @@ void DestructionPower::DestructionOfSurrounding(const coor constraintCoordinate)
             newDestructionArray[i] /=divisor;
     }
 }
+
 DestructionPower_Properties::DestructionPower_Properties() {
-    for(int i=0;i<sizeof(DestructionArray);i++)
-        DestructionArray.emplace_back(DestructionPower_Properties::SpeedTable[i]*DESTRUCTION_INIT);
+    float aging=1.001;
+    for(int i=0;i<DestructionArray.size();i++)
+
+    {
+        DestructionArray.emplace_back((DestructionPower_Properties::SpeedTable[i]*DESTRUCTION_INIT));
+        DestructionArray.back()<0.99 ? DestructionArray.back()*=aging:DestructionArray.back();
+    }
 }
