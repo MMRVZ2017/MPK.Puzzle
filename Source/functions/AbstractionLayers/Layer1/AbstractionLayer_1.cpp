@@ -6,6 +6,7 @@
 #include "../../../header.h"
 
 #include <iostream>
+#include <bitset>
 
 void AbstractionLayer_1::PreProcessing(coor mySize,  const vector<Part*>* partArray)
 {
@@ -75,15 +76,19 @@ bool AbstractionLayer_1::CreateRandomPuzzle()
                 tempPiece and_eq (uint8_t)0b11001111;
 
             //set piece if piece good
+            std::cout << "tempPiece = " << std::bitset<8>(tempPiece)  << std::endl;
             if(PlaceOfPartGood(coor(col,row),tempPiece))
             {
-                row++; // Sollte er hier nicht das Puzzleteil irgendwo abspeichern? Weiß aber nicht ob die constraint layer der richtige platz ist, oder nicht eine neue, bzw. die puzzlebox
                 m_constraintMatrix[col][row].m_connections = tempPiece;
+                printConstraintMatrix();
+                row++;
             }
         }
     }
 
 }
+
+
 
 //puts all pieces of the current constraint matrix into a puzzlebox
 qualityVector AbstractionLayer_1::returnInBox(vector<Part>& PuzzleBox)
@@ -99,6 +104,13 @@ qualityVector AbstractionLayer_1::returnInBox(vector<Part>& PuzzleBox)
 
 }
 
+void AbstractionLayer_1::printConstraintMatrix() {
+    for (auto it1:m_constraintMatrix) {
+        for (auto it2:it1)
+            std::cout << "tempPiece = " << std::bitset<8>(it2.m_connections) << std::endl;
+        std::cout << std::endl;
+    }
+}
 void AbstractionLayer_1::setEdgeZero()
 {
     for(int col = 0; col < m_constraintMatrix.size(); col++)
@@ -118,6 +130,7 @@ bool AbstractionLayer_1::PlaceOfPartGood(coor myCoor, uint8_t& myPart)
     negativePart or_eq (m_constraintMatrix[myCoor.col][myCoor.row-1].m_connections & 0b00001100);
     negativePart or_eq (m_constraintMatrix[myCoor.col+1][myCoor.row].m_connections & 0b00000011);
     shift(negativePart,2);
+    std::cout << "negativePart = " << std::bitset<8>(negativePart)  << std::endl;
     if  (
             (    ((((negativePart & 0b11000000) ^ (myPart & 0b11000000))  != 0b00000000) && (((myPart & 0b11000000) != 0b00000000) && (negativePart & 0b11000000) != 0b00000000))
                  || ((((negativePart & 0b11000000) == 0b11000000) || ((myPart &  0b11000000) == 0b11000000))  && (((myPart & 0b11000000) != 0b00000000) && (negativePart & 0b11000000) != 0b00000000))

@@ -43,8 +43,7 @@ public:
     Puzzle(unsigned int newcols,unsigned int newrows):rows(newrows),cols(newcols)
     {
         a1.PreProcessing({rows,cols}, nullptr);
-        a1.InitialiseConstraintMatrixSize(newcols+2, newrows+2);
-        a1.setEdgeZero();
+        a1.CreateRandomPuzzle();
     }
 
     coor getSizeAsCoor()

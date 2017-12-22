@@ -27,6 +27,7 @@ public:
 
     bool CreateRandomPuzzle();
     qualityVector returnInBox(vector<Part>& PuzzleBox);
+    void printConstraintMatrix();
 
 private:
 };
