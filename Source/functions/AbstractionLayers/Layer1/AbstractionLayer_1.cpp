@@ -7,9 +7,9 @@
 
 #include <iostream>
 
-void AbstractionLayer_1::PreProcessing(const vector<Part*>* partArray)
+void AbstractionLayer_1::PreProcessing(coor mySize,  const vector<Part*>* partArray)
 {
-    InitialiseConstraintMatrixSize(32+2, 28+2);
+    InitialiseConstraintMatrixSize(mySize.row+2, mySize.col+2);
     setEdgeZero();
 }
 
@@ -100,7 +100,7 @@ void AbstractionLayer_1::setEdgeZero()
 {
     for(int col=0;col<m_constraintMatrix.size();col++)
         for(int row=0;row<m_constraintMatrix[col].size();row++)
-            if(col ==0 || col == m_constraintMatrix.size() || row == 0 || row == m_constraintMatrix[col].size())
+            if(col ==0 || col == m_constraintMatrix.size()-1 || row == 0 || row == m_constraintMatrix[col].size()-1)
                 m_constraintMatrix[col][row].m_connections=0b00000000;
 }
 

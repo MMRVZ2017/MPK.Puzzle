@@ -26,7 +26,7 @@ public:
      * @brief   pure virtual method for the pre processing of the layer
      * @param   [in] partArray - References of all Parts, in which the properties of the Layer will be written
      */
-    virtual void PreProcessing(const vector<Part*>* partArray) = 0;
+    virtual void PreProcessing(coor mySize, const vector<Part*>* partArray) = 0;
 
     /**
      * @brief   pure virtual method for the quality evaluation of the layer
@@ -58,7 +58,7 @@ public:
      * @param   [in] collumns - Wished collumns of the m_constraintMatrix
      * @param   [in] rows - Wished rows of the m_constraintMatrix
      */
-    virtual void InitialiseConstraintMatrixSize(const int32_t collumns, const int32_t rows)
+    void InitialiseConstraintMatrixSize(const int32_t collumns, const int32_t rows)
     {
         m_constraintMatrix = vector<vector<T>>(collumns, vector<T>(rows));
     }

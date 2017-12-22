@@ -27,8 +27,8 @@ public:
     void decreaseRandomed() { randomed--;}
     int hasRandomed(){return randomed;}
 
-    LogEntry(coor newCoor = coor(0,0)): myCoor(newCoor){
-        abstractionLevel=0;
+    explicit LogEntry(coor newCoor = coor(0,0)): myCoor(newCoor){
+        abstractionLevel=-1;
         set=false;
     }
 private:
@@ -39,7 +39,12 @@ private:
 class Puzzle
 {
 public:
-    Puzzle(unsigned int newcols,unsigned int newrows):rows(newrows),cols(newcols){}
+    Puzzle(unsigned int newcols,unsigned int newrows,DestructionPower* newdp,AbstractionLayer_1):rows(newrows),cols(newcols)
+    {
+        dp=newdp;
+        a1->PreProcessing({rows,cols}, nullptr);//because could not set nullptr as default in override
+        dp->PreProcessing({rows,cols},nullptr);
+    }
 
     coor getSizeAsCoor()
     {return {cols,rows};}

@@ -11,9 +11,9 @@ map<int,float> DestructionPower_Properties::SpeedTable =
         };
 
 
-void DestructionPower::PreProcessing(const vector<Part*>* partArray)
+void DestructionPower::PreProcessing(coor mySize,const vector<Part*>* partArray)
 {
-    InitialiseConstraintMatrixSize(32,28);
+    InitialiseConstraintMatrixSize(mySize.row,mySize.col);
 }
 
 //it through qualityVector and removes all that do not trigger PlaceOfPartGood
@@ -47,6 +47,35 @@ void DestructionPower::DestructionOfSurrounding(const coor constraintCoordinate)
         if(divisor)
             newDestructionArray[i] /=divisor;
     }
+}
+//gets next highest valued abstraction layer down from current one (if first, get highest)
+int DestructionPower::getNextAbstractionLayer(coor newCoordinate, int currentAbstractionLayer)
+{
+    float currentPower=-1;
+    int nextLayer=-1;
+    float nextLayerPower=0;
+    if (currentAbstractionLayer>=0)
+        currentPower = m_constraintMatrix[newCoordinate.row][newCoordinate.col].DestructionArray[currentAbstractionLayer];
+
+    int i=0;
+    for(float it:m_constraintMatrix[newCoordinate.row][newCoordinate.col].DestructionArray)
+    {
+        if(it <= currentPower)
+        {
+            //if equal, then has to be the next one (activated from left to right)
+            if(it == currentPower)
+                if(i>currentAbstractionLayer)
+                    return i;
+            //if this one is bigger than previous biggest one, save
+            if(it>nextLayerPower)
+            {
+                nextLayerPower=it;
+                nextLayer=i;
+            }
+            i++;
+        }
+    }
+    return nextLayer;
 }
 
 DestructionPower_Properties::DestructionPower_Properties() {
