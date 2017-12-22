@@ -10,7 +10,7 @@
 
 void AbstractionLayer_1::PreProcessing(coor mySize,  const vector<Part*>* partArray)
 {
-    InitialiseConstraintMatrixSize(mySize.row+2, mySize.col+2);
+    InitialiseConstraintMatrixSize(mySize.col+2, mySize.row+2);
     setEdgeZero();
 }
 
@@ -40,8 +40,8 @@ bool AbstractionLayer_1::CreateRandomPuzzle()
     std::minstd_rand simple_rand;
     simple_rand.seed((unsigned int)"dumbo");
 
-    for(int col = 1; col < m_constraintMatrix.size()-1; col++){
-        for(int row = 1; row < (m_constraintMatrix[col].size() - 1);)
+    for(int row = 1; row < m_constraintMatrix.size()-1; row++){
+        for(int col = 1; col < (m_constraintMatrix[row].size() - 1);)
         {
             //create random piece
             uint8_t tempPiece = 0b00000000;
@@ -66,22 +66,22 @@ bool AbstractionLayer_1::CreateRandomPuzzle()
                 tempPiece|=0b00000010;
 
             //set edges and corners to 00
-            if(row==1)
+            if(row == 1)
                 tempPiece and_eq (uint8_t)0b00111111;
-            if(row==m_constraintMatrix[col].size())
+            if(row == (m_constraintMatrix.size() - 2))
                 tempPiece and_eq (uint8_t)0b11110011;
-            if(col==1)
+            if(col == 1)
                 tempPiece and_eq (uint8_t)0b11111100;
-            if(col==m_constraintMatrix.size()-1)
+            if(col == (m_constraintMatrix[row].size() - 2))
                 tempPiece and_eq (uint8_t)0b11001111;
 
             //set piece if piece good
             std::cout << "tempPiece = " << std::bitset<8>(tempPiece)  << std::endl;
             if(PlaceOfPartGood(coor(col,row),tempPiece))
             {
-                m_constraintMatrix[col][row].m_connections = tempPiece;
+                m_constraintMatrix[row][col].m_connections = tempPiece;
                 printConstraintMatrix();
-                row++;
+                col++;
             }
         }
     }
@@ -113,10 +113,10 @@ void AbstractionLayer_1::printConstraintMatrix() {
 }
 void AbstractionLayer_1::setEdgeZero()
 {
-    for(int col = 0; col < m_constraintMatrix.size(); col++)
-        for(int row = 0; row < m_constraintMatrix[col].size(); row++)
-            if(col == 0 || col == (m_constraintMatrix.size() - 1) || row == 0 || row == (m_constraintMatrix[col].size() - 1))
-                m_constraintMatrix[col][row].m_connections=0b00000000;
+    for(int row = 0; row < m_constraintMatrix.size(); row++)
+        for(int col = 0; col < m_constraintMatrix[row].size(); col++)
+            if(col == 0 || col == (m_constraintMatrix[row].size() - 1) || row == 0 || row == (m_constraintMatrix.size() - 1))
+                m_constraintMatrix[row][col].m_connections=0b00000000;
 }
 
 //checks if the myPart in its current orientation is legal in position m, n
@@ -125,10 +125,10 @@ bool AbstractionLayer_1::PlaceOfPartGood(coor myCoor, uint8_t& myPart)
 
     uint8_t negativePart=0b00000000;
 
-    negativePart or_eq (m_constraintMatrix[myCoor.col][myCoor.row+1].m_connections & 0b11000000);
-    negativePart or_eq (m_constraintMatrix[myCoor.col-1][myCoor.row].m_connections & 0b00110000);
-    negativePart or_eq (m_constraintMatrix[myCoor.col][myCoor.row-1].m_connections & 0b00001100);
-    negativePart or_eq (m_constraintMatrix[myCoor.col+1][myCoor.row].m_connections & 0b00000011);
+    negativePart or_eq (m_constraintMatrix[myCoor.row+1][myCoor.col].m_connections & 0b11000000);
+    negativePart or_eq (m_constraintMatrix[myCoor.row][myCoor.col-1].m_connections & 0b00110000);
+    negativePart or_eq (m_constraintMatrix[myCoor.row-1][myCoor.col].m_connections & 0b00001100);
+    negativePart or_eq (m_constraintMatrix[myCoor.row][myCoor.col+1].m_connections & 0b00000011);
     shift(negativePart,2);
     std::cout << "negativePart = " << std::bitset<8>(negativePart)  << std::endl;
     if  (
