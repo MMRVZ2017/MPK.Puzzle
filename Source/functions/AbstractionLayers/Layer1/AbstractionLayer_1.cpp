@@ -36,11 +36,11 @@ bool AbstractionLayer_1::RemoveConstraintOnPosition(const coor constraintCoordin
 
 bool AbstractionLayer_1::CreateRandomPuzzle()
 {
-    std:: minstd_rand simple_rand;
+    std::minstd_rand simple_rand;
     simple_rand.seed((unsigned int)"dumbo");
 
-    for(int col=1;col<m_constraintMatrix.size()-1;col++){
-        for(int row=1;row<m_constraintMatrix[col].size()-1;)
+    for(int col = 1; col < m_constraintMatrix.size()-1; col++){
+        for(int row = 1; row < (m_constraintMatrix[col].size() - 1);)
         {
             //create random piece
             uint8_t tempPiece = 0b00000000;
@@ -76,7 +76,10 @@ bool AbstractionLayer_1::CreateRandomPuzzle()
 
             //set piece if piece good
             if(PlaceOfPartGood(coor(col,row),tempPiece))
-                row++;
+            {
+                row++; // Sollte er hier nicht das Puzzleteil irgendwo abspeichern? Weiß aber nicht ob die constraint layer der richtige platz ist, oder nicht eine neue, bzw. die puzzlebox
+                m_constraintMatrix[col][row].m_connections = tempPiece;
+            }
         }
     }
 
@@ -98,9 +101,9 @@ qualityVector AbstractionLayer_1::returnInBox(vector<Part>& PuzzleBox)
 
 void AbstractionLayer_1::setEdgeZero()
 {
-    for(int col=0;col<m_constraintMatrix.size();col++)
-        for(int row=0;row<m_constraintMatrix[col].size();row++)
-            if(col ==0 || col == m_constraintMatrix.size()-1 || row == 0 || row == m_constraintMatrix[col].size()-1)
+    for(int col = 0; col < m_constraintMatrix.size(); col++)
+        for(int row = 0; row < m_constraintMatrix[col].size(); row++)
+            if(col == 0 || col == (m_constraintMatrix.size() - 1) || row == 0 || row == (m_constraintMatrix[col].size() - 1))
                 m_constraintMatrix[col][row].m_connections=0b00000000;
 }
 

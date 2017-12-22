@@ -39,18 +39,18 @@ private:
 class Puzzle
 {
 public:
-    Puzzle(unsigned int newcols,unsigned int newrows,DestructionPower* newdp,AbstractionLayer_1):rows(newrows),cols(newcols)
+
+    Puzzle(unsigned int newcols,unsigned int newrows):rows(newrows),cols(newcols)
     {
-        dp=newdp;
-        a1->PreProcessing({rows,cols}, nullptr);//because could not set nullptr as default in override
-        dp->PreProcessing({rows,cols},nullptr);
+        a1.InitialiseConstraintMatrixSize(newcols+2, newrows+2);
+        a1.setEdgeZero();
     }
 
     coor getSizeAsCoor()
     {return {cols,rows};}
 
-    DestructionPower* dp;
-    AbstractionLayer_1* a1;
+    DestructionPower dp;
+    AbstractionLayer_1 a1;
 
     void removeConstrains(coor removeCoordinates);
     void printPuzzle();

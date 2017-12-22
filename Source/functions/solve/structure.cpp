@@ -74,7 +74,7 @@ void solve(vector<LogEntry>& log, vector<Part*>& p_Box, Puzzle& puzzleMat)
     switch(log.back().abstractionLevel)
     {
         case 1:
-            puzzleMat.a1->EvaluateQuality(log.back().myCoor, log.back().PieceCollector);
+            puzzleMat.a1.EvaluateQuality(log.back().myCoor, log.back().PieceCollector);
         break;
 
         default:
