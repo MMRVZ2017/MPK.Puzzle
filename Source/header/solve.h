@@ -50,7 +50,7 @@ public:
     coor getSizeAsCoor()
     {return {cols,rows};}
 
-    DestructionPower* dp;
+    DestructionPower dp;
     AbstractionLayer_1 a1;
 
     void removeConstrains(coor removeCoordinates);

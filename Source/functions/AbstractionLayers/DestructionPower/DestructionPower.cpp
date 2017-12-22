@@ -21,7 +21,7 @@ bool DestructionPower::EvaluateQuality (const coor constraintCoordinate, quality
 {
 }
 
-bool DestructionPower::SetConstraintOnPosition(const coor constraintCoordinate, const AbstractionLayer_1_Properties constraint)
+bool DestructionPower::SetConstraintOnPosition(const coor constraintCoordinate, const DestructionPower_Properties constraint)
 {
 }
 

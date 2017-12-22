@@ -19,12 +19,11 @@ class DestructionPower : public AbstractionLayer_Base<DestructionPower_Propertie
 public:
     void PreProcessing(coor mySize,const vector<Part*>* partArray)override;
     bool EvaluateQuality (coor constraintCoordinate, qualityVector& qVector) override;
-    bool SetConstraintOnPosition(coor constraintCoordinate, AbstractionLayer_1_Properties constraint);
+    bool SetConstraintOnPosition(coor constraintCoordinate, DestructionPower_Properties constraint);
     bool RemoveConstraintOnPosition(coor constraintCoordinate)override;
 
     void DestructionOfSurrounding(coor constraintCoordinate);
     int getNextAbstractionLayer(coor newCoordinate, int currentAbstractionLayer);
-
 
 private:
 };
