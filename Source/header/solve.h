@@ -39,13 +39,17 @@ private:
 class Puzzle
 {
 public:
-    Puzzle(unsigned int newcols,unsigned int newrows):rows(newrows),cols(newcols){}
+    Puzzle(unsigned int newcols,unsigned int newrows):rows(newrows),cols(newcols)
+    {
+        a1.InitialiseConstraintMatrixSize(newcols+2, newrows+2);
+        a1.setEdgeZero();
+    }
 
     coor getSizeAsCoor()
     {return {cols,rows};}
 
     DestructionPower* dp;
-    AbstractionLayer_1* a1;
+    AbstractionLayer_1 a1;
 
     void removeConstrains(coor removeCoordinates);
     void printPuzzle();

@@ -20,7 +20,7 @@ void Puzzle::putIntoBox()
         {
             //TODO! add rotation of all parts
             //TODO! add id to every part (how)
-            tmpPart.m_test1=this->a1->m_constraintMatrix[i][j];
+            tmpPart.m_test1=this->a1.m_constraintMatrix[i][j];
             //TODO! add all other layers here
             myBox.emplace_back(tmpPart);
         }
@@ -36,14 +36,15 @@ void Puzzle::shuffle()
 //deletes all constraints from all abstractionlayers
 void Puzzle::removeConstrains(coor removeCoordinates)
 {
-    this->a1->RemoveConstraintOnPosition(removeCoordinates);
+    this->a1.RemoveConstraintOnPosition(removeCoordinates);
 }
 
 void Puzzle::createRandomPuzzle()
 {
-    a1->CreateRandomPuzzle();
+    a1.CreateRandomPuzzle();
 }
 
 void Puzzle::createp_box()
 {
+
 }
