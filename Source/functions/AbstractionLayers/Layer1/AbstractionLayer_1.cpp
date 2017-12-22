@@ -107,7 +107,7 @@ qualityVector AbstractionLayer_1::returnInBox(vector<Part>& PuzzleBox)
 void AbstractionLayer_1::printConstraintMatrix() {
     for (auto it1:m_constraintMatrix) {
         for (auto it2:it1)
-            std::cout << "tempPiece = " << std::bitset<8>(it2.m_connections) << std::endl;
+            std::cout << std::bitset<8>(it2.m_connections) << " ";
         std::cout << std::endl;
     }
 }
