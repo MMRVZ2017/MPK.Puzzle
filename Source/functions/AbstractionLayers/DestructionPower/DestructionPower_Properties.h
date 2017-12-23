@@ -14,13 +14,13 @@ class DestructionPower_Properties
 {
 public:
     explicit DestructionPower_Properties();
-    map<int,float> getSpeedTable() {return SpeedTable;}
     void setSpeedTable();
+    static map<int,float> SpeedTable;
+
+
+    vector<float> DestructionArray;
 
 private:
-
-    static map<int,float> SpeedTable;
-    vector<float> DestructionArray;
     friend class DestructionPower;
 
 };

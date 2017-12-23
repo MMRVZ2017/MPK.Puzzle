@@ -25,5 +25,8 @@ public:
     void DestructionOfSurrounding(coor constraintCoordinate);
     int getNextAbstractionLayer(coor newCoordinate, int currentAbstractionLayer);
 
+    void setDestructionPower(coor myCoor, int AbstractionLevel, float destructionPower)
+    { m_constraintMatrix[myCoor.col][myCoor.row].DestructionArray[AbstractionLevel] = destructionPower;}
+
 private:
 };

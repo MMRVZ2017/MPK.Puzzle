@@ -2,7 +2,10 @@
 void status(vector<LogEntry>& log, vector<Part*>& p_Box);
 bool setBestOrMoreLayers(vector<LogEntry>& log);
 void calculateTrueDestructionPower(vector<LogEntry>& log, Puzzle& puzzleMat, float Layerworth);
-void capLogElements(vector<LogEntry>& log);
+void sort(vector<LogEntry>& log);
+void cut(vector<LogEntry>& log, Part* cutID);
+float capLogElements(vector<LogEntry>& log);
+void calculateNewCombinedProbabilityForPuzzlePiecesArithmetic(vector<LogEntry>& log);
 
 bool next(vector<LogEntry>& log, vector<Part*>& p_Box,Puzzle& puzzleMat)
 {
@@ -18,8 +21,8 @@ bool next(vector<LogEntry>& log, vector<Part*>& p_Box,Puzzle& puzzleMat)
     else if(log.back().PieceCollector.size() > 1)
     {
         //moreLayers is 0, setbest is 1
-    	if(setBestOrMoreLayers(log)) setsolution(log,p_Box,puzzleMat);
-    	else solve(log,p_Box,puzzleMat);
+        if (setBestOrMoreLayers(log)) setsolution(log, p_Box, puzzleMat);
+        else solve(log, p_Box, puzzleMat);
     }
     //case last log exactly one solution
     else if(log.back().PieceCollector.size() == 1)
@@ -81,10 +84,10 @@ void solve(vector<LogEntry>& log, vector<Part*>& p_Box, Puzzle& puzzleMat)
         break;
     }
 
-    //capLogElements(log);
-    //calculateWorth(log);
-    //calculateTrueDestructionPower(log,puzzleMat);
-    //calculateNewCombinedProbablility(log);
+    capLogElements(log);
+    float worth = capLogElements(log);
+    calculateTrueDestructionPower(log,puzzleMat, worth);
+    calculateNewCombinedProbabilityForPuzzlePiecesArithmetic(log);
 
 }
 
@@ -156,24 +159,16 @@ void status(vector<LogEntry>& log, vector<Part*>& p_Box, Puzzle& puzzleMat)
 	cout << "----------------------------" << endl;
 }
 
-void calculateTrueDestructionPower(vector<LogEntry>& log, Puzzle& puzzleMat, float Layerworth)
-{
-	//hier muss noch rein, wo die zeit der Abstractionlevels gespeichter wird
-	float destructionPower=sqrt(Layerworth * log.back().abstractionLevel);
-	//puzzleMat.setdestructionPower(log.back().myCoor,log.back().abstractionLevel,destructionPower);
+//this is addon stuff that should later all be extracted into a sererate cpp as it is not core dispatcher functionality
+
+void calculateTrueDestructionPower(vector<LogEntry>& log, Puzzle& puzzleMat, float Layerworth) {
+    float destructionPower = sqrt(
+            Layerworth * puzzleMat.dp.m_constraintMatrix[0][0].SpeedTable[log.back().abstractionLevel]);
+    puzzleMat.dp.setDestructionPower(log.back().myCoor, log.back().abstractionLevel, destructionPower);
 }
 
 // PART RAUER_WEIDINGER
-/*
-void sort()
-{
-}
-
-void cut()
-{
-}
-
-void capLogElements(vector<LogEntry>& log)
+float capLogElements(vector<LogEntry>& log)
 {
     // Till Now only ground structure -> incorrect variable ans vector names
     double limit = 0.6;
@@ -186,34 +181,50 @@ void capLogElements(vector<LogEntry>& log)
 
     vectorsizeBefore = log.back().PieceCollector.size();
 
-    sort(); // Sort the vector after probabilities
-    auto idxcut;
-    for(idxcut:log.back().PieceCollector)
-        if(idxcut.second < limit)
+    sort(log); // Sort the vector after probabilities
+    std::map<Part*,float>::const_iterator idxcut =log.back().PieceCollector.begin();
+    for(;idxcut !=log.back().PieceCollector.end();idxcut++)
+        if(idxcut->second < limit)
             break;
+
+
+    auto newidxcut = idxcut;
+
 
     while(idxcut != log.back().PieceCollector.end())
     {
-        diff = part[i] - part[i+1];
+        diff = idxcut->second - (++idxcut)->second;
         if(diff > maxdiff)
         {
             maxdiff = diff;
-            idxcut = i;
+            newidxcut = idxcut;
         }
-        i++;
     }
-    cut();
+    cut(log,newidxcut->first);
 
-    vectorsizeAfter = vector.size();
+    vectorsizeAfter = log.back().PieceCollector.size();
 
     destroyed = (vectorsizeBefore - vectorsizeAfter) / vectorsizeBefore;
 
-    worth = sqrt(destroyed*maxdiff);
+    return (float)sqrt(destroyed*maxdiff);
 
 
-    //return worth;
+}
 
-} */
+void sort(vector<LogEntry>& log)
+{
+    //this does all the sorting that needs to happen
+    //saddly this is a false statement
+    //the monkey desperately tried to hold on to the flying dorm room.
+}
+
+void cut(vector<LogEntry>& log, Part* cutID)
+{
+    auto it = log.back().PieceCollector.find(cutID)++;
+    while(it != log.back().PieceCollector.end())
+        log.back().PieceCollector.erase(it++);
+}
+
 
 //partdavid
 bool setBestOrMoreLayers(vector<LogEntry>& log)
@@ -248,11 +259,10 @@ void calculateNewCombinedProbabilityForPuzzlePiecesArithmetic(vector<LogEntry>& 
 {
     float totalValue = 0.0;
     int i;
-    for(int i; i < log.back().PieceCollector.size(); i++)
-    {
+    for(int i; i < log.back().PieceCollector.size(); i++);
+
         // sum Probability of current Puzzle Piece in PieceCollector vector
         //totalValue += *(log.back().PieceCollector.);
-    }
 
     //return totalValue / i;
 }
