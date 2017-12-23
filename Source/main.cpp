@@ -12,7 +12,6 @@ int main()
     puzzleMat.createRandomBox();
     cout << "here" << endl;
     puzzleMat.a1.printConstraintMatrix();
-    puzzleMat.printBox();
 
     //vector<vector<PuzzlePiece*>> ab1class = abstractionLayer1classify(log, p_myFirstBox,puzzleMat);
     while(next(log, puzzleMat.p_myBox,puzzleMat));
