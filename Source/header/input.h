@@ -38,7 +38,9 @@ public:
         m_numOfRotations = numOfRotations;
     }
 
-    AbstractionLayer_1_Properties m_test1;
+    void print(){m_a1.print();}
+
+    AbstractionLayer_1_Properties m_a1;
     DestructionPower_Properties m_destruction;
 private:
     int32_t m_partID;

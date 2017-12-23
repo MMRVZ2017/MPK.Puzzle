@@ -25,7 +25,7 @@ public:
     void setEdgeZero();
 
 
-    bool CreateRandomPuzzle();
+    void CreateRandomPuzzle();
     qualityVector returnInBox(vector<Part>& PuzzleBox);
     void printConstraintMatrix();
 

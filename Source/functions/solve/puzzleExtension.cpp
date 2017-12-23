@@ -7,22 +7,43 @@
 
 void Puzzle::printPuzzle()
 {
-    //print every layer individually for now and later make complete visual
+    cout << "a1: " << endl;
+    a1.printConstraintMatrix();
+}
+
+void Puzzle::printBox()
+{
+    int i=0;
+    for(auto it:myBox)
+    {
+        cout << "Part " << i++ << ":" << endl;
+        it.print(); cout << endl;
+
+    }
 }
 
 //puts a puzzlepiece back into its box
 void Puzzle::putIntoBox()
 {
     Part tmpPart;
+    int id = 0;
     for(int i=0;i<this->getSizeAsCoor().col;i++)
     {
         for(int j=0;j<this->getSizeAsCoor().row;j++)
         {
-            //TODO! add rotation of all parts
-            //TODO! add id to every part (how)
-            tmpPart.m_test1=this->a1.m_constraintMatrix[i][j];
-            //TODO! add all other layers here
-            myBox.emplace_back(tmpPart);
+
+            tmpPart.m_a1=this->a1.m_constraintMatrix[i][j];
+            //sets part id
+            tmpPart.SetPartID(id++);
+            // adds all 4 rotations to Box
+            for(int rotations=0;rotations<4;rotations++)
+            {
+                tmpPart.m_a1.shift(1);
+                //TODO! add all other layers and rotationvariance here
+                myBox.emplace_back(tmpPart);
+
+            }
+
         }
     }
 }

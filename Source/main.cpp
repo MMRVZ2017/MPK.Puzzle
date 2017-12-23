@@ -7,18 +7,16 @@ int main()
 
     unsigned int cols=5, rows=6;
 
-    //some basic random puzzle stuff
-    Puzzle myFirstPuzzle(cols,rows);
-    myFirstPuzzle.createRandomBox();
-
-    //some advanced solver stuff
     vector<LogEntry> log;
-
     Puzzle puzzleMat(cols, rows);
     puzzleMat.createRandomBox();
+    cout << "here" << endl;
+    puzzleMat.a1.printConstraintMatrix();
+    puzzleMat.printBox();
 
     //vector<vector<PuzzlePiece*>> ab1class = abstractionLayer1classify(log, p_myFirstBox,puzzleMat);
     while(next(log, puzzleMat.p_myBox,puzzleMat));
 
     puzzleMat.printPuzzle();
+    return 0;
 }

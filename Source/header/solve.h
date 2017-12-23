@@ -43,7 +43,6 @@ public:
     Puzzle(unsigned int newcols,unsigned int newrows):rows(newrows),cols(newcols)
     {
         a1.PreProcessing({rows,cols}, nullptr);
-        a1.CreateRandomPuzzle();
     }
 
     coor getSizeAsCoor()
@@ -54,6 +53,7 @@ public:
 
     void removeConstrains(coor removeCoordinates);
     void printPuzzle();
+    void printBox();
 
     void createRandomBox(){createRandomPuzzle();putIntoBox();shuffle();createp_box();}
     void createRandomPuzzle();
