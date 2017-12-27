@@ -26,11 +26,16 @@ using std::endl;
 #include <fstream>
 #include <string>
 //</editor-fold>
-
+double pointLength(Point2d point);
 // typedefs:
 class PuzzlePoint{
+
+
+
 public:
     PuzzlePoint(const Point & p, const vector<Point> & c){
+
+        its_cornerity = 0.0;
         its_point = p;
         its_index = -1;
         its_linR = {0.0,0.0,0.0,0.0};
@@ -58,7 +63,12 @@ public:
     Vec4d its_linR;
     Vec4d its_linL;
     vector<Point> its_contour;
+    double its_cornerity;
     int its_index;
+    bool operator < (const  PuzzlePoint & other)
+    {
+        return its_cornerity < other.its_cornerity;
+    }
 };
 void PuzzlePoint::fitLines(int noPoints) {
     Point cPoint = its_point;
@@ -71,21 +81,13 @@ void PuzzlePoint::fitLines(int noPoints) {
         // cout<<contours[index][k]<<endl;
         Point2f contour2Edge = Point2f(its_contour[k].x-float(cPoint.x), its_contour[k].y-float(cPoint.y));
         float distDiff =  sqrt((contour2Edge.x)*(contour2Edge.x)+(contour2Edge.y)*(contour2Edge.y));
-        //cout<<"distDiff: "<<distDiff<<endl;
-        // cout<<"min_diff: "<<min_diff<<endl;
         if(distDiff<minDiff){
             minDiff = distDiff;
             cIndex = k;
         }
-
-
     }
-    //cout<<"cindex: "<< cIndex<<endl;
 
     vector<Point> neighbours;
-    //RotatedRect ellipse  = fitEllipse(neighbours);
-    // minEnclosingCircle(neighbours, Point2f& center, float& radius)
-    //double ellipseFit = matchShapes(ellipse.points(),neighbours);
     vector<Point> rightNeighbours;
     vector<Point> leftNeighbours;
     Vec4d lin;
@@ -123,6 +125,14 @@ void PuzzlePoint::fitLines(int noPoints) {
     fitLine(rightNeighbours,its_linR,CV_DIST_L2,0,0.01,0.01);
     fitLine(leftNeighbours,its_linL,CV_DIST_L2,0,0.01,0.01);
 
+    Point2d PointR = Point2d(its_linR[2]-cPoint.x,its_linR[3]-cPoint.y);
+    Point2d PointL = Point2d(its_linL[2]-cPoint.x,its_linL[3]-cPoint.y);
+
+    double cos_alpha = (PointR.x)*(PointL.x)+(PointR.y)*(PointL.y)/(pointLength(PointL))*(pointLength(PointR));
+    if(cos_alpha==0)
+        cos_alpha = 0.001;
+    its_cornerity =  1/cos_alpha;
+
 
 }
 //double PuzzlePoint::cornerLikeNess(){}
@@ -130,7 +140,7 @@ void PuzzlePoint::fitLines(int noPoints) {
 vector<double> differentiate(vector<double> input, int windowSize);
 vector<double> movingAverage(vector<double> input, int windowSize);
 double avg (vector<double> input);
-double pointLength(Point2d point);
+
 RotatedRect getBaseRect(const Mat &);
 Mat drawRect(const RotatedRect& rectangle, Mat src);
 double lineFitNess(Vec4d lin, vector<Point> points, Point cPoint);
@@ -185,6 +195,7 @@ int main() {
         cvtColor(canny,image,CV_GRAY2BGR);
 
         //</editor-fold>
+
         //<editor-fold desc="Finding centroid of image">
         Contour_t contours;
         Hierarchy_t hierarchy;
@@ -246,6 +257,7 @@ int main() {
 
         }
         //</editor-fold>
+
         //<editor-fold desc="Generating circular buffer">
         imshow("line",image);
         int startIndex = 100;
@@ -265,6 +277,8 @@ int main() {
             }
         }
         //</editor-fold>
+
+        //<editor-fold desc="Applying moving average edge points">
         // for moving average:
         //TODO make windowSize adaptive:
         int windowSize = 7;
@@ -283,7 +297,9 @@ int main() {
         double avgSlope = avg(diff_l);
         double avgDist = avg(mAvg);
         cout<<endl;
-        //<editor-fold desc="Point sorting ( convex or concave)">
+        //</editor-fold>
+
+        //<editor-fold desc="Point sorting (convex or concave)">
         for(int j = startIndex; j < diff_l.size()-startIndex; j++){
             int ind = j - startIndex; // maybe shouldn't: -windowSize
            // cout<<"ind: "<<ind<<endl;
@@ -337,140 +353,51 @@ int main() {
         vector<int> indexes;
         // Examining each convex Point:
         //<editor-fold desc="Fitting lines to convex points-- finding at least the first 3 corners">
+        vector<PuzzlePoint> puzzlePoints;
         for(int o = 0; o<convexPoints.size(); o++){
             Point cPoint = convexPoints[o];
             PuzzlePoint puzzP(convexPoints[o],contours[index]);
-           // cout<<"cPoint: "<<cPoint<<endl;
-            int cIndex = -1;
-            float minDiff = 1000.0;
-            // Find the index of the contour points
-            for(int k = 0; k<contours[index].size();k++){
-
-                // cout<<contours[index][k]<<endl;
-                Point2f contour2Edge = Point2f(contours[index][k].x-float(cPoint.x), contours[index][k].y-float(cPoint.y));
-                float distDiff =  sqrt((contour2Edge.x)*(contour2Edge.x)+(contour2Edge.y)*(contour2Edge.y));
-                //cout<<"distDiff: "<<distDiff<<endl;
-                // cout<<"min_diff: "<<min_diff<<endl;
-                if(distDiff<minDiff){
-                    minDiff = distDiff;
-                    cIndex = k;
-                }
-
-                indexes.push_back(cIndex);
-
-            }
-            //cout<<"cindex: "<< cIndex<<endl;
-			
-            vector<Point> neighbours;
-            //RotatedRect ellipse  = fitEllipse(neighbours);
-           // minEnclosingCircle(neighbours, Point2f& center, float& radius)
-            //double ellipseFit = matchShapes(ellipse.points(),neighbours);
-            vector<Point> rightNeighbours;
-            vector<Point> leftNeighbours;
-            Vec4d lin;
-            Vec4d linR, linL;
             double wSize = contours[index].size()/35;
-
-            //<editor-fold desc="Find neighbouring points">
-            auto wind = int(round(wSize)); // 30
-            // for circularization the contours array:
-            for(int u = -wind; u<wind; u++){
-                int origInd = cIndex+u;
-                int contInd = 0;
-                int det = contours[index].size()-1;
-                if(origInd > det){ // go around
-                    contInd = origInd-contours[index].size();
-                }
-                else if(origInd<0){
-                    contInd = contours[index].size()+origInd;
-                }
-                else{
-                    contInd = origInd;
-                }
-                if(u<0){
-                    leftNeighbours.push_back(contours[index][contInd]);
-                }
-                else{
-                    rightNeighbours.push_back(contours[index][contInd]);
-                }
-                neighbours.push_back(contours[index][contInd]);
-            }
-            //</editor-fold>
-
             puzzP.fitLines(int(round(wSize)));
-			//TODO: try min area enclosing circle as well
-			// or BB concept: hough circles for raw image
-            fitLine(neighbours,lin,CV_DIST_L2,0,0.01,0.01);
-            fitLine(rightNeighbours,linR,CV_DIST_L2,0,0.01,0.01);
-            fitLine(leftNeighbours,linL,CV_DIST_L2,0,0.01,0.01);
-
-            lin = puzzP.its_lin;
-            linR = puzzP.its_linR;
-            linL = puzzP.its_linL;
-
-            Point2d PointR = Point2d(linR[2]-cPoint.x,linR[3]-cPoint.y);
-            Point2d PointL = Point2d(linL[2]-cPoint.x,linL[3]-cPoint.y);
-
-            double cos_alpha = (PointR.x)*(PointL.x)+(PointR.y)*(PointL.y)/(pointLength(PointL))*(pointLength(PointR));
-            if(cos_alpha==0)
-                cos_alpha = 0.001;
            // cout<<lin<<endl;
             //<editor-fold desc="display the line">
             Vec4i displayLine;
+            double wind = wSize;
             displayLine[0] = int(round(lin[0]*wind+cPoint.x));
             displayLine[1] = int(round(lin[1]*wind+cPoint.y));
             displayLine[2] = int(round(cPoint.x)-lin[0]*wind);
             displayLine[3] = int(round(cPoint.y)-lin[1]*wind);
             line(image,Point(displayLine[2],displayLine[3]),Point(displayLine[0],displayLine[1]),Scalar(0,255,200),2);
-            vector<double> dist2Lins;
+            //vector<double> dist2Lins;
             //</editor-fold>
-
-            double lineFitness = lineFitNess(lin,neighbours,cPoint);
-            lineFitness = lineFitNess(linL,leftNeighbours,cPoint)+lineFitNess(linR,rightNeighbours,cPoint);
-            lineFitness = 1/cos_alpha;
-            //double lineFitness = findmax(dist2Lins);
-            lineFits.push_back(lineFitness);
+            puzzlePoints.push_back(puzzP);
             // examine contour region and categorize
 
         }// End of line fitting to convex points
         //</editor-fold>
-        vector<Point> sortedConvex;
+        std::sort(puzzlePoints.begin(), puzzlePoints.end());
         vector<Point> rectPoints;
-        if(convexPoints.size()>4){
-            // sort the points based on how much they are cornerlike (first: cornerlike, last: flat
-            while(!lineFits.empty()){
-                // float minLength =  findmin(lengths); // ascending order
-                double maxLength =  findmin(lineFits); // descending order
-                for(size_t a = 0;a<convexPoints.size(); a++){
-                    if(lineFits[a]==maxLength){
-                        lineFits.erase(lineFits.begin()+ a);
-                        sortedConvex.push_back(convexPoints[a]);
-                        convexPoints.erase(convexPoints.begin() + a);
-                    }
-                }
-            }
-            //drawing the points
-            for(int j = 0; j<sortedConvex.size();j++){
-                char str[200];
-                sprintf(str," no. %d",j);
-                cout<<str<<endl;
-                putText(image, str, sortedConvex[j], FONT_HERSHEY_PLAIN, 1,  Scalar(0,0,255,255));
-                //circle(image,sortedConvex[j],20,Scalar(0,0,255),2);
-            }
-            for(int j = 0; j<4;j++) {
-                rectPoints.push_back(sortedConvex[j]);
-            }
-            RotatedRect minRect = minAreaRect(rectPoints);
-            Point2f rect_points[4]; minRect.points( rect_points );
-            for( int j = 0; j < 4; j++ )
-                line( image, rect_points[j], rect_points[(j+1)%4], Scalar(255,255,0), 3, 8 );
+        for(int j = 0; j<puzzlePoints.size();j++){
+            //cout<<"itscornerity: "<<puzzlePoints[j].its_cornerity<<endl;
+            // clecer algorithm that finds all of the remaining corners:
 
-        }// end if (more than 4 convex points)
-        else{
-            // only 4 convex points, draw bounding rectangle over the piece
-
+            
+            ///////////////////////////////////////////////////
+            char str[200];
+            sprintf(str," no. %d",j);
+            cout<<str<<endl;
+            putText(image, str, puzzlePoints[j].its_point, FONT_HERSHEY_PLAIN, 1,  Scalar(0,0,255,255));
+            //circle(image,sortedConvex[j],20,Scalar(0,0,255),2);
         }
 
+        // drawing box around first for corner candidates:
+        for(int j = 0; j<4;j++) {
+            rectPoints.push_back(puzzlePoints[j].its_point);
+        }
+        RotatedRect minRect = minAreaRect(rectPoints);
+        Point2f rect_points[4]; minRect.points( rect_points );
+        for( int j = 0; j < 4; j++ )
+            line( image , rect_points[j], rect_points[(j+1)%4], Scalar(255,255,0), 3, 8 );
 
         imshow("possible corners",  image);
         char outputFile [100];
