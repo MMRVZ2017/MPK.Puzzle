@@ -82,6 +82,12 @@ Mat resultImage( vector<vector< SolutionElement>> solutionMx ){
             //cout<<"imageIndex: "<< imageNumber << endl;
 
             Mat img = readImage(imageNumber,"../images/input/input_display/");
+            int angle = solutionMx[i][j].orientation*90;
+            Point2f center;
+            center.x = img.cols/2;
+            center.y = img.rows/2;
+            Mat RotMatrix = getRotationMatrix2D(center,angle,1);
+            warpAffine(img,img,RotMatrix, img.size());
 //            imshow("readImg",img); // you can comment with Ctrl + / did you know? :D
 //            waitKey(0);
 
@@ -143,6 +149,31 @@ Mat segment(Mat src){
 
 
 }
+
+
+Mat segmentWS(Mat src){
+    bool loadfailed = false;
+    if (!src.data || src.empty())
+    {
+        std::cout << "Problem loading image!!!" << std::endl;
+    }
+    else{
+        loadfailed = true;
+    }
+    Mat gray;
+
+    cvtColor(src, gray, COLOR_BGR2GRAY);
+    threshold(gray,gray,210,255,THRESH_BINARY_INV);
+    int padding = 100;
+    copyMakeBorder(gray, gray, padding, padding, padding, padding, BORDER_CONSTANT, (0,0,0));
+    Mat canny;
+    // Canny(gray,canny,100,200,3);
+    canny = drawLargestContour(gray,0,true);
+    // Convert image to binary
+    return canny;
+
+}
+
 
 Mat segmentThresh_bad(Mat src){
     bool loadfailed = false;
@@ -294,8 +325,6 @@ Mat drawLargestContour(Mat bw, int approxStrength, bool filled){
     Contour_t contours;
     findContours(bw, contours, hierarchy, CV_RETR_EXTERNAL, CV_CHAIN_APPROX_SIMPLE);
     int largestIndex = getLongestContourIndex(contours);
-    Contour_t  largestContour;
-    largestContour.resize(contours.size()); //Otherwise it is just a null pointer and the program crashes!
     size_t index = 0;
     int strength = approxStrength; // distance between the original contour and the approximated contour
     approxPolyDP(Mat(contours[largestIndex]), contours[largestIndex], strength, true);
@@ -490,7 +519,7 @@ int findOrientation(const Mat inputBW){
         imshow("BW", bw);
         imshow("Canny Image", cannyImage);
         imshow("lines",lineImage);
-        waitKey(0);
+        //waitKey(0);
     }
 
     // Arranging the significant segments into groups based on their angles (parallelity):
@@ -722,28 +751,29 @@ int findOrientation(const Mat inputBW){
 
 Mat correct(Mat src, bool with_alpha) {
 
-    Mat bw = segment(src);
+    Mat bw = segmentWS(src);
     int orientation = findOrientation(bw);
     Mat returnBW = bw.clone();
+    Mat segmented = bw.clone();
+    imshow("seg",segmented );
+    // waitKey(0);
     //imshow("retBW", returnBW);
     int padding = 100;
     Mat padded;
     copyMakeBorder(src, src, padding, padding, padding, padding, BORDER_CONSTANT, Scalar(255,255,255));
     // imshow("src",src);
     // Erode the remaining white edge
-    int morph_size = 5;
-    Mat segmented = bw;
+
+    int morph_size = 2;
     Mat element = getStructuringElement( MORPH_ELLIPSE, Size( 2*morph_size + 1, 2*morph_size+1 ), Point( morph_size, morph_size ) );
     // Point morph size makes it omnidirectional
     morphologyEx(segmented, segmented, MORPH_ERODE, element);
-    Canny(segmented,segmented,100,200,3);
+
+    // Canny(segmented,segmented,100,200,3);
     // close shape:
-    morph_size = 5;
-    element = getStructuringElement( MORPH_RECT, Size( 2*morph_size + 1, 2*morph_size+1 ), Point( morph_size, morph_size ) );
-    morphologyEx(segmented,segmented,MORPH_CLOSE,element);
-    segmented = drawLargestContour(segmented,0,true);
-
-
+//
+//    Canny(segmented,segmented,100,300,3);
+//    segmented = drawLargestContour(segmented,1,true);
 
     Mat alphaimage;
     cvtColor(src,alphaimage,CV_BGR2BGRA);
@@ -804,6 +834,13 @@ int findmax(std::vector<int> vals){
     return max;
 }
 
+double findmax(std::vector<double> vals){
+    double max=vals[0];
+    for(size_t i=0;i<vals.size();i++)
+        if(max<vals[i]) max=vals[i];
+    return max;
+}
+
 float findmax(std::vector<float> vals){
     float max=vals[0];
     for(size_t i=0;i<vals.size();i++)
@@ -825,6 +862,12 @@ float findmin(std::vector<float> vals){
     return min;
 }
 
+double findmin(std::vector<double> vals){
+    double min=vals[0];
+    for(size_t i=0;i<vals.size();i++)
+        if(min>vals[i]) min=vals[i];
+    return min;
+}
 std::vector<int> histogram(std::vector<int> data, int rangeWidth){
 
     int dataMax = findmax(data);

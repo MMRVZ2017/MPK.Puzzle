@@ -32,16 +32,17 @@ const int noRows = 5;
 const int noCols = 13;
 
 int main() {
-    for(int i=0;i<10;i++){
+    for(int i=0;i<1008;i++){
         Mat res = readImage(i,"../images/input/input_BB/");
-        imshow("res",res);
-         waitKey(0);
+        //imshow("res",res);
+        //  waitKey(0);
         //imshow("res",res);
         Mat segmentCheck = segment(res);
         int nonZeros =  countNonZero(segmentCheck);
         Mat straight;
         Mat alpha;
-        if(nonZeros>2000){
+        // check if image is usable (there are enough pixels to work with:
+        if(nonZeros>2000){// check if image is usable (there are enough pixels to work with:
             straight = correct(res, false); // without alpha channel
             alpha = correct(res, true); // with alpha channel
         }
