@@ -103,7 +103,7 @@ double lineFitNess(Vec4d lin, vector<Point> points, Point cPoint);
 void displayLine_(Mat image, Vec4d lin, double length);
 
 int main() {
-    for(int i = 0;i<1008;i++){
+    for(int i = 0;i<1000;i++){
         cout<<"i: "<<i<<endl;
         Mat image = readImage(i, "../images/output/blackAndWhite/output_VZ/");
         //imshow("image",image);
