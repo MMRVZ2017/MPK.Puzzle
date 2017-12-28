@@ -303,7 +303,7 @@ int main() {
         vector<double> lineFits;
         vector<int> indexes;
         // Examining each convex Point:
-        //<editor-fold desc="Fitting lines to convex points-- finding at least the first 3 corners">
+        //<editor-fold desc="Fitting lines to convex points-- finding the corner and male connector candidates">
         vector<PuzzlePoint> puzzlePoints;
         for(int o = 0; o<convexPoints.size(); o++){
             Point cPoint = convexPoints[o];
