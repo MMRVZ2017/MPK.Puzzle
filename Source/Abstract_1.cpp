@@ -33,9 +33,6 @@ using std::endl;
 
 
 class PuzzlePoint{
-
-
-
 public:
     PuzzlePoint(const Point & p, const vector<Point> & c){
 
@@ -48,13 +45,11 @@ public:
         its_contour = c;
         float minDiff = 1000.0;
         // Find the index of the contour points
+        its_linFactor = 0.2;
         for(int k = 0; k<its_contour.size();k++){
 
-            // cout<<contours[index][k]<<endl;
             Point2f contour2Edge = Point2f(its_contour[k].x-float(its_point.x), its_contour[k].y-float(its_point.y));
             float distDiff =  sqrt((contour2Edge.x)*(contour2Edge.x)+(contour2Edge.y)*(contour2Edge.y));
-            //cout<<"distDiff: "<<distDiff<<endl;
-            // cout<<"min_diff: "<<min_diff<<endl;
             if(distDiff<minDiff){
                 minDiff = distDiff;
                 its_index = k;
@@ -62,23 +57,31 @@ public:
         }
     }
     Point its_point;
-    void fitLines(int noPoints); // fits lines to the right and left side of the point, using noPoints amount of points
+    void findCornerity(int noPoints); // fits lines to the right and left side of the point, using noPoints amount of points
     Vec4d its_lin;
     Vec4d its_linR;
     Vec4d its_linL;
     vector<Point> its_contour;
     double its_cornerity;
     int its_index;
+    double its_linFactor;
     bool operator < (const  PuzzlePoint & other)
     {
         return its_cornerity < other.its_cornerity;
     }
 };
 
-
+double parallelity(Vec4d lin1, Vec4d lin2);
 
 // function headers:
-Point closest2Line(const vector<Point> & points, Vec4d lin);
+
+int closestPoint(vector<PuzzlePoint> points, Point p);
+
+bool intersection(Vec4d l1, Vec4d l2, Point2d & r);
+
+int findNeighbour(const vector<PuzzlePoint> & points, const PuzzlePoint & point, bool left);
+
+int closest2Line(const vector<PuzzlePoint> & points, Vec4d lin);
 
 double pointLength(Point2d point);
 
@@ -94,7 +97,7 @@ Mat drawRect(const RotatedRect& rectangle, Mat src);
 
 double lineFitNess(Vec4d lin, vector<Point> points, Point cPoint);
 
-
+void displayLine_(Mat image, Vec4d lin, double length);
 
 int main() {
     for(int i = 0;i<1008;i++){
@@ -103,7 +106,6 @@ int main() {
         imshow("image",image);
         Mat segmentCheck = segment(image);
         int nonZeros =  countNonZero(segmentCheck);
-        cout<<nonZeros<<endl;
         if(nonZeros>4000){
         }
         else{
@@ -219,7 +221,6 @@ int main() {
             // Putting the first 20 elements to the end
             l_alpha.push_back(l_alpha[j]);
         }
-        cout<<"l_alpha.size: "<<l_alpha.size()<<endl;
         for(size_t j = 0; j < l_alpha.size()+startIndex;j++){
             if(j<startIndex){
                 infiniteAlpha.push_back(l_alpha[l_alpha.size()-2*startIndex+j]);
@@ -236,10 +237,8 @@ int main() {
         int windowSize = 7;
 
         vector<double>mAvg = movingAverage(infiniteAlpha, windowSize);
-        cout<<"mAvg.size: "<<mAvg.size()<<endl;
         vector<double> diff_l = differentiate(mAvg,3);
         vector<double> diff2_l = differentiate(diff_l,3);
-        cout<<"diff_l.size: "<<diff_l.size()<<endl;
         vector<Point> convexPoints;
         vector<Point> concavePoints;
         vector<Point> inPoints;
@@ -248,13 +247,11 @@ int main() {
         double maxSlope = findmax(diff_l);
         double avgSlope = avg(diff_l);
         double avgDist = avg(mAvg);
-        cout<<endl;
         //</editor-fold>
 
         //<editor-fold desc="Point sorting (convex or concave)">
         for(int j = startIndex; j < diff_l.size()-startIndex; j++){
             int ind = j - startIndex; // maybe shouldn't: -windowSize
-           // cout<<"ind: "<<ind<<endl;
             // if the sign changes from - to + or + to - (discrete nullposition)
             if(diff_l[j+1]*diff_l[j-1] < 0) { // if nullposition
                 double middleIndex = 0.0;
@@ -273,7 +270,6 @@ int main() {
                 {  // corner or outPoint, blue:
                     circle(image, edge_alpha[ind], 3, Scalar(255, 100, 0), 3);
                     convexPoints.push_back(edge_alpha[ind]);
-                    cout<<"edge_alpha(ind): "<<edge_alpha[ind]<<endl;
                     /*
                     int wind=3;
                     double sum = 0;
@@ -283,9 +279,9 @@ int main() {
                     double avg = sum/(2*double(wind));
 
 
-                    cout<<"angle: "<<ind<<endl;
+
                     double value = diff_l[j-6];
-                    cout<<"avg: "<<avg<<endl;
+
                     if(abs(value) >0.15){ // than outPoint, blue
                        // circle(image, edge_alpha[ind], 3, Scalar(255, 100, 0), 3);
                     }
@@ -310,18 +306,20 @@ int main() {
             Point cPoint = convexPoints[o];
             PuzzlePoint puzzP(convexPoints[o],contours[index]);
             double wSize = contours[index].size()/35;
-            puzzP.fitLines(int(round(wSize)));
+            puzzP.findCornerity(int(round(wSize)));
            // cout<<lin<<endl;
             //<editor-fold desc="display the line">
             Vec4i displayLine;
             double wind = wSize;
-            displayLine[0] = int(round(lin[0]*wind+cPoint.x));
-            displayLine[1] = int(round(lin[1]*wind+cPoint.y));
-            displayLine[2] = int(round(cPoint.x)-lin[0]*wind);
-            displayLine[3] = int(round(cPoint.y)-lin[1]*wind);
-            line(image,Point(displayLine[2],displayLine[3]),Point(displayLine[0],displayLine[1]),Scalar(0,255,200),2);
+            displayLine[0] = int(round(puzzP.its_lin[0]*wind+cPoint.x));
+            displayLine[1] = int(round(puzzP.its_lin[1]*wind+cPoint.y));
+            displayLine[2] = int(round(cPoint.x)-puzzP.its_lin[0]*wind);
+            displayLine[3] = int(round(cPoint.y)-puzzP.its_lin[1]*wind);
+            //line(image,Point(displayLine[2],displayLine[3]),Point(displayLine[0],displayLine[1]),Scalar(0,255,200),2);
             //vector<double> dist2Lins;
             //</editor-fold>
+            displayLine_(image, puzzP.its_linR,wSize);
+            displayLine_(image, puzzP.its_linL,wSize);
             puzzlePoints.push_back(puzzP);
             // examine contour region and categorize
 
@@ -329,27 +327,53 @@ int main() {
         //</editor-fold>
         std::sort(puzzlePoints.begin(), puzzlePoints.end());
         vector<Point> rectPoints;
-        for(int j = 0; j<puzzlePoints.size();j++){
-            //cout<<"itscornerity: "<<puzzlePoints[j].its_cornerity<<endl;
-            // clecer algorithm that finds all of the remaining corners:
-
-
-            ///////////////////////////////////////////////////
-            char str[200];
-            sprintf(str," no. %d",j);
-            cout<<str<<endl;
-            putText(image, str, puzzlePoints[j].its_point, FONT_HERSHEY_PLAIN, 1,  Scalar(0,0,255,255));
-            //circle(image,sortedConvex[j],20,Scalar(0,0,255),2);
+        if(puzzlePoints.size() == 4){
+            for(int k = 0; k<4;k++){
+                circle(image, puzzlePoints[k].its_point, 10, Scalar(200, 100, 100), 4);
+            }
         }
+        else {
 
-        // drawing box around first for corner candidates:
-        for(int j = 0; j<4;j++) {
-            rectPoints.push_back(puzzlePoints[j].its_point);
+            for (int j = 0; j < puzzlePoints.size(); j++) {
+                //cout<<"itscornerity: "<<puzzlePoints[j].its_cornerity<<endl;
+                // clecer algorithm that finds all of the remaining corners:
+                ///////////////////////////////////////////////////
+                char str[200];
+                sprintf(str, " no. %d", j);
+                cout << str << endl;
+                putText(image, str, puzzlePoints[j].its_point, FONT_HERSHEY_PLAIN, 1, Scalar(0, 0, 255, 255));
+                //circle(image,sortedConvex[j],20,Scalar(0,0,255),2);
+            }
+            //int closestIndexR = closest2Line(puzzlePoints,puzzlePoints[0].its_linR);
+            // circle(image,puzzlePoints[closestIndexR].its_point,10,Scalar(200,100,100),4);
+
+
+            circle(image, puzzlePoints[0].its_point, 10, Scalar(200, 100, 100), 4);
+            int closestIndexL = findNeighbour(puzzlePoints, puzzlePoints[0], true);
+            circle(image, puzzlePoints[closestIndexL].its_point, 10, Scalar(200, 100, 100), 4);
+            cout<<"left: "<< puzzlePoints[closestIndexL].its_point<<endl;
+            int closestIndexR = findNeighbour(puzzlePoints, puzzlePoints[0], false);
+            circle(image, puzzlePoints[closestIndexR].its_point, 10, Scalar(200, 100, 100), 4);
+            cout<<"right: "<< puzzlePoints[closestIndexR].its_point<<endl;
+            Point2d intersectPoint;
+            bool success = intersection(puzzlePoints[closestIndexR].its_linR, puzzlePoints[closestIndexL].its_linL,
+                                        intersectPoint);
+            Point intP(int(round(intersectPoint.x)), int(round(intersectPoint.y)));
+            int lastCorner = closestPoint(puzzlePoints, intP);
+            circle(image, puzzlePoints[lastCorner].its_point, 10, Scalar(200, 100, 100), 4);
+            cout<<"last: "<<puzzlePoints[lastCorner].its_point<<endl;
+            //circle(image,intP,10,Scalar(200,100,100),4);
+
+            // drawing box around first for corner candidates:
+            for (int j = 0; j < 4; j++) {
+                rectPoints.push_back(puzzlePoints[j].its_point);
+            }
+            RotatedRect minRect = minAreaRect(rectPoints);
+            Point2f rect_points[4];
+            minRect.points(rect_points);
+            for (int j = 0; j < 4; j++){}
+            // line( image , rect_points[j], rect_points[(j+1)%4], Scalar(255,255,0), 3, 8 );
         }
-        RotatedRect minRect = minAreaRect(rectPoints);
-        Point2f rect_points[4]; minRect.points( rect_points );
-        for( int j = 0; j < 4; j++ )
-            line( image , rect_points[j], rect_points[(j+1)%4], Scalar(255,255,0), 3, 8 );
 
         imshow("possible corners",  image);
         char outputFile [100];
@@ -375,31 +399,138 @@ int main() {
 
 
 }
+
+void displayLine_(Mat image, Vec4d lin, double length){
+    Vec4i displayLin;
+    double wind = length;
+    displayLin[0] = int(round(lin[0]*wind+lin[2]));
+    displayLin[1] = int(round(lin[1]*wind+lin[3]));
+    displayLin[2] = int(round(lin[2]));
+    displayLin[3] = int(round(lin[3]));
+    line(image,Point(displayLin[2],displayLin[3]),Point(displayLin[0],displayLin[1]),Scalar(0,255,200),2);
+}
+
+double parallelity(Vec4d lin1, Vec4d lin2){
+    Point2d l1(lin1[0],lin1[1]);
+    Point2d l2(lin2[0],lin2[1]);
+    //double crossP = (l1.x)*(l2.y)-(l1.y)*(l2.y);
+    double dotP = (l1.x)*(l2.x)+(l1.y)*(l2.y);
+    double cos_alpha = abs(dotP/((pointLength(l1))*(pointLength(l2))));
+   // double sin_alpha = abs(crossP/(pointLength(l1)*pointLength(l2)));
+    return 1/cos_alpha;
+
+}
+
 double dist2Line(Vec4d lin, Point point){
-    vector<double> dist2Lins;
-    double x_0 = double( lin[2]);
-    double y_0 = double( lin[3]);
-    double x_p =  point.x-x_0;
-    double y_p =  point.y-y_0;
-    double v_x =  double(lin[0]);
-    double v_y =  double(lin[1]);
-    double dist2Lin = sqrt(pow(  x_p*(1-pow(v_x,2) -v_x*v_y*y_p) , 2 ) + pow(  y_p*(1-pow(v_y,2))-v_x*v_y*x_p  ,2));
+    double x_0 = lin[2];
+    double y_0 = lin[3];
+    double x_p = point.x-x_0;
+    double y_p = point.y-y_0;
+    auto v_x =  double(lin[0]);
+    auto v_y =  double(lin[1]);
+    double dist2Lin =abs(x_p*v_y-y_p*v_x);
     return dist2Lin;
 
 }
 
-Point closest2Line(const vector<Point> & points, Vec4d lin){
+int closest2Line(const vector<PuzzlePoint> & points, Vec4d lin){
     vector<double> dist2Lins;
     double minDiff = 10000.0;
-    Point minPoint;
+    int minIndex = -1;
     for(int a = 0; a<points.size();a++){
-        double distance = dist2Line(lin,points[a]);
+        Point point = points[a].its_point;
+        double distance = dist2Line(lin,point);
+        cout<<"distance: "<<distance<<endl;
         dist2Lins.push_back(distance);
-        if(distance<minDiff){
-            minPoint = points[a];
+        if(distance<minDiff && point!=Point(lin[2], lin[3])){
+            minIndex = a;
             minDiff = distance;
         }
     }
+    return minIndex;
+
+}
+
+int findNeighbour(const vector<PuzzlePoint> & points, const PuzzlePoint & puzzP, bool left){
+    double minDiff = 10000.0;
+    int minIndex = -1;
+    vector<double> distances;
+    if(left){
+        for(int a = 0; a<points.size();a++) {
+            Point point = points[a].its_point;
+            double distance = 0;
+            distance = dist2Line(puzzP.its_linL, point);
+            double paral = parallelity(puzzP.its_linL, points[a].its_linR);
+            paral += parallelity(puzzP.its_linR, points[a].its_linL);
+            distances.push_back(distance);
+
+            if (distance < minDiff && point != Point(int(round(puzzP.its_linR[2])), int(round(puzzP.its_linR[3])))) {
+                minIndex = a;
+                minDiff = distance;
+            }
+        }//end for
+        std::sort(distances.begin(),distances.end());
+        int firstCandidate =  minIndex;
+        int secondCandidate = 0;
+        for(int i =0; i< points.size(); i++){
+            double d = dist2Line(puzzP.its_linL, points[i].its_point);
+            if(d == distances[2]){
+                if(distances[2]>(2*distances[1]+9)){ // if the second candidate would be too far away
+                         secondCandidate = firstCandidate;
+                }
+                else
+                    secondCandidate = i;
+            }
+        }
+        double paral1 = parallelity(puzzP.its_linL, points[firstCandidate].its_linR);
+        paral1+=parallelity(puzzP.its_linR, points[firstCandidate].its_linL);
+        double paral2 = parallelity(puzzP.its_linL, points[secondCandidate].its_linR);
+        paral2+=parallelity(puzzP.its_linR, points[secondCandidate].its_linL);
+        if(paral1<paral2)
+            return (firstCandidate);
+        else
+            //return(secondCandidate);
+            return (secondCandidate);
+
+
+    }
+    else{
+        for(int a = 0; a<points.size();a++) {
+            Point point = points[a].its_point;
+            double distance = 0;
+            distance = dist2Line(puzzP.its_linR, point);
+            double paral = parallelity(puzzP.its_linR, points[a].its_linL);
+            paral += parallelity(puzzP.its_linL, points[a].its_linR);
+            distances.push_back(distance);
+
+            if (distance < minDiff && point != Point(int(round(puzzP.its_linL[2])), int(round(puzzP.its_linL[3])))) {
+                minIndex = a;
+                minDiff = distance;
+            }
+        }//end for
+        std::sort(distances.begin(),distances.end());
+        int firstCandidate =  minIndex;
+        int secondCandidate = 0;
+        for(int i =0; i< points.size(); i++){
+            double d = dist2Line(puzzP.its_linR, points[i].its_point);
+            if(d == distances[2]){
+                secondCandidate = i;
+                if(distances[2]>(2*(distances[1])+9)){ // if the second candidate would be too far away
+                        secondCandidate = firstCandidate;
+                }
+            }
+        }
+        double paral1 = parallelity(puzzP.its_linR, points[firstCandidate].its_linL)
+        + parallelity(puzzP.its_linL,points[firstCandidate].its_linR);
+        double paral2 = parallelity(puzzP.its_linR, points[secondCandidate].its_linL)
+        + parallelity(puzzP.its_linL, points[secondCandidate].its_linR);
+        if(paral1<paral2)
+            return (firstCandidate);
+        else
+            return (secondCandidate);
+
+    }
+    return minIndex;
 
 }
 
@@ -488,18 +619,22 @@ RotatedRect getBaseRect(const Mat& src){
 double lineFitNess(Vec4d lin, vector<Point> points, Point cPoint){
     vector<double> dist2Lins;
     double sumD = 0.0;
+
     for(int a = 0; a<points.size();a++){
 
         double x_0 = double( cPoint.x);
         double y_0 = double( cPoint.y);
-        double x_p = double(points[a].x-x_0);
-        double y_p = double( points[a].y-y_0);
+        x_0 = lin[2];
+        y_0 = lin[3];
+        double x_p = points[a].x-x_0;
+        double y_p = points[a].y-y_0;
         double v_x =  double(lin[0]);
         double v_y =  double(lin[1]);
 
         // cout<<"x0: "<<x_0<<" y0: "<< y_0<<"x_p: "<< x_p << " y_p" << y_p<<" vx: "<<v_x<<" vy: "<<v_y<<endl;
-        double dist2Lin = -(x_p-x_0)*(y_0+v_y)+(y_p-y_0)*(x_0+v_x);
-        dist2Lin = sqrt(pow(  x_p*(1-pow(v_x,2) -v_x*v_y*y_p) , 2 ) + pow(  y_p*(1-pow(v_y,2))-v_x*v_y*x_p  ,2));
+        double dist2Lin = (x_p-x_0)*(y_0+v_y)-(y_p-y_0)*(x_0+v_x);
+        dist2Lin = x_p*v_y-y_p*v_x;
+       // dist2Lin = sqrt(pow(  x_p*(1-pow(v_x,2) -v_x*v_y*y_p) , 2 ) + pow(  y_p*(1-pow(v_y,2))-v_x*v_y*x_p  ,2));
         dist2Lins.push_back(dist2Lin);
         sumD += abs(dist2Lin);
 
@@ -507,8 +642,6 @@ double lineFitNess(Vec4d lin, vector<Point> points, Point cPoint){
     double lineFitness = sumD / (double)points.size();
     return lineFitness;
 }
-
-
 
 double pointLength(Point2d point){
     double length = sqrt((point.x)*(point.x)+(point.y)*(point.y));
@@ -527,16 +660,15 @@ Mat drawRect(const RotatedRect& rectangle,  Mat src){
     return src;
 }
 
-void PuzzlePoint::fitLines(int noPoints) {
-    Point cPoint = its_point;
-    // cout<<"cPoint: "<<cPoint<<endl;
+void PuzzlePoint::findCornerity(int noPoints) {
+    // cout<<"its_point: "<<its_point<<endl;
     int cIndex = -1;
     float minDiff = 1000.0;
     // Find the index of the contour points
     for(int k = 0; k<its_contour.size();k++){
 
         // cout<<contours[index][k]<<endl;
-        Point2f contour2Edge = Point2f(its_contour[k].x-float(cPoint.x), its_contour[k].y-float(cPoint.y));
+        Point2f contour2Edge = Point2f(its_contour[k].x-float(its_point.x), its_contour[k].y-float(its_point.y));
         float distDiff =  sqrt((contour2Edge.x)*(contour2Edge.x)+(contour2Edge.y)*(contour2Edge.y));
         if(distDiff<minDiff){
             minDiff = distDiff;
@@ -582,13 +714,76 @@ void PuzzlePoint::fitLines(int noPoints) {
     fitLine(rightNeighbours,its_linR,CV_DIST_L2,0,0.01,0.01);
     fitLine(leftNeighbours,its_linL,CV_DIST_L2,0,0.01,0.01);
 
-    Point2d PointR = Point2d(its_linR[2]-cPoint.x,its_linR[3]-cPoint.y);
-    Point2d PointL = Point2d(its_linL[2]-cPoint.x,its_linL[3]-cPoint.y);
+    its_linR[2] = its_point.x;
+    its_linR[3] = its_point.y;
+    its_linL[2] = its_point.x;
+    its_linL[3] = its_point.y;
+
+    double linefitness = lineFitNess(its_linR,rightNeighbours, Point2d(its_linR[2],its_linR[3]))+
+                         lineFitNess(its_linL,leftNeighbours, Point2d(its_linL[2],its_linL[3]));
+    Point2d PointR = Point2d(its_linR[2]-its_point.x,its_linR[3]-its_point.y);
+    Point2d PointL = Point2d(its_linL[2]-its_point.x,its_linL[3]-its_point.y);
+    PointR = Point2d(its_linR[0],its_linR[1]);
+    PointL = Point2d(its_linL[0],its_linL[1]);
 
     double cos_alpha = (PointR.x)*(PointL.x)+(PointR.y)*(PointL.y)/(pointLength(PointL))*(pointLength(PointR));
     if(cos_alpha==0)
         cos_alpha = 0.001;
-    its_cornerity =  1/cos_alpha;
+    double flatness = abs(cos_alpha);
+    double evenness = linefitness*its_linFactor; // how good can we fit a line on the two sides
+    //cout<<"flatness: "<<flatness<<endl;
+    //cout<<"evenness: "<<evenness<<endl;
+    its_cornerity =  (flatness+evenness);
 
 
+}
+
+// Finds the intersection of two lines, or returns false.
+// The lines are defined by (o1, p1) and (o2, p2).
+bool intersection__old(Vec4d l1, Vec4d l2, Point2d & r) {
+    Point2d o1(l1[2],l1[3]);
+    Point2d p1(l1[0],l1[1]);
+    Point2d o2(l2[2],l2[3]);
+    Point2d p2(l2[0],l2[1]);
+
+
+    Point2d x = o2 - o1;
+    Point2d d1 = p1 - o1;
+    Point2d d2 = p2 - o2;
+
+    double cross = (d1.x)*(d2.y) - (d1.y)*(d2.x);
+    cout<< "cross: "<<cross<<endl;
+    if (abs(cross) < /*EPS*/1e-8)
+        return false;
+
+    double t1 = (x.x * d2.y - x.y * d2.x)/cross;
+    r = o1 + d1 * t1;
+    cout<<"intersectP: "<< r <<endl;
+    return true;
+}
+
+bool intersection(Vec4d l1, Vec4d l2, Point2d & r) {
+    double a, c;
+    a = (l1[1])/(l1[0]);
+    c = l1[3]-l1[2]*a;
+    double b, d;
+    b = (l2[1])/(l2[0]);
+    d = l2[3]-l2[2]*b;
+
+    r = Point2d((d-c)/(a-b),(a*d-b*c)/(a-b));
+    return true;
+}
+
+int closestPoint(vector<PuzzlePoint> points, Point p){
+    double minDist = 10000;
+    int minIndex = 0;
+    for(int i = 0; i< points.size(); i++){
+        Point2d segment = p-points[i].its_point;
+        double distance = pointLength(segment);
+        if(distance<minDist){
+            minDist = distance;
+            minIndex = i;
+        }
+    }
+    return minIndex;
 }
