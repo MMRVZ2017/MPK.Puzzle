@@ -1,3 +1,6 @@
+// same as Abstract1.cpp as of 28-12-2017
+
+
 //<editor-fold desc="All the includes and stuff">
 //
 // Created by Tamas on 2017-12-07.
@@ -136,7 +139,7 @@ int main() {
 
         Mat canny;
         Canny(gray,canny,100,200,3);
-       // imshow("Canny",canny);
+        // imshow("Canny",canny);
         morph_size = 4;
         element = getStructuringElement( MORPH_ELLIPSE, Size( 2*morph_size + 1, 2*morph_size+1 ), Point( morph_size, morph_size ) );
         //image = drawLargestContour(image,0,true);
@@ -206,14 +209,14 @@ int main() {
             edge_alpha.push_back(edgeP);
             //line(image,centroid,endP,Scalar(0,255,255),1);
             //line(image,edgeP,endP,Scalar(255,200,100),1);
-           // circle(image,edgeP,2,Scalar(0,255,0),1);
+            // circle(image,edgeP,2,Scalar(0,255,0),1);
             //TODO edgeP_(alpha) vector
 
         }
         //</editor-fold>
 
         //<editor-fold desc="Generating circular buffer">
-       // imshow("line",image);
+        // imshow("line",image);
         int startIndex = 100;
         vector<double> infiniteAlpha; // not really infinite, but has the last elements in the beginning as well for
         // moving average to work correctly
@@ -307,7 +310,7 @@ int main() {
             PuzzlePoint puzzP(convexPoints[o],contours[index]);
             double wSize = contours[index].size()/35;
             puzzP.findCornerity(int(round(wSize)));
-           // cout<<lin<<endl;
+            // cout<<lin<<endl;
             //<editor-fold desc="display the line">
             Vec4i displayLine;
             double wind = wSize;
@@ -416,7 +419,7 @@ double parallelity(Vec4d lin1, Vec4d lin2){
     //double crossP = (l1.x)*(l2.y)-(l1.y)*(l2.y);
     double dotP = (l1.x)*(l2.x)+(l1.y)*(l2.y);
     double cos_alpha = abs(dotP/((pointLength(l1))*(pointLength(l2))));
-   // double sin_alpha = abs(crossP/(pointLength(l1)*pointLength(l2)));
+    // double sin_alpha = abs(crossP/(pointLength(l1)*pointLength(l2)));
     return 1/cos_alpha;
 
 }
@@ -476,7 +479,7 @@ int findNeighbour(const vector<PuzzlePoint> & points, const PuzzlePoint & puzzP,
             double d = dist2Line(puzzP.its_linL, points[i].its_point);
             if(d == distances[2]){
                 if(distances[2]>(2*distances[1]+9)){ // if the second candidate would be too far away
-                         secondCandidate = firstCandidate;
+                    secondCandidate = firstCandidate;
                 }
                 else
                     secondCandidate = i;
@@ -516,14 +519,14 @@ int findNeighbour(const vector<PuzzlePoint> & points, const PuzzlePoint & puzzP,
             if(d == distances[2]){
                 secondCandidate = i;
                 if(distances[2]>(2*(distances[1])+9)){ // if the second candidate would be too far away
-                        secondCandidate = firstCandidate;
+                    secondCandidate = firstCandidate;
                 }
             }
         }
         double paral1 = parallelity(puzzP.its_linR, points[firstCandidate].its_linL)
-        + parallelity(puzzP.its_linL,points[firstCandidate].its_linR);
+                        + parallelity(puzzP.its_linL,points[firstCandidate].its_linR);
         double paral2 = parallelity(puzzP.its_linR, points[secondCandidate].its_linL)
-        + parallelity(puzzP.its_linL, points[secondCandidate].its_linR);
+                        + parallelity(puzzP.its_linL, points[secondCandidate].its_linR);
         if(paral1<paral2)
             return (firstCandidate);
         else
@@ -634,7 +637,7 @@ double lineFitNess(Vec4d lin, vector<Point> points, Point cPoint){
         // cout<<"x0: "<<x_0<<" y0: "<< y_0<<"x_p: "<< x_p << " y_p" << y_p<<" vx: "<<v_x<<" vy: "<<v_y<<endl;
         double dist2Lin = (x_p-x_0)*(y_0+v_y)-(y_p-y_0)*(x_0+v_x);
         dist2Lin = x_p*v_y-y_p*v_x;
-       // dist2Lin = sqrt(pow(  x_p*(1-pow(v_x,2) -v_x*v_y*y_p) , 2 ) + pow(  y_p*(1-pow(v_y,2))-v_x*v_y*x_p  ,2));
+        // dist2Lin = sqrt(pow(  x_p*(1-pow(v_x,2) -v_x*v_y*y_p) , 2 ) + pow(  y_p*(1-pow(v_y,2))-v_x*v_y*x_p  ,2));
         dist2Lins.push_back(dist2Lin);
         sumD += abs(dist2Lin);
 
@@ -786,4 +789,7 @@ int closestPoint(vector<PuzzlePoint> points, Point p){
         }
     }
     return minIndex;
-}
+}//
+// Created by Tamas on 2017-12-28.
+//
+
