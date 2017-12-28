@@ -26,8 +26,12 @@ using std::endl;
 #include <fstream>
 #include <string>
 //</editor-fold>
-double pointLength(Point2d point);
+
+
+
 // typedefs:
+
+
 class PuzzlePoint{
 
 
@@ -70,80 +74,28 @@ public:
         return its_cornerity < other.its_cornerity;
     }
 };
-void PuzzlePoint::fitLines(int noPoints) {
-    Point cPoint = its_point;
-    // cout<<"cPoint: "<<cPoint<<endl;
-    int cIndex = -1;
-    float minDiff = 1000.0;
-    // Find the index of the contour points
-    for(int k = 0; k<its_contour.size();k++){
-
-        // cout<<contours[index][k]<<endl;
-        Point2f contour2Edge = Point2f(its_contour[k].x-float(cPoint.x), its_contour[k].y-float(cPoint.y));
-        float distDiff =  sqrt((contour2Edge.x)*(contour2Edge.x)+(contour2Edge.y)*(contour2Edge.y));
-        if(distDiff<minDiff){
-            minDiff = distDiff;
-            cIndex = k;
-        }
-    }
-
-    vector<Point> neighbours;
-    vector<Point> rightNeighbours;
-    vector<Point> leftNeighbours;
-    Vec4d lin;
-    Vec4d linR, linL;
-    double wSize = noPoints;
-    //<editor-fold desc="Find neighbouring points">
-    auto wind = int(round(wSize)); // 30
-    // for circularization the contours array:
-    for(int u = -wind; u<wind; u++){
-        int origInd = cIndex+u;
-        int contInd = 0;
-        int det = its_contour.size()-1;
-        if(origInd > det){ // go around
-            contInd = origInd-its_contour.size();
-        }
-        else if(origInd<0){
-            contInd = its_contour.size()+origInd;
-        }
-        else{
-            contInd = origInd;
-        }
-        if(u<0){
-            leftNeighbours.push_back(its_contour[contInd]);
-        }
-        else{
-            rightNeighbours.push_back(its_contour[contInd]);
-        }
-        neighbours.push_back(its_contour[contInd]);
-    }
-    //</editor-fold>
-
-    //TODO: try min area enclosing circle as well
-    // or BB concept: hough circles for raw image
-    fitLine(neighbours,its_lin,CV_DIST_L2,0,0.01,0.01);
-    fitLine(rightNeighbours,its_linR,CV_DIST_L2,0,0.01,0.01);
-    fitLine(leftNeighbours,its_linL,CV_DIST_L2,0,0.01,0.01);
-
-    Point2d PointR = Point2d(its_linR[2]-cPoint.x,its_linR[3]-cPoint.y);
-    Point2d PointL = Point2d(its_linL[2]-cPoint.x,its_linL[3]-cPoint.y);
-
-    double cos_alpha = (PointR.x)*(PointL.x)+(PointR.y)*(PointL.y)/(pointLength(PointL))*(pointLength(PointR));
-    if(cos_alpha==0)
-        cos_alpha = 0.001;
-    its_cornerity =  1/cos_alpha;
 
 
-}
-//double PuzzlePoint::cornerLikeNess(){}
+
 // function headers:
+Point closest2Line(const vector<Point> & points, Vec4d lin);
+
+double pointLength(Point2d point);
+
 vector<double> differentiate(vector<double> input, int windowSize);
+
 vector<double> movingAverage(vector<double> input, int windowSize);
+
 double avg (vector<double> input);
 
 RotatedRect getBaseRect(const Mat &);
+
 Mat drawRect(const RotatedRect& rectangle, Mat src);
+
 double lineFitNess(Vec4d lin, vector<Point> points, Point cPoint);
+
+
+
 int main() {
     for(int i = 0;i<1008;i++){
         cout<<"i: "<<i<<endl;
@@ -381,7 +333,7 @@ int main() {
             //cout<<"itscornerity: "<<puzzlePoints[j].its_cornerity<<endl;
             // clecer algorithm that finds all of the remaining corners:
 
-            
+
             ///////////////////////////////////////////////////
             char str[200];
             sprintf(str," no. %d",j);
@@ -423,7 +375,33 @@ int main() {
 
 
 }
+double dist2Line(Vec4d lin, Point point){
+    vector<double> dist2Lins;
+    double x_0 = double( lin[2]);
+    double y_0 = double( lin[3]);
+    double x_p =  point.x-x_0;
+    double y_p =  point.y-y_0;
+    double v_x =  double(lin[0]);
+    double v_y =  double(lin[1]);
+    double dist2Lin = sqrt(pow(  x_p*(1-pow(v_x,2) -v_x*v_y*y_p) , 2 ) + pow(  y_p*(1-pow(v_y,2))-v_x*v_y*x_p  ,2));
+    return dist2Lin;
 
+}
+
+Point closest2Line(const vector<Point> & points, Vec4d lin){
+    vector<double> dist2Lins;
+    double minDiff = 10000.0;
+    Point minPoint;
+    for(int a = 0; a<points.size();a++){
+        double distance = dist2Line(lin,points[a]);
+        dist2Lins.push_back(distance);
+        if(distance<minDiff){
+            minPoint = points[a];
+            minDiff = distance;
+        }
+    }
+
+}
 
 double avg (vector<double> input){
     double sum = 0.0;
@@ -522,7 +500,6 @@ double lineFitNess(Vec4d lin, vector<Point> points, Point cPoint){
         // cout<<"x0: "<<x_0<<" y0: "<< y_0<<"x_p: "<< x_p << " y_p" << y_p<<" vx: "<<v_x<<" vy: "<<v_y<<endl;
         double dist2Lin = -(x_p-x_0)*(y_0+v_y)+(y_p-y_0)*(x_0+v_x);
         dist2Lin = sqrt(pow(  x_p*(1-pow(v_x,2) -v_x*v_y*y_p) , 2 ) + pow(  y_p*(1-pow(v_y,2))-v_x*v_y*x_p  ,2));
-        //  cout<<"dist2Lin: "<<dist2Lin<<endl;// értelmetlen
         dist2Lins.push_back(dist2Lin);
         sumD += abs(dist2Lin);
 
@@ -530,6 +507,8 @@ double lineFitNess(Vec4d lin, vector<Point> points, Point cPoint){
     double lineFitness = sumD / (double)points.size();
     return lineFitness;
 }
+
+
 
 double pointLength(Point2d point){
     double length = sqrt((point.x)*(point.x)+(point.y)*(point.y));
@@ -546,4 +525,70 @@ Mat drawRect(const RotatedRect& rectangle,  Mat src){
     line(src,vtx[0], vtx[2],Scalar(0, 255, 0), 1, LINE_AA); // diagonal
     line(src,vtx[1], vtx[3],Scalar(0, 255, 0), 1, LINE_AA); // diagonal
     return src;
+}
+
+void PuzzlePoint::fitLines(int noPoints) {
+    Point cPoint = its_point;
+    // cout<<"cPoint: "<<cPoint<<endl;
+    int cIndex = -1;
+    float minDiff = 1000.0;
+    // Find the index of the contour points
+    for(int k = 0; k<its_contour.size();k++){
+
+        // cout<<contours[index][k]<<endl;
+        Point2f contour2Edge = Point2f(its_contour[k].x-float(cPoint.x), its_contour[k].y-float(cPoint.y));
+        float distDiff =  sqrt((contour2Edge.x)*(contour2Edge.x)+(contour2Edge.y)*(contour2Edge.y));
+        if(distDiff<minDiff){
+            minDiff = distDiff;
+            cIndex = k;
+        }
+    }
+
+    vector<Point> neighbours;
+    vector<Point> rightNeighbours;
+    vector<Point> leftNeighbours;
+    Vec4d lin;
+    Vec4d linR, linL;
+    double wSize = noPoints;
+    //<editor-fold desc="Find neighbouring points">
+    auto wind = int(round(wSize)); // 30
+    // for circularization the contours array:
+    for(int u = -wind; u<wind; u++){
+        int origInd = cIndex+u;
+        int contInd = 0;
+        int det = its_contour.size()-1;
+        if(origInd > det){ // go around
+            contInd = origInd-its_contour.size();
+        }
+        else if(origInd<0){
+            contInd = its_contour.size()+origInd;
+        }
+        else{
+            contInd = origInd;
+        }
+        if(u<0){
+            leftNeighbours.push_back(its_contour[contInd]);
+        }
+        else{
+            rightNeighbours.push_back(its_contour[contInd]);
+        }
+        neighbours.push_back(its_contour[contInd]);
+    }
+    //</editor-fold>
+
+    //TODO: try min area enclosing circle as well
+    // or BB concept: hough circles for raw image
+    fitLine(neighbours,its_lin,CV_DIST_L2,0,0.01,0.01);
+    fitLine(rightNeighbours,its_linR,CV_DIST_L2,0,0.01,0.01);
+    fitLine(leftNeighbours,its_linL,CV_DIST_L2,0,0.01,0.01);
+
+    Point2d PointR = Point2d(its_linR[2]-cPoint.x,its_linR[3]-cPoint.y);
+    Point2d PointL = Point2d(its_linL[2]-cPoint.x,its_linL[3]-cPoint.y);
+
+    double cos_alpha = (PointR.x)*(PointL.x)+(PointR.y)*(PointL.y)/(pointLength(PointL))*(pointLength(PointR));
+    if(cos_alpha==0)
+        cos_alpha = 0.001;
+    its_cornerity =  1/cos_alpha;
+
+
 }
