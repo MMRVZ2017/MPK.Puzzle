@@ -17,7 +17,7 @@ bool AbstractionLayer_1::PreProcessing(coor mySize,  const vector<Part*>* partAr
 
     if(!analyse.getImages())
     {
-        cerr << "Error: No pictures found!" << endl;
+        cerr << "Error occured in getImages!" << endl;
         return false;
     }
     else
@@ -373,6 +373,11 @@ bool analyseParts::getImages(){
         mask.setContour(contours);
         mask.setHierarchy(hierarchy);
         corners = findCorners(contours[0],mask.getCenter());
+        if((corners.empty()) || (corners.size() < 4))
+        {
+            cerr << "Error occured in findCorners" << endl;
+            return false;
+        }
         mask.setCorners(corners);
         mask.setTabs(analyseContour(corners,contours[0]));
         masks.push_back(mask);
@@ -413,6 +418,13 @@ vector<Point> analyseParts::findCorners(vector<Point> contour, Point center){
             buf3.push_back(contour[i]);
         }
     }
+
+    if((buf0.empty()) || (buf1.empty()) || (buf2.empty()) || (buf3.empty()))
+    {
+        // return an empty vector if not all corners were found!
+        return vector<Point>();
+    }
+
     quad_contour.push_back(buf0);
     quad_contour.push_back(buf1);
     quad_contour.push_back(buf2);
@@ -458,7 +470,7 @@ vector<Point> analyseParts::findCorners(vector<Point> contour, Point center){
     line(drawing,Point((IMG_SIZE/2),center.y+dist),Point(IMG_SIZE,center.y+dist),Scalar(255,0,255),3,8);
     circle(drawing,quad_contour[0][max_idx],5,Scalar(50,100,255),5,8);
 
-/*finde ecke links unten*/
+    /*finde ecke links unten*/
     dist = 0;
     max_dist = 0;
     max_idx = 0;
@@ -489,7 +501,7 @@ vector<Point> analyseParts::findCorners(vector<Point> contour, Point center){
     line(drawing,Point((IMG_SIZE/2),center.y+dist),Point(0,center.y+dist),Scalar(255,0,255),3,8);
     circle(drawing,quad_contour[1][max_idx],5,Scalar(50,100,255),5,8);
 
-/*finde ecke rechts oben*/
+    /*finde ecke rechts oben*/
     dist = 0;
     max_dist = 0;
     max_idx = 0;
@@ -520,7 +532,7 @@ vector<Point> analyseParts::findCorners(vector<Point> contour, Point center){
     line(drawing,Point((IMG_SIZE/2),center.y-dist),Point(IMG_SIZE,center.y-dist),Scalar(255,0,255),3,8);
     circle(drawing,quad_contour[2][max_idx],5,Scalar(50,100,255),5,8);
 
-/*finde ecke links oben*/
+    /*finde ecke links oben*/
     dist = 0;
     max_dist = 0;
     max_idx = 0;
