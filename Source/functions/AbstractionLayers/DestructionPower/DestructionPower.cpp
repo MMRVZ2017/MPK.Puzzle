@@ -11,9 +11,11 @@ map<int,float> DestructionPower_Properties::SpeedTable =
         };
 
 
-void DestructionPower::PreProcessing(coor mySize,const vector<Part*>* partArray)
+bool DestructionPower::PreProcessing(coor mySize,const vector<Part*>* partArray)
 {
     InitialiseConstraintMatrixSize(mySize.row,mySize.col);
+
+    return true;
 }
 
 //it through qualityVector and removes all that do not trigger PlaceOfPartGood

@@ -9,6 +9,12 @@ int main()
 
     vector<LogEntry> log;
     Puzzle puzzleMat(cols, rows);
+    if(!puzzleMat.PreProcessing())
+    {
+        cerr << "Error occured at PreProcessing!";
+        return 0;
+    }
+
     puzzleMat.createRandomBox();
     cout << "here" << endl;
     puzzleMat.a1.printConstraintMatrix();

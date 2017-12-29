@@ -8,19 +8,28 @@
 #include <iostream>
 #include <bitset>
 
-void AbstractionLayer_1::PreProcessing(coor mySize,  const vector<Part*>* partArray)
+bool AbstractionLayer_1::PreProcessing(coor mySize,  const vector<Part*>* partArray)
 {
 
     analyseParts analyse(1008);
     vector<Part> parts;
     Part buf;
-    unsigned char tabs = 0;
-    for(int i = 0; i < 1008; i++){
-        tabs = analyse.getTabs(i);
-        buf.m_a1.m_connections=tabs;
-        parts.push_back(buf);
-    }
 
+    if(!analyse.getImages())
+    {
+        cerr << "Error: No pictures found!" << endl;
+        return false;
+    }
+    else
+    {
+        unsigned char tabs = 0;
+        for(int i = 0; i < 1008; i++)
+        {
+            tabs = analyse.getTabs(i);
+            buf.m_a1.m_connections=tabs;
+            parts.push_back(buf);
+        }
+    }
 
     //Zugriff auf den vector mit den einzelnen teilen: part[0].getConnenctions() entspricht pömpel von bild 0.jpg und liefert ein unsigned char, poempl Belegung wie ausgemacht
 
@@ -28,6 +37,8 @@ void AbstractionLayer_1::PreProcessing(coor mySize,  const vector<Part*>* partAr
 
     InitialiseConstraintMatrixSize(mySize.col+2, mySize.row+2);
     setEdgeZero();
+
+    return true;
 }
 
 //it through qualityVector and removes all that do not trigger PlaceOfPartGood
@@ -204,7 +215,11 @@ Mat analyseParts::readImages(int count)
 
     Mat src = imread(name, 1);
     if (!src.data)
+    {
         cerr << "Problem loading image!!!" << endl;
+        return src;
+    }
+
     if(DISPLAY)imshow("src",src);
 
     Mat im_gray, im_bw;
@@ -328,7 +343,7 @@ float analyseParts::angle(Point one, Point two, Point three) {
     return angle;
 }
 
-void analyseParts::getImages(){
+bool analyseParts::getImages(){
     Details mask;
     Mat src;
     vector<vector<Point> > contours;
@@ -342,6 +357,13 @@ void analyseParts::getImages(){
     for (int i = 0; i < nr_parts; i++) {
         if(DISPLAY) cout << "Bild " << i << endl;
         Mat im_bw = readImages(i);
+
+        if(!im_bw.data)
+        {
+            cerr << "Error: No pic found!!" << endl;
+            return false;
+        }
+
         Mat dst = morphDilateErode(im_bw);
         contours1 = findingContours(dst);
         mask_gray = polyApprox(contours1);
@@ -356,6 +378,8 @@ void analyseParts::getImages(){
         masks.push_back(mask);
         destroyAllWindows();
     }
+
+    return true;
 }
 
 Point analyseParts::findCenter(Mat img){

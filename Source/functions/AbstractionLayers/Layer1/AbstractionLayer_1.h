@@ -37,7 +37,7 @@ using namespace cv;
 class AbstractionLayer_1 : public AbstractionLayer_Base<AbstractionLayer_1_Properties>
 {
 public:
-    void PreProcessing(coor mySize, const vector<Part*>* partArray) override ;
+    bool PreProcessing(coor mySize, const vector<Part*>* partArray) override ;
     bool EvaluateQuality ( coor constraintCoordinate, qualityVector& qVector)override;
     bool SetConstraintOnPosition( coor constraintCoordinate, AbstractionLayer_1_Properties constraint)override;
     bool RemoveConstraintOnPosition( coor constraintCoordinate)override;
@@ -81,7 +81,7 @@ private:
 
 class analyseParts{
 public:
-    explicit analyseParts(int s = 1008): nr_parts(s){getImages();}
+    explicit analyseParts(int s = 1008): nr_parts(s){}
     Mat getImage(int i){if(i>= nr_parts)return masks[nr_parts-1].getImage(); else return masks[i].getImage();}
     vector<vector<Point>> getContour(int i){if(i>= nr_parts)return masks[nr_parts-1].getContour(); else return masks[i].getContour();}
     Point getCenter(int i){if(i>= nr_parts)return masks[nr_parts-1].getCenter(); else return masks[i].getCenter();}
@@ -95,8 +95,8 @@ public:
     Mat morphDilateErode(Mat&);
     vector<vector<Point>> findingContours(Mat&);
     Mat polyApprox(vector<vector<Point>> &);
+    bool getImages();
 private:
-    void getImages();
     float lengthTwoPoints(Point, Point);
     float angle(Point, Point, Point);
     vector<Details> masks;

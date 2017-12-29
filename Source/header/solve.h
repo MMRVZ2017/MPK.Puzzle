@@ -40,9 +40,11 @@ class Puzzle
 {
 public:
 
-    Puzzle(unsigned int newcols,unsigned int newrows):rows(newrows),cols(newcols)
+    Puzzle(unsigned int newcols,unsigned int newrows):rows(newrows),cols(newcols) {}
+
+    bool PreProcessing()
     {
-        a1.PreProcessing({rows,cols}, nullptr);
+        return a1.PreProcessing({rows,cols}, nullptr);
     }
 
     coor getSizeAsCoor()

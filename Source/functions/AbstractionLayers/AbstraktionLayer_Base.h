@@ -26,7 +26,7 @@ public:
      * @brief   pure virtual method for the pre processing of the layer
      * @param   [in] partArray - References of all Parts, in which the properties of the Layer will be written
      */
-    virtual void PreProcessing(coor mySize, const vector<Part*>* partArray) = 0;
+    virtual bool PreProcessing(coor mySize, const vector<Part*>* partArray) = 0;
 
     /**
      * @brief   pure virtual method for the quality evaluation of the layer

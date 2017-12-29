@@ -17,7 +17,7 @@
 class DestructionPower : public AbstractionLayer_Base<DestructionPower_Properties>
 {
 public:
-    void PreProcessing(coor mySize,const vector<Part*>* partArray)override;
+    bool PreProcessing(coor mySize,const vector<Part*>* partArray)override;
     bool EvaluateQuality (coor constraintCoordinate, qualityVector& qVector) override;
     bool SetConstraintOnPosition(coor constraintCoordinate, DestructionPower_Properties constraint);
     bool RemoveConstraintOnPosition(coor constraintCoordinate)override;
