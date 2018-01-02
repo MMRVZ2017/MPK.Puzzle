@@ -46,7 +46,7 @@ bool AbstractionLayer_1::EvaluateQuality (const coor constraintCoordinate, quali
 {
     for(auto it = qVector.begin(); it != qVector.end(); it++)
     {
-        if(PlaceOfPartGood(constraintCoordinate, it->first->m_a1.m_connections))
+        if(PlaceOfPartGood(constraintCoordinate, it->second->m_a1.m_connections))
             continue;
         qVector.erase(it++);
     }

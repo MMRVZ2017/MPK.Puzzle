@@ -99,7 +99,7 @@ void setsolution(vector<LogEntry>& log, vector<Part*>& p_Box, Puzzle& puzzleMat)
 	
 	//remove first element in last logelement from box
 	for(int i=0;i<p_Box.size();)
-		if(p_Box[i]==log.back().PieceCollector.begin()->first)//mach ich das richtig so?!
+		if(p_Box[i]==log.back().PieceCollector.begin()->second)//mach ich das richtig so?!
 			p_Box.erase(p_Box.begin()+i);
 		else
 			i++;
@@ -113,7 +113,7 @@ bool backtrack(vector<LogEntry>& log, vector<Part*>& p_Box, Puzzle& puzzleMat)
     //if more pieces possible, take next piece
     if((log.back().PieceCollector.size())>1)
     {
-        p_Box.push_back(log.back().PieceCollector.begin()->first);
+        p_Box.push_back(log.back().PieceCollector.begin()->second);
         log.back().PieceCollector.erase(log.back().PieceCollector.begin());
 
         if(log.back().PieceCollector.size()==1)
@@ -128,7 +128,7 @@ bool backtrack(vector<LogEntry>& log, vector<Part*>& p_Box, Puzzle& puzzleMat)
     {
         puzzleMat.removeConstrains(log.back().myCoor); //this should remove constraints from all layers
         if((log.back().PieceCollector.size()))
-            p_Box.emplace_back(log.back().PieceCollector.begin()->first);
+            p_Box.emplace_back(log.back().PieceCollector.begin()->second);
         log.pop_back();
         backtrack(log,p_Box,puzzleMat);
     }
@@ -182,9 +182,9 @@ float capLogElements(vector<LogEntry>& log)
     vectorsizeBefore = log.back().PieceCollector.size();
 
     sort(log); // Sort the vector after probabilities
-    std::map<Part*,float>::const_iterator idxcut =log.back().PieceCollector.begin();
+    qualityVector::const_iterator idxcut =log.back().PieceCollector.begin();
     for(;idxcut !=log.back().PieceCollector.end();idxcut++)
-        if(idxcut->second < limit)
+        if(idxcut->first < limit)
             break;
 
 
@@ -200,7 +200,7 @@ float capLogElements(vector<LogEntry>& log)
             newidxcut = idxcut;
         }
     }
-    cut(log,newidxcut->first);
+    cut(log,newidxcut->second);
 
     vectorsizeAfter = log.back().PieceCollector.size();
 
@@ -218,13 +218,31 @@ void sort(vector<LogEntry>& log)
     //the monkey desperately tried to hold on to the flying dorm room.
 }
 
+qualityVector::iterator FindPartInLog(vector<LogEntry>& log, Part* wishedPartPointer)
+{
+    qualityVector::iterator partOnPositionIterator = log.back().PieceCollector.begin();
+
+    while (partOnPositionIterator != log.back().PieceCollector.end())
+    {
+        if(partOnPositionIterator.base()->second == wishedPartPointer)
+        {
+            break;
+        }
+        else
+        {
+            partOnPositionIterator++;
+        }
+    }
+
+    return partOnPositionIterator;
+}
+
 void cut(vector<LogEntry>& log, Part* cutID)
 {
-    auto it = log.back().PieceCollector.find(cutID)++;
+    auto it = FindPartInLog(log, cutID);
     while(it != log.back().PieceCollector.end())
         log.back().PieceCollector.erase(it++);
 }
-
 
 //partdavid
 bool setBestOrMoreLayers(vector<LogEntry>& log)
@@ -236,11 +254,11 @@ bool setBestOrMoreLayers(vector<LogEntry>& log)
     for(auto it:log.back().PieceCollector)
     {
         // check Probability of current Puzzle Piece in this vector
-        if (it.second >= 0.90) // 0.90 as threshold
+        if (it.first >= 0.90) // 0.90 as threshold
             countBest++;
         else
-            if (it.second > tempBest)
-                tempBest = it.second;
+            if (it.first > tempBest)
+                tempBest = it.first;
     }
 
     // return true if only one piece is left

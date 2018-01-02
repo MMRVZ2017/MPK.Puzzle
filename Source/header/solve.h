@@ -10,13 +10,12 @@
 #include "../functions/AbstractionLayers/Layer1/AbstractionLayer_1.h"
 #include "../functions/AbstractionLayers/DestructionPower/DestructionPower.h"
 
-
 using namespace std;
 
 class LogEntry
 {
 public:
-    map<Part*, float> PieceCollector;
+    qualityVector PieceCollector;
     int abstractionLevel;
     coor myCoor;
 

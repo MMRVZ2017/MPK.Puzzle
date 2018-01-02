@@ -1,13 +1,12 @@
 #ifndef SOURCE_ABSTRAKTIONLAYER_BASE_H
 #define SOURCE_ABSTRAKTIONLAYER_BASE_H
 
-#include <map>
 #include <vector>
 #include "../../header/input.h"
 
 using namespace std;
 
-typedef map<Part*, float> qualityVector;
+typedef vector<pair<float, Part*>> qualityVector;
 
 /*
  * Die Logik mit der Template-Basisklasse und den abgeleiteten Layern kam mit der Idee, dass die Layer
