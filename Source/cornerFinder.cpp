@@ -31,9 +31,11 @@ int main() {
     for(int i = 0;i<1000;i++){
         // reading the image:
         char inputFile[100];
+        
+        // modify path and filename structure as needed:
         sprintf(inputFile,"../images/output/blackAndWhite/output_VZ/%d.jpg",i);
         Mat image = imread(inputFile,1); // 3 channel, but Black and white
-        
+
         Mat segmentCheck = segment(image);
         int nonZeros =  countNonZero(segmentCheck);
         // skip to next iteration if the image is not processable (less then 4000 foreground pixels):
