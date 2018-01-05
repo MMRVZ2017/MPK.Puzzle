@@ -35,6 +35,7 @@ public:
 
 
 
+// Basic functions:
 
 Mat readImage(int fileIndex, const char* inputDir);
 Mat segmentWS(Mat src);
@@ -52,6 +53,8 @@ int findOrientation(Mat);
 Contour_t getLongestContour(Mat); //  depracated by getLongestContourIndex
 int getLongestContourIndex(Contour_t);
 
+// Functions used mainly by straighten.cpp:
+
 int findmax(std::vector<int> vals);
 int findmin(std::vector<int> vals);
 float findmax(std::vector<float> vals);
@@ -61,6 +64,7 @@ double findmax(std::vector<double> vals);
 std::vector<int> histogram(std::vector<int> data, int rangeWidth); // discrete histogram
 std::vector<int> cont_histogram(std::vector<int> data);
 void drawHistogram(vector<int> hist);
+
 
 
 #endif //MPK_PUZZLE_PREPROC_BASE_H

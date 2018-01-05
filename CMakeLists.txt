@@ -3,13 +3,13 @@ project(MPK.Puzzle)
 
 set(CMAKE_CXX_STANDARD 11)
 
-set(OpenCV_DIR "C:\\UOCV\\build")
+set(OpenCV_DIR "C:\\openCV\\build")
 # ^^ replace with: C:\\opencv\\build
 
 
 find_package(OpenCV REQUIRED)
 include_directories(${OpenCV_INCLUDE_DIRS}  )
-set(SOURCE_FILES Source/cornerFindier.cpp Source/header/preproc_base.h Source/functions/preproc_base.cpp )
+set(SOURCE_FILES Source/cornerFinder.cpp Source/header/preproc_base.h Source/functions/preproc_base.cpp Source/header/layer1.h Source/functions/layer1.cpp)
 # ^^ replace with:
 # set(SOURCE_FILES Source/straighten.cpp Source/header/preproc_base.h Source/functions/preproc_base.cpp)
 # to use the preprocessing algorithm.
