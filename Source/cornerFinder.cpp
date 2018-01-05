@@ -15,6 +15,7 @@
 
 #include "../Source/header/preproc_base.h"
 #include "../Source/header/layer1.h"
+
 using namespace cv;
 
 // common std members:
@@ -32,10 +33,7 @@ int main() {
         char inputFile[100];
         sprintf(inputFile,"../images/output/blackAndWhite/output_VZ/%d.jpg",i);
         Mat image = imread(inputFile,1); // 3 channel, but Black and white
-
-        // IF INPUT IS COLOR IMAGE:
-        //image = segment(image);
-
+        
         Mat segmentCheck = segment(image);
         int nonZeros =  countNonZero(segmentCheck);
         // skip to next iteration if the image is not processable (less then 4000 foreground pixels):
