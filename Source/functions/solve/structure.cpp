@@ -1,11 +1,11 @@
 #include "../../header.h"
 void status(vector<LogEntry>& log, vector<Part*>& p_Box);
-bool setBestOrMoreLayers(vector<LogEntry>& log);
+bool SetBestOrMoreLayersArithmetical(vector<LogEntry>& log, qualityVector* cqVector);
 void calculateTrueDestructionPower(vector<LogEntry>& log, Puzzle& puzzleMat, float Layerworth);
 void sort(vector<LogEntry>& log);
 void cut(vector<LogEntry>& log, Part* cutID);
 float capLogElements(vector<LogEntry>& log);
-void calculateNewCombinedProbabilityForPuzzlePiecesArithmetic(vector<LogEntry>& log);
+void CalculateNewCombinedQuality(vector<LogEntry>& log, qualityVector& qVector, qualityVector* cqVector);
 
 bool next(vector<LogEntry>& log, vector<Part*>& p_Box,Puzzle& puzzleMat)
 {
@@ -21,7 +21,7 @@ bool next(vector<LogEntry>& log, vector<Part*>& p_Box,Puzzle& puzzleMat)
     else if(log.back().PieceCollector.size() > 1)
     {
         //moreLayers is 0, setbest is 1
-        if (setBestOrMoreLayers(log)) setsolution(log, p_Box, puzzleMat);
+        if (SetBestOrMoreLayersArithmetical(log, &puzzleMat.combinedQualityVector)) setsolution(log, p_Box, puzzleMat);
         else solve(log, p_Box, puzzleMat);
     }
     //case last log exactly one solution
@@ -87,7 +87,7 @@ void solve(vector<LogEntry>& log, vector<Part*>& p_Box, Puzzle& puzzleMat)
     capLogElements(log);
     float worth = capLogElements(log);
     calculateTrueDestructionPower(log,puzzleMat, worth);
-    calculateNewCombinedProbabilityForPuzzlePiecesArithmetic(log);
+    CalculateNewCombinedQuality(log, log.back().PieceCollector, &puzzleMat.combinedQualityVector);
 
 }
 
@@ -244,85 +244,116 @@ void cut(vector<LogEntry>& log, Part* cutID)
         log.back().PieceCollector.erase(it++);
 }
 
-//partdavid
-bool setBestOrMoreLayers(vector<LogEntry>& log)
+// --------------------  Part David: SetBest and CalculateCombinedQuality --------------------
+// pruefen, ob mehr als X combinedQualities ueber dem Grenzwert sind. Wenn nur noch Y Pieces ueber bleiben, dann setBest!
+// geeignete Threshold values muessen noch getestet werden
+bool SetBestOrMoreLayersArithmetical(vector<LogEntry>& log, qualityVector* cqVector)
 {
-    int countBest = 0;
-    float tempBest = 0.0;
+    float threshold = 1.0, tempBest = 0.0;
+    unsigned int countHigherThreshold = 0;
 
-    // count how many Pieces are greater than the threshold value
-    for(auto it:log.back().PieceCollector)
+    if(cqVector->empty())
     {
-        // check Probability of current Puzzle Piece in this vector
-        if (it.first >= 0.90) // 0.90 as threshold
-            countBest++;
-        else
-            if (it.first > tempBest)
-                tempBest = it.first;
+        cerr << "combinedQualityVector is empty." << endl;  // should not be empty => backtrack?
+        return false; // Warning: can only return true or false. What return for error?
     }
-
-    // return true if only one piece is left
-    if (1 == countBest)
-    {
-        return true;
-    }
-        //else if (countBest > 1 && countBest < 10) // TODO: add possible constraints
     else
     {
-        return false;
-    }
-}
-
-void calculateNewCombinedProbabilityForPuzzlePiecesArithmetic(vector<LogEntry>& log)
-{
-    float totalValue = 0.0;
-    int i;
-    for(int i; i < log.back().PieceCollector.size(); i++);
-
-        // sum Probability of current Puzzle Piece in PieceCollector vector
-        //totalValue += *(log.back().PieceCollector.);
-
-    //return totalValue / i;
-}
-
-/*
-//PartDavid
-void calculateNewCombinedProbabilityForPuzzlePiecesTopK(vector<LogEntry>& log, int executedLayers)
-{
-    float TopK[executedLayers][2] = {0.0};  // in Log speichern?
-    float sumTopK[executedLayers] = {0.0};
-    float HighestProbability = 0.0;
-
-    // searching for Top2 probability values in PieceCollector for each layer
-    for (int currentLayer = 0; currentLayer < executedLayers; currentLayer++)
-    {
-        // searching for Top2 probabilities in currentLayer
-        for(int i = 0; i < log.back().PieceCollector.size() && log.back().abstractionLevel == currentLayer; i++)
+        switch(log.back().abstractionLevel)
         {
-            if (*(log.back().PieceCollector[i]) > TopK[currentLayer][0])
+            case 1: threshold = 0.90; break;
+            case 2: threshold = 0.80; break;
+            case 3: threshold = 0.75; break;
+            case 4: threshold = 0.66; break;
+            case 5: threshold = 0.60; break;
+            default: threshold = 0.5; break;
+        }
+
+        // check Quality of current Puzzle Piece in combinedQualityVector with Threshold value
+        for (qualityVector::iterator it = cqVector->begin(); it != cqVector->end(); it++)
+        {
+            if ((cqVector->back().first / log.back().abstractionLevel) >= threshold) // const threshold values
             {
-                TopK[currentLayer][0] = *log.back().PieceCollector[i];
-            }
-            else if (*(log.back().PieceCollector[i]) > TopK[currentLayer][1])
-            {
-                TopK[currentLayer][1] = *log.back().PieceCollector[i];
+                // count how many Pieces are greater than the threshold value
+                countHigherThreshold++;
             }
             else
             {
-                // Spezialfall fuer 0 Ueberlegen
+                if ((cqVector->back().first / log.back().abstractionLevel) > tempBest)
+                {
+                    tempBest = cqVector->back().first;  // could be used, for additional constraints
+                }
             }
         }
-        sumTopK[currentLayer] = TopK[currentLayer][0] + TopK[currentLayer][1];
-    }
 
-    // searching for highest probability for designated Position
-    for (int currentLayer = 0; currentLayer < executedLayers; currentLayer++)
-    {
-        if (sumTopK[currentLayer+1] > sumTopK[currentLayer])
+        // return true if only one piece is left
+        if (1 == countHigherThreshold)
         {
-            HighestProbability = sumTopK[currentLayer+1];
+            return true;
+        }
+        else
+        {
+            return false;
         }
     }
-    }
+}
 
-*/
+// jede Quality vom Piececollector zu einer combinedQuality aufsummieren (von jedem bereits verwendetem Layer)
+// Achtung: Es muss noch der Mittelwert gebildet werden => SetBestOrMoreLayersArithmetical
+void CalculateNewCombinedQuality(vector<LogEntry>& log, qualityVector& qVector, qualityVector* cqVector)
+{
+    bool summarizedVectors = false;
+    int countSummarizedVectors = 0;
+
+    // check if both qualityVectors are not empty
+    if(qVector.empty())
+    {
+        cerr << "qualityVector is empty." << endl;  // should not be empty => backtrack?
+        return;
+    }
+    else if(cqVector->empty())
+    {
+        cerr << "combinedQualityVector is empty." << endl;  // should not be empty => backtrack?
+        return;
+    }
+    else
+    {
+        for (unsigned int i = 0; i < cqVector->size(); i++)
+        {
+            summarizedVectors = false;
+
+            for (unsigned int j = 0; j < qVector.size(); j++)
+            {
+                // search same PuzzlePart of qualityVector and combinedQualityVector
+                if (&cqVector->at(i).second == &qVector.at(j).second)
+                {
+                    // sum Quality of PieceCollector (qualityVector) to combinedQualityVector
+                    cqVector->at(j).first += qVector.at(i).first;
+                    countSummarizedVectors++;
+                    summarizedVectors = true;
+                    continue; // skip remaining for loop => save time!
+                }
+            }
+
+            // remove element at poisition X in combinedQualityVector, because it was not summarized
+            if (!summarizedVectors)
+            {
+                // inefficient way to delete element X
+                //cqVector->erase(cqVector->begin()+i);
+
+                // efficient way, but no sorted cqVector => wayne
+                swap(cqVector->at(i), cqVector->back());
+                cqVector->pop_back();
+            }
+        }
+
+        // cqVector should have the same size now as newest qVector
+        if (cqVector->size() != qVector.size())
+        {
+            cerr << "Size of combinedQualityVector doenst match with size of qualityVector!" << endl;
+            cout << "Size of combinedQualityVector: " << cqVector->size() << endl;
+            cout << "Size of qualityVector: " << qVector.size() << endl;
+            cout << "Size of countSummarizedVectors: " << countSummarizedVectors << endl;
+        }
+    }
+}

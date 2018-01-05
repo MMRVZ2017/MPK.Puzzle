@@ -65,6 +65,8 @@ public:
     vector<Part> myBox;
     vector<Part*> p_myBox;
 
+    qualityVector combinedQualityVector;
+
 private:
 
     unsigned int rows;
