@@ -5,21 +5,19 @@ int LogEntry::randomed(0);
 int main()
 {
 
-    unsigned int cols=5, rows=6;
+    unsigned int cols=36, rows=28;
 
     vector<LogEntry> log;
     Puzzle puzzleMat(cols, rows);
     if(!puzzleMat.PreProcessing())
     {
-        cerr << "Error occured at PreProcessing!";
+        cerr << "Error occurred at PreProcessing!";
         return 0;
     }
 
-    puzzleMat.createRandomBox();
-    cout << "here" << endl;
+    //puzzleMat.createRandomBox();
     puzzleMat.a1.printConstraintMatrix();
 
-    //vector<vector<PuzzlePiece*>> ab1class = abstractionLayer1classify(log, p_myFirstBox,puzzleMat);
     while(next(log, puzzleMat.p_myBox,puzzleMat));
 
     puzzleMat.printPuzzle();

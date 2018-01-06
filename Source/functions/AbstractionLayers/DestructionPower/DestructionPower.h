@@ -29,4 +29,5 @@ public:
     { m_constraintMatrix[myCoor.col][myCoor.row].DestructionArray[AbstractionLevel] = destructionPower;}
 
 private:
+    float defaultDestructionPower(int i);
 };

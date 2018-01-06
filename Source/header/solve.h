@@ -43,11 +43,13 @@ public:
 
     bool PreProcessing()
     {
-        return a1.PreProcessing({rows,cols}, nullptr);
+        createBox(); createp_box();
+        dp.PreProcessing({rows,cols}, nullptr);
+        a1.PreProcessing({rows,cols}, &p_myBox);
+        return true;
     }
 
-    coor getSizeAsCoor()
-    {return {cols,rows};}
+    coor getSizeAsCoor() {return {cols,rows};}
 
     DestructionPower dp;
     AbstractionLayer_1 a1;
@@ -60,6 +62,7 @@ public:
     void createRandomPuzzle();
     void putIntoBox();
     void shuffle();
+    void createBox();
     void createp_box();
 
     vector<Part> myBox;

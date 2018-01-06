@@ -24,7 +24,7 @@
 #include <bitset>
 
 #define DISPLAY false
-#define PATH "..\\pieces\\%d.png"
+#define PATH "..\\..\\..\\pieces\\%04d.jpg"
 #define IMG_SIZE 400
 #define TOP 6
 #define RIGHT 4

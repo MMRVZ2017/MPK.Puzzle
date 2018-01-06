@@ -31,40 +31,52 @@ bool DestructionPower::RemoveConstraintOnPosition(const coor constraintCoordinat
 {
 }
 
-//gets destruction power from left and from top if possibe and normalizes
+//gets destruction power from left and from top if possible and normalizes
 void DestructionPower::DestructionOfSurrounding(const coor constraintCoordinate) {
     float newDestructionArray[DESTRUCTION_COUNT];
+
     for (int i = 0; i < DESTRUCTION_COUNT; ++i) {
+        m_constraintMatrix[constraintCoordinate.col][constraintCoordinate.row].DestructionArray.push_back(0);
         int divisor=0;
         if(constraintCoordinate.row > 0)
         {
             divisor++;
-            newDestructionArray[i] += m_constraintMatrix[constraintCoordinate.col][constraintCoordinate.row-1].DestructionArray[i];
+            m_constraintMatrix[constraintCoordinate.col][constraintCoordinate.row].DestructionArray[i] += m_constraintMatrix[constraintCoordinate.col][constraintCoordinate.row-1].DestructionArray[i];
         }
         if(constraintCoordinate.col > 0)
         {
             divisor++;
-            newDestructionArray[i] += m_constraintMatrix[constraintCoordinate.col-1][constraintCoordinate.row].DestructionArray[i];
+            m_constraintMatrix[constraintCoordinate.col][constraintCoordinate.row].DestructionArray[i] += m_constraintMatrix[constraintCoordinate.col-1][constraintCoordinate.row].DestructionArray[i];
         }
         if(divisor)
-            newDestructionArray[i] /=divisor;
+            m_constraintMatrix[constraintCoordinate.col][constraintCoordinate.row].DestructionArray[i] /=divisor;
+        else
+            //create default destructionPower //TODO find some better solution for default
+            m_constraintMatrix[constraintCoordinate.col][constraintCoordinate.row].DestructionArray[i] =1-m_constraintMatrix[constraintCoordinate.col][constraintCoordinate.row].SpeedTable[i+1];
     }
 }
+
+float DestructionPower::defaultDestructionPower(int i)
+{
+
+}
+
 //gets next highest valued abstraction layer down from current one (if first, get highest)
 int DestructionPower::getNextAbstractionLayer(coor newCoordinate, int currentAbstractionLayer)
 {
-    float currentPower=-1;
+    float currentPower = 1;
     int nextLayer=-1;
     float nextLayerPower=0;
     if (currentAbstractionLayer>=0)
         currentPower = m_constraintMatrix[newCoordinate.row][newCoordinate.col].DestructionArray[currentAbstractionLayer];
 
     int i=0;
-    for(float it:m_constraintMatrix[newCoordinate.row][newCoordinate.col].DestructionArray)
+
+    //giff next most valuable layer
+    for(auto it:m_constraintMatrix[newCoordinate.row][newCoordinate.col].DestructionArray)
     {
         if(it <= currentPower)
-        {
-            //if equal, then has to be the next one (activated from left to right)
+        {//if equal, then has to be the next one (activated from left to right)
             if(it == currentPower)
                 if(i>currentAbstractionLayer)
                     return i;
@@ -74,8 +86,8 @@ int DestructionPower::getNextAbstractionLayer(coor newCoordinate, int currentAbs
                 nextLayerPower=it;
                 nextLayer=i;
             }
-            i++;
         }
+        i++;
     }
     return nextLayer;
 }

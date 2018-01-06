@@ -48,6 +48,10 @@ void createNextLogElement(vector<LogEntry>& log, vector<Part*>& p_Box, Puzzle& p
 	log.emplace_back(LogEntry(coor(0, 0)));
    	log.back().myCoor = calculateNextCoor(log, p_Box,puzzleMat);
     puzzleMat.dp.DestructionOfSurrounding(log.back().myCoor);//calculate dp from surrounding
+    for(auto it:p_Box)
+        log.back().PieceCollector.emplace_back(pair<float,Part*>(0,it));
+    cout << p_Box.size() << endl;
+    cout << log.back().PieceCollector.size() << endl;
    	solve(log, p_Box,puzzleMat);
 
 }
@@ -72,11 +76,11 @@ coor calculateNextCoor(vector<LogEntry>& log, vector<Part*>& p_Box, Puzzle& puzz
 
 void solve(vector<LogEntry>& log, vector<Part*>& p_Box, Puzzle& puzzleMat)
 {
-	puzzleMat.dp.getNextAbstractionLayer(log.back().myCoor,log.back().abstractionLevel); //sets in abstractionLevel
+	log.back().abstractionLevel = puzzleMat.dp.getNextAbstractionLayer(log.back().myCoor,log.back().abstractionLevel); //sets in abstractionLevel
 	//status(log,p_Box,puzzleMat);
     switch(log.back().abstractionLevel)
     {
-        case 1:
+        case 0:
             puzzleMat.a1.EvaluateQuality(log.back().myCoor, log.back().PieceCollector);
         break;
 

@@ -67,5 +67,23 @@ void Puzzle::createRandomPuzzle()
 
 void Puzzle::createp_box()
 {
+    for(int i=0;i<rows*cols*4;i++)
+    p_myBox.push_back(&myBox[i]);
+}
+
+//creates a box of puzzlepieces with nothing other than puzzle piece id and correct nr of pieces
+void Puzzle::createBox(){
+    for(int i=0;i<rows*cols*4;i++)
+    {
+        Part temp;
+        temp.SetPartID(i);
+        for(uint8_t j=0;j<4;j++)
+        {
+            temp.SetNumOfRotations(j);
+            myBox.push_back(temp);
+        }
+
+
+    }
 
 }

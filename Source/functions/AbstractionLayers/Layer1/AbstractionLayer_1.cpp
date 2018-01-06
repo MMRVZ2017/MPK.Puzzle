@@ -10,26 +10,26 @@
 
 bool AbstractionLayer_1::PreProcessing(coor mySize,  const vector<Part*>* partArray)
 {
-
+    const vector<Part*>& ref_partArray = *partArray;
     analyseParts analyse(1008);
-    vector<Part> parts;
     Part buf;
-
+    int iterator=0;
     if(!analyse.getImages())
     {
         cerr << "Error occured in getImages!" << endl;
         return false;
     }
-    else
-    {
-        unsigned char tabs = 0;
+    else // hier werden alle vier verschiedenen Rotationsarten 'gleichzeitig' abgespeichert
         for(int i = 0; i < 1008; i++)
         {
-            tabs = analyse.getTabs(i);
-            buf.m_a1.m_connections=tabs;
-            parts.push_back(buf);
+            unsigned char poempel = analyse.getTabs(i);;
+            for (int j=0;j<4;j++)
+            {
+                ref_partArray[iterator]->m_a1.m_connections=poempel;
+                shift(poempel,1);
+                iterator++;
+            }
         }
-    }
 
     //Zugriff auf den vector mit den einzelnen teilen: part[0].getConnenctions() entspricht pömpel von bild 0.jpg und liefert ein unsigned char, poempl Belegung wie ausgemacht
 
@@ -44,11 +44,16 @@ bool AbstractionLayer_1::PreProcessing(coor mySize,  const vector<Part*>* partAr
 //it through qualityVector and removes all that do not trigger PlaceOfPartGood
 bool AbstractionLayer_1::EvaluateQuality (const coor constraintCoordinate, qualityVector& qVector)
 {
-    for(auto it = qVector.begin(); it != qVector.end(); it++)
+    int j=0;
+    for(int i = 0;i<qVector.size();i++)
     {
-        if(PlaceOfPartGood(constraintCoordinate, it->second->m_a1.m_connections))
+        j++;
+        cout <<"qVector size: " << qVector.size() << endl;
+        cout << "ID: " << qVector[i].second->GetPartID() << ", rotations: " << (int)qVector[i].second->GetNumOfRotations() << endl;
+        qVector[i].second->print();
+        if(PlaceOfPartGood(constraintCoordinate, qVector[i].second->m_a1.m_connections))
             continue;
-        qVector.erase(it++);
+        qVector.erase(qVector.begin()+(i--)); cout << endl << endl;
     }
 }
 
@@ -148,6 +153,9 @@ void AbstractionLayer_1::setEdgeZero()
 //checks if the myPart in its current orientation is legal in position m, n
 bool AbstractionLayer_1::PlaceOfPartGood(coor myCoor, uint8_t& myPart)
 {
+    //sets coordinates to correct position for layer
+    myCoor.row++;
+    myCoor.col++;
 
     uint8_t negativePart=0b00000000;
 
@@ -156,6 +164,8 @@ bool AbstractionLayer_1::PlaceOfPartGood(coor myCoor, uint8_t& myPart)
     negativePart or_eq (m_constraintMatrix[myCoor.row-1][myCoor.col].m_connections & 0b00001100);
     negativePart or_eq (m_constraintMatrix[myCoor.row][myCoor.col+1].m_connections & 0b00000011);
     shift(negativePart,2);
+    if(negativePart & 0b11000000)
+        return 1;
     if  (
             (    ((((negativePart & 0b11000000) ^ (myPart & 0b11000000))  != 0b00000000) && (((myPart & 0b11000000) != 0b00000000) && (negativePart & 0b11000000) != 0b00000000))
                  || ((((negativePart & 0b11000000) == 0b11000000) || ((myPart &  0b11000000) == 0b11000000))  && (((myPart & 0b11000000) != 0b00000000) && (negativePart & 0b11000000) != 0b00000000))
