@@ -15,7 +15,7 @@ bool DestructionPower::PreProcessing(coor mySize,const vector<Part*>* partArray)
 {
     cout << "DestructionPower Preprocessing...  ";
 
-    InitialiseConstraintMatrixSize(mySize.row,mySize.col);
+    InitialiseConstraintMatrixSize(mySize.col,mySize.row);
     cout << "Done!" << endl;
     return true;
 }

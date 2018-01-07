@@ -74,8 +74,8 @@ void AbstractionLayer_1::CreateRandomPuzzle()
     std::minstd_rand simple_rand;
     simple_rand.seed((unsigned int)"dumbo");
 
-    for(int row = 1; row < m_constraintMatrix.size()-1; row++){
-        for(int col = 1; col < (m_constraintMatrix[row].size() - 1);)
+    for(int col = 0; col < m_constraintMatrix.size()-2; col++){
+        for(int row = 0; row < (m_constraintMatrix[col].size() - 2);)
         {
             //create random piece
             uint8_t tempPiece = 0b00000000;
@@ -100,20 +100,20 @@ void AbstractionLayer_1::CreateRandomPuzzle()
                 tempPiece|=0b00000010;
 
             //set edges and corners to 00
-            if(row == 1)
+            if(row == 0)
                 tempPiece and_eq (uint8_t)0b00111111;
-            if(row == (m_constraintMatrix.size() - 2))
+            if(row == (m_constraintMatrix[col].size() - 3))
                 tempPiece and_eq (uint8_t)0b11110011;
-            if(col == 1)
+            if(col == 0)
                 tempPiece and_eq (uint8_t)0b11111100;
-            if(col == (m_constraintMatrix[row].size() - 2))
+            if(col == (m_constraintMatrix.size() - 3))
                 tempPiece and_eq (uint8_t)0b11001111;
 
             //set piece if piece good
             if(PlaceOfPartGood(coor((unsigned int)col,(unsigned int)row),tempPiece))
             {
-                m_constraintMatrix[col][row].m_connections = tempPiece;
-                col++;
+                m_constraintMatrix[col+1][row+1].m_connections = tempPiece;
+                row++;
             }
         }
     }
@@ -137,9 +137,10 @@ qualityVector AbstractionLayer_1::returnInBox(vector<Part>& PuzzleBox)
 }
 
 void AbstractionLayer_1::printConstraintMatrix() {
-    for (auto it1:m_constraintMatrix) {
-        for (auto it2:it1)
-            std::cout << std::bitset<8>(it2.m_connections) << " ";
+    for (int j=0;j<m_constraintMatrix[0].size();j++) {
+        for (int i=0;i<m_constraintMatrix.size();i++)
+
+            std::cout << std::bitset<8>(m_constraintMatrix[i][j].m_connections) << " ";
         std::cout << std::endl;
     }
     cout.flush();
@@ -161,10 +162,10 @@ bool AbstractionLayer_1::PlaceOfPartGood(coor myCoor, uint8_t& myPart)
 
     uint8_t negativePart=0b00000000;
 
-    negativePart or_eq (m_constraintMatrix[myCoor.row+1][myCoor.col].m_connections & 0b11000000);
-    negativePart or_eq (m_constraintMatrix[myCoor.row][myCoor.col-1].m_connections & 0b00110000);
-    negativePart or_eq (m_constraintMatrix[myCoor.row-1][myCoor.col].m_connections & 0b00001100);
-    negativePart or_eq (m_constraintMatrix[myCoor.row][myCoor.col+1].m_connections & 0b00000011);
+    negativePart or_eq (m_constraintMatrix[myCoor.col+1][myCoor.row].m_connections & 0b00000011);
+    negativePart or_eq (m_constraintMatrix[myCoor.col][myCoor.row-1].m_connections & 0b00001100);
+    negativePart or_eq (m_constraintMatrix[myCoor.col-1][myCoor.row].m_connections & 0b00110000);
+    negativePart or_eq (m_constraintMatrix[myCoor.col][myCoor.row+1].m_connections & 0b11000000);
     shift(negativePart,2);
     if  (
             (    ((((negativePart & 0b11000000) ^ (myPart & 0b11000000))  != 0b00000000) && (((myPart & 0b11000000) != 0b00000000) && (negativePart & 0b11000000) != 0b00000000))

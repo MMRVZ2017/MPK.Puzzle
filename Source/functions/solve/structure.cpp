@@ -150,7 +150,14 @@ bool backtrack(vector<LogEntry>& log, Puzzle& puzzleMat)
 void calculateTrueDestructionPower(vector<LogEntry>& log, Puzzle& puzzleMat, float Layerworth) {
     float destructionPower = sqrt(
             Layerworth * puzzleMat.dp.m_constraintMatrix[0][0].SpeedTable[log.back().abstractionLevel+1]);
-    puzzleMat.dp.setDestructionPower(log.back().myCoor, log.back().abstractionLevel, destructionPower);
+
+    //save destructionArray for when coor is done
+    if(puzzleMat.tmp_destructionArray.empty())
+        for(auto it:puzzleMat.dp.m_constraintMatrix[log.back().myCoor.col][log.back().myCoor.row].DestructionArray)
+            puzzleMat.tmp_destructionArray.emplace_back(it);
+
+    puzzleMat.tmp_destructionArray[log.back().abstractionLevel]=destructionPower;
+
 }
 
 // PART RAUER_WEIDINGER

@@ -59,12 +59,16 @@ public:
     void printPuzzle();
     void printBox();
 
-    void createRandomBox(){createRandomPuzzle();putIntoBox();shuffle();createp_box();}
+    void createRandomBox(){
+        myBox.clear();p_myBox.clear();
+        createRandomPuzzle();putIntoBox();
+        printPuzzle();shuffle();createp_box(); clearMat();}
     void createRandomPuzzle();
     void putIntoBox();
     void shuffle();
     void createBox();
     void createp_box();
+    void clearMat();
 
     bool allSet();
 
@@ -72,6 +76,8 @@ public:
     vector<Part*> p_myBox;
 
     qualityVector combinedQualityVector;
+
+    vector<float> tmp_destructionArray;
 
 private:
 

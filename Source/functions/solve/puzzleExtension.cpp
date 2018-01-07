@@ -39,7 +39,7 @@ void Puzzle::putIntoBox()
             for(int rotations=0;rotations<4;rotations++)
             {
                 tmpPart.m_a1.shift(1);
-                //TODO! add all other layers and rotationvariance here
+                //TODO! add all other layerswith their rotaionvariance here
                 myBox.emplace_back(tmpPart);
 
             }
@@ -61,6 +61,12 @@ void Puzzle::removeConstrains(coor removeCoordinates)
 }
 void Puzzle::setConstraints(coor setConstraints, Part* constraintPiece)
 {
+    //dp
+    this->dp.m_constraintMatrix[setConstraints.col][setConstraints.row].DestructionArray.clear();
+    for(auto it:this->tmp_destructionArray)
+    this->dp.m_constraintMatrix[setConstraints.col][setConstraints.row].DestructionArray.emplace_back(it);
+
+    //a1
     this->a1.SetConstraintOnPosition(setConstraints,constraintPiece->m_a1);
 }
 
@@ -97,4 +103,15 @@ bool Puzzle::allSet() {
         if(!it.set)
             return false;
     return true;
+}
+
+void Puzzle::clearMat()
+{
+    for(unsigned int i=0;i<cols;i++)
+    {
+        for(unsigned int j=0;j<rows;j++)
+        {
+            this->removeConstrains({i,j});
+        }
+    }
 }
