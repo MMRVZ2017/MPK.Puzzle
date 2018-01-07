@@ -65,6 +65,8 @@ public:
     void createBox();
     void createp_box();
 
+    bool allSet();
+
     vector<Part> myBox;
     vector<Part*> p_myBox;
 
@@ -76,11 +78,11 @@ private:
     unsigned int cols;
 };
 
-bool next(vector<LogEntry>& log, vector<Part*>& p_Box, Puzzle& puzzleMat);
-coor calculateNextCoor(vector<LogEntry>& log, vector<Part*>& p_Box, Puzzle& puzzleMat);
-void solve(vector<LogEntry>& log, vector<Part*>& p_Box, Puzzle& puzzleMat);
-void setsolution(vector<LogEntry>& log, vector<Part*>& p_Box, Puzzle& puzzleMat);
-bool backtrack(vector<LogEntry>& log, vector<Part*>& p_Box, Puzzle& puzzleMat);
+bool next(vector<LogEntry>& log,Puzzle& puzzleMat);
+coor calculateNextCoor(vector<LogEntry>& log, Puzzle& puzzleMat);
+void solve(vector<LogEntry>& log, Puzzle& puzzleMat);
+void setsolution(vector<LogEntry>& log, Puzzle& puzzleMat);
+bool backtrack(vector<LogEntry>& log,Puzzle& puzzleMat);
 
-void createNextLogElement(vector<LogEntry>& log, vector<Part*>& p_Box, Puzzle& puzzleMat);
+void createNextLogElement(vector<LogEntry>& log,Puzzle& puzzleMat);
 

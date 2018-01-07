@@ -18,7 +18,7 @@ int main()
     //puzzleMat.createRandomBox();
     puzzleMat.a1.printConstraintMatrix();
 
-    while(next(log, puzzleMat.p_myBox,puzzleMat));
+    while(next(log, puzzleMat));
 
     puzzleMat.printPuzzle();
     return 0;

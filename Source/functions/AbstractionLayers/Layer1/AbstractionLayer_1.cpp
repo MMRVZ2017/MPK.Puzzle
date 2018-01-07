@@ -44,16 +44,15 @@ bool AbstractionLayer_1::PreProcessing(coor mySize,  const vector<Part*>* partAr
 //it through qualityVector and removes all that do not trigger PlaceOfPartGood
 bool AbstractionLayer_1::EvaluateQuality (const coor constraintCoordinate, qualityVector& qVector)
 {
-    int j=0;
     for(int i = 0;i<qVector.size();i++)
     {
-        j++;
-        cout <<"qVector size: " << qVector.size() << endl;
-        cout << "ID: " << qVector[i].second->GetPartID() << ", rotations: " << (int)qVector[i].second->GetNumOfRotations() << endl;
-        qVector[i].second->print();
         if(PlaceOfPartGood(constraintCoordinate, qVector[i].second->m_a1.m_connections))
+        {
+            qVector[i].first=1;
+
             continue;
-        qVector.erase(qVector.begin()+(i--)); cout << endl << endl;
+        }
+        qVector[i].first=0;
     }
 }
 

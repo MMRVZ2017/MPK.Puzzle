@@ -87,3 +87,8 @@ void Puzzle::createBox(){
     }
 
 }
+
+bool Puzzle::allSet() {
+    //TODO! check if all puzzlepieces are set
+    return false;
+}
