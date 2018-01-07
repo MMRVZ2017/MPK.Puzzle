@@ -14,7 +14,7 @@ class LayerContainer;
 class Part
 {
 public:
-    Part() : m_partID(0), m_numOfRotations(0)
+    Part() : m_partID(0), m_numOfRotations(0), set(false)
     {}
     ~Part() = default;
 
@@ -40,8 +40,8 @@ public:
 
     void print(){m_a1.print();}
 
+    bool set;
     AbstractionLayer_1_Properties m_a1;
-    DestructionPower_Properties m_destruction;
 private:
     int32_t m_partID;
     uint8_t m_numOfRotations;

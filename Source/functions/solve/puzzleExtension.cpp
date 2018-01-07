@@ -59,6 +59,10 @@ void Puzzle::removeConstrains(coor removeCoordinates)
 {
     this->a1.RemoveConstraintOnPosition(removeCoordinates);
 }
+void Puzzle::setConstraints(coor setConstraints, Part* constraintPiece)
+{
+    this->a1.SetConstraintOnPosition(setConstraints,constraintPiece->m_a1);
+}
 
 void Puzzle::createRandomPuzzle()
 {
@@ -67,13 +71,13 @@ void Puzzle::createRandomPuzzle()
 
 void Puzzle::createp_box()
 {
-    for(int i=0;i<rows*cols*4;i++)
+    for(int i=0;i<cols*rows*4;i++)
     p_myBox.push_back(&myBox[i]);
 }
 
 //creates a box of puzzlepieces with nothing other than puzzle piece id and correct nr of pieces
 void Puzzle::createBox(){
-    for(int i=0;i<rows*cols*4;i++)
+    for(int i=0;i<cols*rows;i++)
     {
         Part temp;
         temp.SetPartID(i);
@@ -89,6 +93,8 @@ void Puzzle::createBox(){
 }
 
 bool Puzzle::allSet() {
-    //TODO! check if all puzzlepieces are set
-    return false;
+    for(auto it:myBox)
+        if(!it.set)
+            return false;
+    return true;
 }

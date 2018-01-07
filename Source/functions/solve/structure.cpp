@@ -1,8 +1,6 @@
 #include "../../header.h"
-void status(vector<LogEntry>& log, vector<Part*>& p_Box);
 bool SetBestOrMoreLayersArithmetical(vector<LogEntry>& log, qualityVector& cqVector);
 void calculateTrueDestructionPower(vector<LogEntry>& log, Puzzle& puzzleMat, float Layerworth);
-void sort(vector<LogEntry>& log);
 void cut(vector<LogEntry>& log, int& cutID);
 float capLogElements(vector<LogEntry>& log);
 void CalculateNewCombinedQuality(vector<LogEntry>& log, qualityVector& qVector, qualityVector& cqVector);
@@ -11,35 +9,31 @@ bool next(vector<LogEntry>& log,Puzzle& puzzleMat)
 {
     //last log element is set, create new log element or log not yet started
     if(!(log.size()) || log.back().isSet())
-    {
     	if((puzzleMat.allSet())) return false; //puzzle solved
     	else createNextLogElement(log,puzzleMat);
-    }
+
     //last log element is empty, backtrack
-    else if(!(log.back().PieceCollector.size())) backtrack(log,puzzleMat);
+    else if(!(log.back().PieceCollector.size()))
+    {
+        if(!(backtrack(log,puzzleMat)))
+            return false;
+    }
+
     //case last log element has multiple entries
     else if(log.back().PieceCollector.size() > 1)
-    {
         //moreLayers is 0, setbest is 1
         if (SetBestOrMoreLayersArithmetical(log, puzzleMat.combinedQualityVector)) setsolution(log, puzzleMat);
         else solve(log, puzzleMat);
-    }
+
     //case last log exactly one solution
     else if(log.back().PieceCollector.size() == 1)
-    {
         if(log.back().hasRandomed())
-        {
 	    	if(log.back().abstractionLevel < 2)//do 2 at least two best abstractions to check if part is okay
-	    	{
-	    		log.back().advance();
 	            solve(log,puzzleMat);
-	    	}
 	    	else
 	    		setsolution(log,puzzleMat);
-    	}
         else
     		setsolution(log,puzzleMat);
-    }
     return true;
 }
 
@@ -48,10 +42,10 @@ void createNextLogElement(vector<LogEntry>& log, Puzzle& puzzleMat)
 	log.emplace_back(LogEntry(coor(0, 0)));
    	log.back().myCoor = calculateNextCoor(log, puzzleMat);
     puzzleMat.dp.DestructionOfSurrounding(log.back().myCoor);//calculate dp from surrounding
+    //get all not set pieces
     for(auto it:puzzleMat.p_myBox)
-        log.back().PieceCollector.emplace_back(pair<float,Part*>(0,it));
-    cout << puzzleMat.p_myBox.size() << endl;
-    cout << log.back().PieceCollector.size() << endl;
+        if(!it->set)
+            log.back().PieceCollector.emplace_back(pair<float,Part*>(0,it));
    	solve(log,puzzleMat);
 
 }
@@ -65,25 +59,27 @@ coor calculateNextCoor(vector<LogEntry>& log, Puzzle& puzzleMat)
         return {0,0};
 
 
-	unsigned int m= log.rbegin()[1].myCoor.col;
-	unsigned int n= log.rbegin()[1].myCoor.row;
+	unsigned int col= log.rbegin()[1].myCoor.col;
+	unsigned int row= log.rbegin()[1].myCoor.row;
 
 
-	if(m<puzzleMat.getSizeAsCoor().col-1) m++;
-	else if(n<puzzleMat.getSizeAsCoor().row-1){ m=0; n++;}
-	return	{m,n};
+	if(row<puzzleMat.getSizeAsCoor().row-1) row++;
+	else if(col<puzzleMat.getSizeAsCoor().col-1){ row=0; col++;}
+	return	{col,row};
 }
 
-void solve(vector<LogEntry>& log, vector<Part*>& p_Box, Puzzle& puzzleMat)
+void solve(vector<LogEntry>& log,Puzzle& puzzleMat)
 {
 	log.back().abstractionLevel = puzzleMat.dp.getNextAbstractionLayer(log.back().myCoor,log.back().abstractionLevel); //sets in abstractionLevel
 	//status(log,p_Box,puzzleMat);
     switch(log.back().abstractionLevel)
     {
-        case 0:
+        case 0://pömpel
             puzzleMat.a1.EvaluateQuality(log.back().myCoor, log.back().PieceCollector);
         break;
-
+        case -1://random
+            setsolution(log,puzzleMat);
+        return;
         default:
         break;
     }
@@ -100,19 +96,26 @@ void setsolution(vector<LogEntry>& log, Puzzle& puzzleMat)
 	//advance number of randomed part count
 	if(log.back().PieceCollector.size()>1) log.back().advanceRandomed();
 	
-	//remove first element in last logelement from box
-	for(int i=0;i<puzzleMat.p_myBox.size();)
-		if(puzzleMat.p_myBox[i]==log.back().PieceCollector.begin()->second)//mach ich das richtig so?!
-            puzzleMat.p_myBox.erase(puzzleMat.p_myBox.begin()+i);
-		else
-			i++;
+	//'set=true' all 4 rotations of pieces in puzzleBox
+	for(int i=0;i<puzzleMat.p_myBox.size();i++)
+		if(puzzleMat.p_myBox[i]->GetPartID()==log.back().PieceCollector.begin()->second->GetPartID())
+            puzzleMat.p_myBox[i]->set=true;
 
+    puzzleMat.combinedQualityVector.clear(); //clear data from temp variable
 	//tell log entry that it is set
 	log.back().Set();
+    puzzleMat.setConstraints(log.back().myCoor,log.back().PieceCollector.begin()->second);
+    cout << "set:" << log.back().myCoor.col << "," << log.back().myCoor.row << endl;
 }
 
 bool backtrack(vector<LogEntry>& log, Puzzle& puzzleMat)
 {
+    if(log.empty())
+    {
+        cout << "Puzzle not solveable!" << endl;
+        return false;
+    }
+    puzzleMat.combinedQualityVector.clear(); //remove all data from temp quality save
     //if more pieces possible, take next piece
     if((log.back().PieceCollector.size())>1)
     {
@@ -131,42 +134,22 @@ bool backtrack(vector<LogEntry>& log, Puzzle& puzzleMat)
     {
         puzzleMat.removeConstrains(log.back().myCoor); //this should remove constraints from all layers
         if((log.back().PieceCollector.size()))
-            puzzleMat.p_myBox.emplace_back(log.back().PieceCollector.begin()->second);
+            for(int i=0;i<puzzleMat.p_myBox.size();i++)
+                if(puzzleMat.p_myBox[i]->GetPartID()==log.back().PieceCollector.begin()->second->GetPartID())//sets all with partid
+                    puzzleMat.p_myBox[i]->set=false;
         log.pop_back();
-        backtrack(log,puzzleMat);
+        if(!backtrack(log,puzzleMat))
+            return false;
+        return true;
     }
 }
 
-void status(vector<LogEntry>& log, Puzzle& puzzleMat)
-{
-	cout << "----------------------------" << endl;
-	cout << "status:" << endl;
-	cout << "hasrandomed: " << log[0].hasRandomed() << endl;
-	for(int i=0;i<log.size();i++)
-	{
-		cout << "log    #" << i << ":" << endl;
-		cout << "piecenr " << log[i].PieceCollector.size() << endl;
-		if(log[i].isSet())
-			cout << "isset: 1" << endl;
-		else
-			cout << "isset: 0" << endl;
-		cout << "col: " << log[i].myCoor.col<< " row: " << log[i].myCoor.row << endl;
-	}
-
-	cout << endl;
-	cout << "Box:" << endl;
-	cout << "size:  " << puzzleMat.p_myBox.size() << endl;
-
-	cout << "Puzzle:" << endl;
-	puzzleMat.printPuzzle();
-	cout << "----------------------------" << endl;
-}
 
 //this is addon stuff that should later all be extracted into a sererate cpp as it is not core dispatcher functionality
 
 void calculateTrueDestructionPower(vector<LogEntry>& log, Puzzle& puzzleMat, float Layerworth) {
     float destructionPower = sqrt(
-            Layerworth * puzzleMat.dp.m_constraintMatrix[0][0].SpeedTable[log.back().abstractionLevel]);
+            Layerworth * puzzleMat.dp.m_constraintMatrix[0][0].SpeedTable[log.back().abstractionLevel+1]);
     puzzleMat.dp.setDestructionPower(log.back().myCoor, log.back().abstractionLevel, destructionPower);
 }
 
@@ -193,13 +176,14 @@ float capLogElements(vector<LogEntry>& log)
         if(log.back().PieceCollector[id].first < limit)
             break;
     }
+    int newid=0;
+    if(id>0)
+        newid = --id; //set to the one just over limit
 
-
-    int newid = --id; //set to the one just over limit
-
-
-    while(id<log.back().PieceCollector.size()-1) //find maximum difference in function
+    while(id<(log.back().PieceCollector.size()-1)) //find maximum difference in function
     {
+        if(!log.back().PieceCollector[id].first)
+            break;
 
         diff = log.back().PieceCollector[id].first - log.back().PieceCollector[++id].first;
         if(diff > maxdiff)
@@ -217,21 +201,6 @@ float capLogElements(vector<LogEntry>& log)
 
 }
 
-qualityVector::iterator FindPartInLog(vector<LogEntry>& log, Part* wishedPartPointer)
-{
-    qualityVector::iterator partOnPositionIterator = log.back().PieceCollector.begin();
-
-    while (partOnPositionIterator != log.back().PieceCollector.end())
-    {
-        if(partOnPositionIterator->second == wishedPartPointer)
-            break;
-        else
-            partOnPositionIterator++;
-    }
-
-    return partOnPositionIterator;
-}
-
 void cut(vector<LogEntry>& log, int& cutID)
 {
     while(cutID<log.back().PieceCollector.size())
@@ -243,17 +212,17 @@ void cut(vector<LogEntry>& log, int& cutID)
 // geeignete Threshold values muessen noch getestet werden
 bool SetBestOrMoreLayersArithmetical(vector<LogEntry>& log, qualityVector& cqVector)
 {
-    float threshold = 1.0, tempBest = 0.0;
+    float threshold, tempBest = 0.0;
     unsigned int countHigherThreshold = 0;
 
     if(cqVector.empty())
     {
-        cerr << "combinedQualityVector is empty." << endl;  // should not be empty => backtrack?
+        //cerr << "combinedQualityVector is empty." << endl;  // should not be empty => backtrack?
         return false; // Warning: can only return true or false. What return for error?
     }
     else
     {
-        switch(log.back().abstractionLevel)
+        switch(log.back().abstractionLevel+1)
         {
             case 1: threshold = 0.90; break;
             case 2: threshold = 0.80; break;
@@ -263,22 +232,14 @@ bool SetBestOrMoreLayersArithmetical(vector<LogEntry>& log, qualityVector& cqVec
             default: threshold = 0.5; break;
         }
 
-        // check Quality of current Puzzle Piece in combinedQualityVector with Threshold value
+        // check Quality of current Puzzle Piece in  combinedQualityVector with Threshold value
         for (qualityVector::iterator it = cqVector.begin(); it != cqVector.end(); it++)
-        {
             if ((cqVector.back().first / log.back().abstractionLevel) >= threshold) // const threshold values
-            {
                 // count how many Pieces are greater than the threshold value
                 countHigherThreshold++;
-            }
             else
-            {
                 if ((cqVector.back().first / log.back().abstractionLevel) > tempBest)
-                {
                     tempBest = cqVector.back().first;  // could be used, for additional constraints
-                }
-            }
-        }
 
         // return true if only one piece is left
         if (1 == countHigherThreshold)
@@ -302,52 +263,41 @@ void CalculateNewCombinedQuality(vector<LogEntry>& log, qualityVector& qVector, 
     // check if both qualityVectors are not empty
     if(qVector.empty())
     {
-        cerr << "qualityVector is empty." << endl;  // should not be empty => backtrack?
+        //cerr << "qualityVector is empty." << endl;  // should not be empty => backtrack?
         return;
     }
-    else if(cqVector.empty())
+     if(cqVector.empty())
     {
-        cerr << "combinedQualityVector is empty." << endl;  // should not be empty => backtrack?
-        return;
+        //cout << "combinedQualityVector was initialized." << endl;  //first layer stuff eh
+        for(auto it:qVector)
+            cqVector.emplace_back(it);
     }
-    else
-    {
-        for (unsigned int i = 0; i < cqVector.size(); i++)
-        {
-            summarizedVectors = false;
+     else
+     {
+         for (unsigned int i = 0; i < cqVector.size(); i++) {
+             for (unsigned int j = 0; j < qVector.size(); j++) {
+                 // search same PuzzlePart of qualityVector and combinedQualityVector
+                 if (&cqVector.at(i).second == &qVector.at(j).second) {
+                     // sum Quality of PieceCollector (qualityVector) to combinedQualityVector
+                     cqVector.at(j).first += qVector.at(i).first;
+                     countSummarizedVectors++;
+                     break; // skip remaining for loop => save time!
+                 }
+             // remove element at poisition X in combinedQualityVector, because it was not summarized
+             // inefficient way to delete element X
+             //cqVector->erase(cqVector->begin()+i);
+             // efficient way, but no sorted cqVector => wayne //echt? lol
+             swap(cqVector.at(i), cqVector.back());
+             cqVector.pop_back();
+             }
+         }
 
-            for (unsigned int j = 0; j < qVector.size(); j++)
-            {
-                // search same PuzzlePart of qualityVector and combinedQualityVector
-                if (&cqVector.at(i).second == &qVector.at(j).second)
-                {
-                    // sum Quality of PieceCollector (qualityVector) to combinedQualityVector
-                    cqVector.at(j).first += qVector.at(i).first;
-                    countSummarizedVectors++;
-                    summarizedVectors = true;
-                    continue; // skip remaining for loop => save time!
-                }
-            }
-
-            // remove element at poisition X in combinedQualityVector, because it was not summarized
-            if (!summarizedVectors)
-            {
-                // inefficient way to delete element X
-                //cqVector->erase(cqVector->begin()+i);
-
-                // efficient way, but no sorted cqVector => wayne
-                swap(cqVector.at(i), cqVector.back());
-                cqVector.pop_back();
-            }
-        }
-
-        // cqVector should have the same size now as newest qVector
-        if (cqVector.size() != qVector.size())
-        {
-            cerr << "Size of combinedQualityVector doenst match with size of qualityVector!" << endl;
-            cout << "Size of combinedQualityVector: " << cqVector.size() << endl;
-            cout << "Size of qualityVector: " << qVector.size() << endl;
-            cout << "Size of countSummarizedVectors: " << countSummarizedVectors << endl;
-        }
-    }
+         // cqVector should have the same size now as newest qVector
+         if (cqVector.size() != qVector.size()) {
+             cerr << "Size of combinedQualityVector doenst match with size of qualityVector!" << endl;
+             cout << "Size of combinedQualityVector: " << cqVector.size() << endl;
+             cout << "Size of qualityVector: " << qVector.size() << endl;
+             cout << "Size of countSummarizedVectors: " << countSummarizedVectors << endl;
+         }
+     }
 }

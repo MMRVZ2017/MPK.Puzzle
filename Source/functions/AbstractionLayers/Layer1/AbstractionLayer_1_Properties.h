@@ -12,6 +12,7 @@ class AbstractionLayer_1_Properties
 public:
     AbstractionLayer_1_Properties() : m_connections(0b11111111) {}
     void shift(int shifts);
+    uint8_t getConnections(){return m_connections;};
     void print();
 
 private:

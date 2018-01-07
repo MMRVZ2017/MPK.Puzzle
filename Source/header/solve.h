@@ -39,13 +39,13 @@ class Puzzle
 {
 public:
 
-    Puzzle(unsigned int newcols,unsigned int newrows):rows(newrows),cols(newcols) {}
+    Puzzle(unsigned int newcols,unsigned int newrows):cols(newcols),rows(newrows) {}
 
     bool PreProcessing()
     {
         createBox(); createp_box();
-        dp.PreProcessing({rows,cols}, nullptr);
-        a1.PreProcessing({rows,cols}, &p_myBox);
+        dp.PreProcessing({cols,rows}, nullptr);
+        a1.PreProcessing({cols,rows}, &p_myBox);
         return true;
     }
 
@@ -55,6 +55,7 @@ public:
     AbstractionLayer_1 a1;
 
     void removeConstrains(coor removeCoordinates);
+    void setConstraints(coor setConstraints, Part *constraintPiece);
     void printPuzzle();
     void printBox();
 
@@ -74,8 +75,8 @@ public:
 
 private:
 
-    unsigned int rows;
     unsigned int cols;
+    unsigned int rows;
 };
 
 bool next(vector<LogEntry>& log,Puzzle& puzzleMat);

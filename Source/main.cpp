@@ -5,7 +5,7 @@ int LogEntry::randomed(0);
 int main()
 {
 
-    unsigned int cols=36, rows=28;
+    unsigned int cols=36,rows=28;
 
     vector<LogEntry> log;
     Puzzle puzzleMat(cols, rows);
@@ -16,10 +16,11 @@ int main()
     }
 
     //puzzleMat.createRandomBox();
-    puzzleMat.a1.printConstraintMatrix();
 
+    cout << "Solving Puzzle now...";
     while(next(log, puzzleMat));
 
+    cout << "Done!" << endl;
     puzzleMat.printPuzzle();
     return 0;
 }

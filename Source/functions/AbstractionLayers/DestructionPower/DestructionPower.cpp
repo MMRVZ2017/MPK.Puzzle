@@ -13,8 +13,10 @@ map<int,float> DestructionPower_Properties::SpeedTable =
 
 bool DestructionPower::PreProcessing(coor mySize,const vector<Part*>* partArray)
 {
-    InitialiseConstraintMatrixSize(mySize.row,mySize.col);
+    cout << "DestructionPower Preprocessing...  ";
 
+    InitialiseConstraintMatrixSize(mySize.row,mySize.col);
+    cout << "Done!" << endl;
     return true;
 }
 
@@ -33,7 +35,6 @@ bool DestructionPower::RemoveConstraintOnPosition(const coor constraintCoordinat
 
 //gets destruction power from left and from top if possible and normalizes
 void DestructionPower::DestructionOfSurrounding(const coor constraintCoordinate) {
-    float newDestructionArray[DESTRUCTION_COUNT];
 
     for (int i = 0; i < DESTRUCTION_COUNT; ++i) {
         m_constraintMatrix[constraintCoordinate.col][constraintCoordinate.row].DestructionArray.push_back(0);
@@ -68,24 +69,25 @@ int DestructionPower::getNextAbstractionLayer(coor newCoordinate, int currentAbs
     int nextLayer=-1;
     float nextLayerPower=0;
     if (currentAbstractionLayer>=0)
-        currentPower = m_constraintMatrix[newCoordinate.row][newCoordinate.col].DestructionArray[currentAbstractionLayer];
+        currentPower = m_constraintMatrix[newCoordinate.col][newCoordinate.row].DestructionArray[currentAbstractionLayer];
 
     int i=0;
 
     //giff next most valuable layer
-    for(auto it:m_constraintMatrix[newCoordinate.row][newCoordinate.col].DestructionArray)
+    for(auto it:m_constraintMatrix[newCoordinate.col][newCoordinate.row].DestructionArray)
     {
         if(it <= currentPower)
         {//if equal, then has to be the next one (activated from left to right)
-            if(it == currentPower)
-                if(i>currentAbstractionLayer)
+            if(it == currentPower) {
+                if (i > currentAbstractionLayer)
                     return i;
-            //if this one is bigger than previous biggest one, save
-            if(it>nextLayerPower)
-            {
-                nextLayerPower=it;
-                nextLayer=i;
             }
+                //if this one is bigger than previous biggest one, save
+            else if(it>nextLayerPower)
+                {
+                    nextLayerPower=it;
+                    nextLayer=i;
+                }
         }
         i++;
     }

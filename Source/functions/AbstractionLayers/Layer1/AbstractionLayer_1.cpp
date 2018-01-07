@@ -10,8 +10,9 @@
 
 bool AbstractionLayer_1::PreProcessing(coor mySize,  const vector<Part*>* partArray)
 {
+    cout << "Abstraction 1 Preprocessing...  " << flush;
     const vector<Part*>& ref_partArray = *partArray;
-    analyseParts analyse(1008);
+    analyseParts analyse(mySize.row*mySize.col);
     Part buf;
     int iterator=0;
     if(!analyse.getImages())
@@ -20,7 +21,8 @@ bool AbstractionLayer_1::PreProcessing(coor mySize,  const vector<Part*>* partAr
         return false;
     }
     else // hier werden alle vier verschiedenen Rotationsarten 'gleichzeitig' abgespeichert
-        for(int i = 0; i < 1008; i++)
+        //TODO rows and cols
+        for(int i = 0; i < mySize.row*mySize.col; i++)
         {
             unsigned char poempel = analyse.getTabs(i);;
             for (int j=0;j<4;j++)
@@ -35,9 +37,10 @@ bool AbstractionLayer_1::PreProcessing(coor mySize,  const vector<Part*>* partAr
 
 
 
-    InitialiseConstraintMatrixSize(mySize.col+2, mySize.row+2);
+    InitialiseConstraintMatrixSize(mySize.col+2, mySize.row+2); //col row switched in this function
     setEdgeZero();
 
+    cout << "Done!" << endl;
     return true;
 }
 
@@ -58,12 +61,12 @@ bool AbstractionLayer_1::EvaluateQuality (const coor constraintCoordinate, quali
 
 bool AbstractionLayer_1::SetConstraintOnPosition(const coor constraintCoordinate, const AbstractionLayer_1_Properties constraint)
 {
-    m_constraintMatrix[constraintCoordinate.col][constraintCoordinate.row].m_connections=constraint.m_connections;
+    m_constraintMatrix[constraintCoordinate.col+1][constraintCoordinate.row+1].m_connections=constraint.m_connections;
 }
 
 bool AbstractionLayer_1::RemoveConstraintOnPosition(const coor constraintCoordinate)
 {
-    m_constraintMatrix[constraintCoordinate.col][constraintCoordinate.row].m_connections=0b11111111;
+    m_constraintMatrix[constraintCoordinate.col+1][constraintCoordinate.row+1].m_connections=0b11111111;
 }
 
 void AbstractionLayer_1::CreateRandomPuzzle()
@@ -107,9 +110,9 @@ void AbstractionLayer_1::CreateRandomPuzzle()
                 tempPiece and_eq (uint8_t)0b11001111;
 
             //set piece if piece good
-            if(PlaceOfPartGood(coor(col,row),tempPiece))
+            if(PlaceOfPartGood(coor((unsigned int)col,(unsigned int)row),tempPiece))
             {
-                m_constraintMatrix[row][col].m_connections = tempPiece;
+                m_constraintMatrix[col][row].m_connections = tempPiece;
                 col++;
             }
         }
@@ -163,8 +166,6 @@ bool AbstractionLayer_1::PlaceOfPartGood(coor myCoor, uint8_t& myPart)
     negativePart or_eq (m_constraintMatrix[myCoor.row-1][myCoor.col].m_connections & 0b00001100);
     negativePart or_eq (m_constraintMatrix[myCoor.row][myCoor.col+1].m_connections & 0b00000011);
     shift(negativePart,2);
-    if(negativePart & 0b11000000)
-        return 1;
     if  (
             (    ((((negativePart & 0b11000000) ^ (myPart & 0b11000000))  != 0b00000000) && (((myPart & 0b11000000) != 0b00000000) && (negativePart & 0b11000000) != 0b00000000))
                  || ((((negativePart & 0b11000000) == 0b11000000) || ((myPart &  0b11000000) == 0b11000000))  && (((myPart & 0b11000000) != 0b00000000) && (negativePart & 0b11000000) != 0b00000000))
@@ -220,8 +221,6 @@ Mat analyseParts::readImages(int count)
     Mat ref_gray;
 
     sprintf(name, PATH, count);
-    cout << "path" << name << endl;
-
     Mat src = imread(name, 1);
     if (!src.data)
     {
