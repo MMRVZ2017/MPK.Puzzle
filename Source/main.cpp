@@ -5,7 +5,7 @@ int LogEntry::randomed(0);
 int main()
 {
 
-    unsigned int cols=6,rows=8;
+    unsigned int cols=9,rows=8;
 
     vector<LogEntry> log;
     Puzzle puzzleMat(cols, rows);

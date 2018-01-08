@@ -9,7 +9,8 @@ bool next(vector<LogEntry>& log,Puzzle& puzzleMat)
 {
     //last log element is set, create new log element or log not yet started
     if(!(log.size()) || log.back().isSet())
-    	if((puzzleMat.allSet())) return false; //puzzle solved
+    	if((puzzleMat.allSet()))
+            return false; //puzzle solved
     	else createNextLogElement(log,puzzleMat);
 
     //last log element is empty, backtrack
@@ -116,10 +117,12 @@ bool backtrack(vector<LogEntry>& log, Puzzle& puzzleMat)
         return false;
     }
     puzzleMat.combinedQualityVector.clear(); //remove all data from temp quality save
-    //if more pieces possible, take next piece
+    //if more pieces possible, tset piece as not logged
     if((log.back().PieceCollector.size())>1)
     {
-        puzzleMat.p_myBox.push_back(log.back().PieceCollector.begin()->second);
+        for(int i=0;i<puzzleMat.p_myBox.size();i++)
+            if(puzzleMat.p_myBox[i]->GetPartID()==log.back().PieceCollector.begin()->second->GetPartID())//sets all with partid
+                puzzleMat.p_myBox[i]->set=false;
         log.back().PieceCollector.erase(log.back().PieceCollector.begin());
 
         if(log.back().PieceCollector.size()==1)

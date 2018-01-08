@@ -32,7 +32,7 @@ void Puzzle::putIntoBox()
         for(int j=0;j<this->getSizeAsCoor().row;j++)
         {
 
-            tmpPart.m_a1=this->a1.m_constraintMatrix[i][j];
+            tmpPart.m_a1=this->a1.m_constraintMatrix[i+1][j+1];
             //sets part id
             tmpPart.SetPartID(id++);
             // adds all 4 rotations to Box
