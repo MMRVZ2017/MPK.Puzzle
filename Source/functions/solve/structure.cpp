@@ -96,7 +96,7 @@ void setsolution(vector<LogEntry>& log, Puzzle& puzzleMat)
 {
 	//advance number of randomed part count
 	if(log.back().PieceCollector.size()>1) log.back().advanceRandomed();
-	
+
 	//'set=true' all 4 rotations of pieces in puzzleBox
 	for(int i=0;i<puzzleMat.p_myBox.size();i++)
 		if(puzzleMat.p_myBox[i]->GetPartID()==log.back().PieceCollector.begin()->second->GetPartID())
@@ -152,7 +152,7 @@ bool backtrack(vector<LogEntry>& log, Puzzle& puzzleMat)
 
 void calculateTrueDestructionPower(vector<LogEntry>& log, Puzzle& puzzleMat, float Layerworth) {
     float destructionPower = sqrt(
-            Layerworth * puzzleMat.dp.m_constraintMatrix[0][0].SpeedTable[log.back().abstractionLevel+1]);
+            Layerworth * puzzleMat.dp.m_constraintMatrix[0][0].SpeedTable[log.back().abstractionLevel]);
 
     //save destructionArray for when coor is done
     if(puzzleMat.tmp_destructionArray.empty())
@@ -232,13 +232,13 @@ bool SetBestOrMoreLayersArithmetical(vector<LogEntry>& log, qualityVector& cqVec
     }
     else
     {
-        switch(log.back().abstractionLevel+1)
+        switch(log.back().abstractionLevel)
         {
-            case 1: threshold = 0.90; break;
-            case 2: threshold = 0.80; break;
-            case 3: threshold = 0.75; break;
-            case 4: threshold = 0.66; break;
-            case 5: threshold = 0.60; break;
+            case 0: threshold = 0.90; break;
+            case 1: threshold = 0.80; break;
+            case 2: threshold = 0.75; break;
+            case 3: threshold = 0.66; break;
+            case 4: threshold = 0.60; break;
             default: threshold = 0.5; break;
         }
 

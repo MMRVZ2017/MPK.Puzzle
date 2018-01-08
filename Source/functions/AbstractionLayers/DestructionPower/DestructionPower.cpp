@@ -5,9 +5,11 @@
 #include "DestructionPower.h"
 
 //TODO! Add more layers here!
+
+//sets relations of speed for the different layers
 map<int,float> DestructionPower_Properties::SpeedTable =
         {
-                {1,0.001}
+                {0,0.99}
         };
 
 
@@ -53,7 +55,7 @@ void DestructionPower::DestructionOfSurrounding(const coor constraintCoordinate)
             m_constraintMatrix[constraintCoordinate.col][constraintCoordinate.row].DestructionArray[i] /=divisor;
         else
             //create default destructionPower //TODO find some better solution for default
-            m_constraintMatrix[constraintCoordinate.col][constraintCoordinate.row].DestructionArray[i] =1-m_constraintMatrix[constraintCoordinate.col][constraintCoordinate.row].SpeedTable[i+1];
+            m_constraintMatrix[constraintCoordinate.col][constraintCoordinate.row].DestructionArray[i] =1-m_constraintMatrix[constraintCoordinate.col][constraintCoordinate.row].SpeedTable[i];
     }
 }
 
