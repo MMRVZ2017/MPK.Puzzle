@@ -3,6 +3,13 @@ MPK Projekt Puzzle Solver
 
 Don't merge branch to master unless you are absolutely, 100% sure it works and you have discussed it with pm!
 
+# How to use Program
+- In Master, set cols and rows to size of Puzzle
+- Comment or uncomment random Puzzle Generator Line
+- Put Pieces .jpg into a 'pieces' dir at same level as git rep dir.
+- Name Pieces 0000.jpg, 0001.jpg etc.
+
+
 # Git intro
 0, read github tutorial
 
