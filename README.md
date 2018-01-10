@@ -7,7 +7,7 @@ Don't merge branch to master unless you are absolutely, 100% sure it works and y
 - In Master, set cols and rows to size of Puzzle
 - Comment or uncomment random Puzzle Generator Line
 - Put Pieces .jpg into a 'pieces' dir at same level as git rep dir.
-- Name Pieces 0000.jpg, 0001.jpg etc.
+- Name Pieces  in dir 0000.jpg, 0001.jpg etc.
 
 
 # Git intro
