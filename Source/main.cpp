@@ -8,15 +8,18 @@
 #include <vector>
 #include <bitset>
 
-#define DISPLAY false
-#define PATH "D:\\TS_Straight\\%d.png"
-#define IMG_SIZE 400
+#define DISPLAY true
+#define PATH "C:\\Users\\michi\\Downloads\\puzzleteile_bb_2017\\jpg_96_klein\\%04d.jpg"
+#define IMG_SIZE 270
 #define TOP 6
 #define RIGHT 4
 #define BOTTOM 2
 #define LEFT 0
 using namespace std;
 using namespace cv;
+
+Mat source;
+int counter_save = 0;
 
 class Part
 {
@@ -92,6 +95,7 @@ Mat analyseParts::makeBorder(Mat& im_bw) {
     Scalar value = (0,0,0);
     Point center = findCenter(im_bw);
     copyMakeBorder(im_bw, im_part, abs((IMG_SIZE/2)-center.y),abs((IMG_SIZE/2)-(im_bw.rows-center.y)), abs((IMG_SIZE/2)-center.x),abs( (IMG_SIZE/2)-(im_bw.cols-center.x )), BORDER_CONSTANT, value);
+    copyMakeBorder(source, source, abs((IMG_SIZE/2)-center.y),abs((IMG_SIZE/2)-(source.rows-center.y)), abs((IMG_SIZE/2)-center.x),abs((IMG_SIZE/2)-(source.cols-center.x )), BORDER_CONSTANT, Scalar(255,255,255));
 
     return im_part;
 }
@@ -105,13 +109,13 @@ Mat analyseParts::readImages(int count)
     sprintf(name, PATH, count);
     //cout << "path" << name << endl;
 
-    Mat src = imread(name, 1);
-    if (!src.data)
+    source = imread(name, 1);
+    if (!source.data)
         cerr << "Problem loading image!!!" << endl;
-    if(DISPLAY)imshow("src",src);
+    if(DISPLAY)imshow("source",source);
 
     Mat im_gray, im_bw;
-    cvtColor(src, im_gray, CV_RGB2GRAY);
+    cvtColor(source, im_gray, CV_RGB2GRAY);
     im_bw = (im_gray > 220);
     im_bw = 255 - im_bw;
     im_bw = makeBorder(im_bw);
@@ -144,7 +148,6 @@ Mat analyseParts::morphDilateErode(Mat &im_bw)
 
 vector<vector<Point>> analyseParts::findingContours(Mat& dst)
 {
-
     vector<vector<Point> > contours1;
     vector<vector<Point> > contours;
     vector<Point> poly;
@@ -221,6 +224,18 @@ float analyseParts::lengthTwoPoints (Point one, Point two) {
 float analyseParts::angle(Point one, Point two, Point three) {
     float angle = 0;
     float disa, disb, disc;
+    int det = 0;
+    Point vecA, vecB;
+    vecA.x = one.x-two.x;
+    vecA.y = one.y-two.y;
+
+    vecB.x = three.x-two.x;
+    vecB.y = three.y-two.y;
+
+    det = vecA.x*vecB.y-vecA.y*vecB.x;
+   // cout << "vecA: " << vecA << endl;
+    //cout << "vecB: " << vecB << endl;
+    //cout << "det: " << det << endl;
 
     disa = lengthTwoPoints(two, three);
     disb = lengthTwoPoints(one, three);
@@ -243,12 +258,47 @@ void analyseParts::getImages(){
     Mat mask_gray;
 
     for (int i = 0; i < nr_parts; i++) {
-        if(DISPLAY) cout << "Bild " << i << endl;
+        if(DISPLAY)
+            cout << "Bild " << i << endl;
         Mat im_bw = readImages(i);
         Mat dst = morphDilateErode(im_bw);
         contours1 = findingContours(dst);
         mask_gray = polyApprox(contours1);
         mask.setImage(mask_gray);
+
+        int maxCorners = 20;
+        vector<Point> corners_find;
+        double qualityLevel = 0.01;
+        double minDistance = 10;
+        int blockSize = 3;
+        bool useHarrisDetector = false;
+        double k = 0.04;
+        RNG rng(12345);
+
+        Mat copy;
+        copy = mask_gray.clone();
+
+      /*  goodFeaturesToTrack( mask_gray,
+                             corners_find,
+                             maxCorners,
+                             qualityLevel,
+                             minDistance,
+                             Mat(),
+                             blockSize,
+                             useHarrisDetector,
+                             k );
+
+        //cout<<"** Number of corners detected: "<<corners_find.size()<<endl;
+
+        int r = 4;
+        for( int i = 0; i < corners_find.size(); i++ )
+        { circle( copy, corners_find[i], r, Scalar(rng.uniform(0,255), rng.uniform(0,255),
+                                                   rng.uniform(0,255)), -1, 8, 0 ); }
+
+
+        if(DISPLAY) imshow( "Ecken gefunden", copy );*/
+
+
         mask.setCenter(findCenter(mask_gray));
         findContours(mask_gray, contours, hierarchy, CV_RETR_CCOMP, CV_CHAIN_APPROX_SIMPLE, Point(0, 0));
         mask.setContour(contours);
@@ -272,8 +322,31 @@ Point analyseParts::findCenter(Mat img){
     return center;
 }
 
+float pitch2Points(Point one, Point two)
+{
+    float pitch=0;
+    float deltay=0;
+    float deltax = 0;
+    //cout << "**********\n" << "punkt1: " << one.x << "," << one.y << endl << "punkt2:" << two.x << "," << two.y << endl << "*********" << endl;
+    deltay = abs(one.y - two.y);
+    deltax = abs(one.x - two.x);
+
+    if(deltax == 0)
+        deltax = 0.1;
+
+    if(deltay == 0)
+        deltay = 0.1;
+
+    pitch = deltay/deltax;
+
+  //  cout << "deltax = " << deltax << endl;
+  //  cout << "deltay = " << deltay << endl;
+    return pitch;
+}
 
 vector<Point> analyseParts::findCorners(vector<Point> contour, Point center){
+
+
     int minContourPoint = 5;
     vector<vector<Point>> quad_contour;
     vector<Point> buf0;
@@ -304,7 +377,6 @@ vector<Point> analyseParts::findCorners(vector<Point> contour, Point center){
         }
     }
     circle(drawing,center,2,Scalar(0,255,255),3,8,0);
-
     /*finde ecke rechts unten*/
     vector<Point> corners;
     float dist = 0;
@@ -312,6 +384,8 @@ vector<Point> analyseParts::findCorners(vector<Point> contour, Point center){
     int max_idx = 0;
     int num = 0;
     float distToCenter = 0;
+    float min_dist_line = 1000;
+    float dist_buf = 0;
     for(int i = 0; i < (IMG_SIZE/2); i++){
         for(int j = 0; j < quad_contour[0].size(); j++){
             if(quad_contour[0][j].x > center.x+i  && quad_contour[0][j].y > center.y+i)
@@ -326,16 +400,61 @@ vector<Point> analyseParts::findCorners(vector<Point> contour, Point center){
     for(int j = 0; j < quad_contour[0].size(); j++){
         if(quad_contour[0][j].x > center.x+dist  && quad_contour[0][j].y > center.y+dist) {
             distToCenter = lengthTwoPoints(center,quad_contour[0][j]);
+
+            if(abs(quad_contour[0][j].x-center.x+dist) < min_dist_line){
+                min_dist_line = j;
+               // cout << "min dist line: " << min_dist_line << endl;
+            }
+
             if(distToCenter > max_dist) {
                     max_dist = distToCenter;
                     max_idx = j;
             }
         }
     }
+
     corners.push_back(quad_contour[0][max_idx]);
     line(drawing,Point(center.x+dist,(IMG_SIZE/2)),Point(center.x+dist,IMG_SIZE),Scalar(255,0,255),3,8);
     line(drawing,Point((IMG_SIZE/2),center.y+dist),Point(IMG_SIZE,center.y+dist),Scalar(255,0,255),3,8);
     circle(drawing,quad_contour[0][max_idx],5,Scalar(50,100,255),5,8);
+
+    circle(source,quad_contour[0][max_idx],8,Scalar(50,100,255),2,8);
+
+    // Hier Code um bei Ecke rechts unten in beide Richtungen weiter zu gehen und 90° zu finden. Das ist echte Ecke
+
+
+   /* float k = 0;
+    float k1 = 0;
+    circle(drawing,quad_contour[0][max_idx-7],8,Scalar(255,255,255),1,8);
+   /* for(int i = max_idx; i > 2; i--){
+        k = pitch2Points(quad_contour[0][i],quad_contour[0][i-2]);
+        k1= pitch2Points(quad_contour[0][i-2],quad_contour[0][i-4]);
+        cout << "delta zurueck: " << abs(k1-k) << "i: " << i <<   endl;
+        if(abs(k1-k) >= 15){
+            circle(drawing,quad_contour[0][i-2],8,Scalar(255,255,0),1,8);
+            max_idx = i;
+            i = 0;
+        }
+    }*/
+
+   /* for (int i = max_idx-7;  i < quad_contour[0].size()-2; i++)
+    {
+        /*cout << "punkt1: " << quad_contour[0][max_idx].x << "," << quad_contour[0][max_idx].y<< endl;
+        cout << "punkt2: " << quad_contour[0][max_idx+i].x << "," << quad_contour[0][max_idx+i].y<< endl;
+        cout << "punkt3: " << quad_contour[0][max_idx+i*2].x << "," << quad_contour[0][max_idx+i*2].y<< endl;*/
+       /* k = pitch2Points(quad_contour[0][i],quad_contour[0][i+1]);
+        k1= pitch2Points(quad_contour[0][i+1],quad_contour[0][i+2]);
+        cout << "delta: " << k-k1 << endl;
+        if(k-k1 < -2 && quad_contour[0][i+1].y > quad_contour[0][i+2].y){
+            circle(drawing,quad_contour[0][i+1],10,Scalar(0,255,255),1,8);
+            i = quad_contour[0].size();
+        }
+
+
+        //contour von ecke nach links und rechts
+        //cout << angle(contour[max_idx], contour[max_idx + 1], contour[max_idx + 2]);
+
+    }
 
 /*finde ecke links unten*/
     dist = 0;
@@ -367,6 +486,7 @@ vector<Point> analyseParts::findCorners(vector<Point> contour, Point center){
     line(drawing,Point(center.x-dist,(IMG_SIZE/2)),Point(center.x-dist,IMG_SIZE),Scalar(255,0,255),3,8);
     line(drawing,Point((IMG_SIZE/2),center.y+dist),Point(0,center.y+dist),Scalar(255,0,255),3,8);
     circle(drawing,quad_contour[1][max_idx],5,Scalar(50,100,255),5,8);
+    circle(source,quad_contour[1][max_idx],8,Scalar(50,100,255),2,8);
 
 /*finde ecke rechts oben*/
     dist = 0;
@@ -398,6 +518,7 @@ vector<Point> analyseParts::findCorners(vector<Point> contour, Point center){
     line(drawing,Point(center.x+dist,(IMG_SIZE/2)),Point(center.x+dist,0),Scalar(255,0,255),3,8);
     line(drawing,Point((IMG_SIZE/2),center.y-dist),Point(IMG_SIZE,center.y-dist),Scalar(255,0,255),3,8);
     circle(drawing,quad_contour[2][max_idx],5,Scalar(50,100,255),5,8);
+    circle(source,quad_contour[2][max_idx],8,Scalar(50,100,255),2,8);
 
 /*finde ecke links oben*/
     dist = 0;
@@ -429,7 +550,13 @@ vector<Point> analyseParts::findCorners(vector<Point> contour, Point center){
     line(drawing,Point(center.x-dist,(IMG_SIZE/2)),Point(center.x-dist,0),Scalar(255,0,255),3,8);
     line(drawing,Point(0,center.y-dist),Point((IMG_SIZE/2),center.y-dist),Scalar(255,0,255),3,8);
     circle(drawing,quad_contour[3][max_idx],5,Scalar(50,100,255),5,8);
+    circle(source,quad_contour[3][max_idx],8,Scalar(50,100,255),2,8);
     if(DISPLAY) imshow("draw",drawing);
+    if(DISPLAY) imshow("Corners",source);
+    //char save_name[100];
+   // sprintf(save_name,"C:\\Users\\michi\\Desktop\\test_teile\\%d.jpg",counter_save);
+   // imwrite(save_name,source);
+  //  counter_save++;
     return corners;
 }
 
@@ -438,19 +565,27 @@ unsigned char analyseParts::analyseContour(vector<Point> corners, vector<Point> 
     vector<Point> contour_top;
     vector<Point> contour_left;
     vector<Point> contour_bottom;
+
     Mat drawing = createEmpty(Point(IMG_SIZE,IMG_SIZE),1);
     int count = 0;
     int corner0 = 0, corner1 = 0, corner2 = 0, corner3 = 0;
     for(int i = 0; i < contour.size(); i++){
+        //cout << "contour " << contour[i] << endl;
         if(contour[i] == corners[0])
             corner0 = i;
-        if(contour[i] == corners[1])
+        else if(contour[i] == corners[1])
             corner1 = i;
-        if(contour[i] == corners[2])
+        else if(contour[i] == corners[2])
             corner2 = i;
-        if(contour[i] == corners[3])
+        else if(contour[i] == corners[3])
             corner3 = i;
     }
+    //cout << "corner0: " << corners[0] << endl;
+    //cout << "corner1: " << corners[1] << endl;
+    //cout << "corner2: " << corners[2] << endl;
+    //cout << "corner3: " << corners[3] << endl;
+
+
     count = corner0;
     while(contour[count] != contour[corner2]){
         count++;
@@ -494,6 +629,342 @@ unsigned char analyseParts::analyseContour(vector<Point> corners, vector<Point> 
             max_idx = i;
         }
     }
+
+    contour_right.insert(contour_right.begin(),corners[0]);
+    contour_right.push_back(corners[2]);
+
+    contour_top.insert(contour_top.begin(),corners[2]);
+    contour_top.push_back(corners[3]);
+
+    contour_left.insert(contour_left.begin(),corners[3]);
+    contour_left.push_back(corners[1]);
+
+    contour_bottom.insert(contour_bottom.begin(),corners[1]);
+    contour_bottom.push_back(corners[0]);
+
+    /*-------------------------------------*/
+    //ecken Korrektur rechte Kontur
+    /*-------------------------------------*/
+
+    vector<Point> contour_r;
+    double laenge = 0;
+    int idx = 0, counter = 0, c = 0, d = 0;
+
+    while (counter < (contour_right.size()-1)) {
+        counter++;
+        c++;
+        laenge = sqrt((contour_right[idx].x - contour_right[idx + c].x) * (contour_right[idx].x - contour_right[idx + c].x) +
+                      (contour_right[idx].y - contour_right[idx + c].y) * (contour_right[idx].y - contour_right[idx + c].y));
+        if (laenge > 4) {
+            d++;
+            contour_r.push_back(contour_right[idx]);
+            idx = counter;
+            c = 0;
+        }
+    }
+
+    float k = 0;
+    int correct_count = 0;
+    int correct_idx = 0;
+    for(correct_count = 0; correct_count < contour_r.size()-2; correct_count++){
+
+        k = pitch2Points(contour_r[correct_count],contour_r[correct_count+1]);
+        //cout << "unten: " << k << endl;
+        if(k >= 2) {
+            correct_idx = correct_count;
+            correct_count = contour_r.size();
+        }
+        if(correct_count > 500)
+            break;
+    }
+    /*-----------------------------------*/
+    if(correct_idx > 0){
+        circle(drawing, contour_r[correct_idx], 10, Scalar(0, 255, 0), 2, 8);
+        corners[0] = contour_r[correct_idx];
+    }
+    /*-----------------------------------*/
+    vector<Point> contour_r1;
+    laenge = 0;
+    idx = contour_right.size()-1, counter = contour_right.size()-1, c = 0, d = 0;
+
+    while (counter > 1) {
+        counter--;
+        c--;
+        laenge = sqrt((contour_right[idx].x - contour_right[idx + c].x) * (contour_right[idx].x - contour_right[idx + c].x) +
+                      (contour_right[idx].y - contour_right[idx + c].y) * (contour_right[idx].y - contour_right[idx + c].y));
+        if (laenge > 4) {
+            contour_r1.push_back(contour_right[idx]);
+            idx = counter;
+            c = 0;
+        }
+    }
+
+
+    k = 0;
+    correct_count = 0;
+    correct_idx = 0;
+    for(correct_count = 0; correct_count < contour_r1.size()-2; correct_count++){
+
+        k = pitch2Points(contour_r1[correct_count],contour_r1[correct_count+1]);
+       // cout << "oben: " << k << endl;
+        if(k >= 2) {
+            correct_idx = correct_count;
+            correct_count = contour_r1.size();
+        }
+    }
+    /*-----------------------------------*/
+    if(correct_idx > 0){
+        circle(drawing, contour_r1[correct_idx], 10, Scalar(0, 0, 255), 2, 8);
+        corners[2] = contour_r1[correct_idx];
+    }
+    /*-----------------------------------*/
+
+    /*-------------------------------------*/
+    //ecken Korrektur links Kontur
+    /*-------------------------------------*/
+
+    vector<Point> contour_l;
+    laenge = 0;
+    idx = 0, counter = 0, c = 0, d = 0;
+
+    while (counter < (contour_left.size()-1)) {
+        counter++;
+        c++;
+        laenge = sqrt((contour_left[idx].x - contour_left[idx + c].x) * (contour_left[idx].x - contour_left[idx + c].x) +
+                      (contour_left[idx].y - contour_left[idx + c].y) * (contour_left[idx].y - contour_left[idx + c].y));
+        if (laenge > 4) {
+            d++;
+            contour_l.push_back(contour_left[idx]);
+            idx = counter;
+            c = 0;
+        }
+    }
+
+    k = 0;
+    correct_count = 0;
+    correct_idx = 0;
+    for(correct_count = 0; correct_count < contour_l.size()-2; correct_count++){
+
+        k = pitch2Points(contour_l[correct_count],contour_l[correct_count+1]);
+       // cout << "oben _links: " << k << endl;
+        if(k >= 2) {
+            correct_idx = correct_count;
+            correct_count = contour_l.size();
+        }
+        if(correct_count > 500)
+            break;
+    }
+    /*-----------------------------------*/
+    if(correct_idx > 0){
+        circle(drawing, contour_l[correct_idx], 8 , Scalar(0, 255, 0), 2, 8);
+        corners[3] = contour_l[correct_idx];
+    }
+    /*-----------------------------------*/
+    vector<Point> contour_l1;
+    laenge = 0;
+    idx = contour_left.size()-1, counter = contour_left.size()-1, c = 0, d = 0;
+
+    while (counter > 1) {
+        counter--;
+        c--;
+        laenge = sqrt((contour_left[idx].x - contour_left[idx + c].x) * (contour_left[idx].x - contour_left[idx + c].x) +
+                      (contour_left[idx].y - contour_left[idx + c].y) * (contour_left[idx].y - contour_left[idx + c].y));
+        if (laenge > 4) {
+            contour_l1.push_back(contour_left[idx]);
+            idx = counter;
+            c = 0;
+        }
+        if(correct_count > 500)
+            break;
+    }
+    k = 0;
+    correct_count = 0;
+    correct_idx = 0;
+   // cout << "unten _links_länge" << contour_l1.size() << endl;
+    for(correct_count = 0; correct_count < contour_l1.size(); correct_count++){
+
+        k = pitch2Points(contour_l1[correct_count],contour_l1[correct_count+1]);
+        //circle(drawing, contour_l1[correct_count], 8, Scalar(0, 0, 255), 2, 8);
+       // cout << "unten _links: " << k << endl;
+        if(k >= 2) {
+          //  cout << "end _links: " << endl;
+            correct_idx = correct_count;
+            correct_count = contour_l1.size();
+        }
+        if(correct_count > 500)
+            break;
+    }
+    /*-----------------------------------*/
+  //  cout << "unten _links_correct: " << correct_idx << endl;
+    if(correct_idx > 0){
+        circle(drawing, contour_l1[correct_idx], 8, Scalar(0, 0, 255), 2, 8);
+        corners[1] = contour_l1[correct_idx];
+    }
+    /*-----------------------------------*/
+
+    /*-------------------------------------*/
+    //ecken Korrektur oben Kontur
+    /*-------------------------------------*/
+
+    vector<Point> contour_t;
+    laenge = 0;
+    idx = 0, counter = 0, c = 0, d = 0;
+
+    while (counter < (contour_top.size()-1)) {
+        counter++;
+        c++;
+        laenge = sqrt((contour_top[idx].x - contour_top[idx + c].x) * (contour_top[idx].x - contour_top[idx + c].x) +
+                      (contour_top[idx].y - contour_top[idx + c].y) * (contour_top[idx].y - contour_top[idx + c].y));
+        if (laenge > 4) {
+            d++;
+            contour_t.push_back(contour_top[idx]);
+            idx = counter;
+            c = 0;
+        }
+        if(correct_count > 500)
+            break;
+    }
+
+    k = 0;
+    correct_count = 0;
+    correct_idx = 0;
+    for(correct_count = 0; correct_count < contour_t.size()-2; correct_count++){
+
+        k = pitch2Points(contour_t[correct_count],contour_t[correct_count+1]);
+       // cout << "top _rechts: " << k << endl;
+        if(k <= 2) {
+            correct_idx = correct_count;
+            correct_count = contour_t.size();
+        }
+        if(correct_count > 500)
+            break;
+    }
+    /*-----------------------------------*/
+    if(correct_idx > 0){
+        circle(drawing, contour_t[correct_idx], 8 , Scalar(255, 255, 255), 2, 8);
+        corners[2] = contour_t[correct_idx];
+    }
+    /*-----------------------------------*/
+    vector<Point> contour_t1;
+    laenge = 0;
+    idx = contour_top.size()-1, counter = contour_top.size()-1, c = 0, d = 0;
+
+    while (counter > 1) {
+        counter--;
+        c--;
+        laenge = sqrt((contour_top[idx].x - contour_top[idx + c].x) * (contour_top[idx].x - contour_top[idx + c].x) +
+                      (contour_top[idx].y - contour_top[idx + c].y) * (contour_top[idx].y - contour_top[idx + c].y));
+        if (laenge > 4) {
+            contour_t1.push_back(contour_top[idx]);
+            idx = counter;
+            c = 0;
+        }
+        if(correct_count > 500)
+            break;
+    }
+    k = 0;
+    correct_idx = 0;
+   // cout << "oben _links_lange" << contour_t1.size() << endl;
+    for(correct_count = 0; correct_count < contour_t1.size(); correct_count++){
+        k = pitch2Points(contour_t1[correct_count],contour_t1[correct_count+1]);
+        //circle(drawing, contour_l1[correct_count], 8, Scalar(0, 0, 255), 2, 8);
+       // cout << "oben _links: " << k << endl;
+        if(k < 2) {
+        //    cout << "end_oben _links " << endl;
+            correct_idx = correct_count;
+            correct_count = contour_t1.size();
+        }
+    }
+    /*-----------------------------------*/
+   // cout << "unten _top_correct: " << correct_idx << endl;
+    if(correct_idx > 0){
+        circle(drawing, contour_t1[correct_idx], 8, Scalar(0, 255, 255), 2, 8);
+        corners[3] = contour_t1[correct_idx];
+    }
+    /*-------------------------------------*/
+
+    /*-------------------------------------*/
+    //ecken Korrektur unten Kontur
+    /*-------------------------------------*/
+
+    vector<Point> contour_b;
+    laenge = 0;
+    idx = 0, counter = 0, c = 0, d = 0;
+
+    while (counter < (contour_bottom.size()-1)) {
+        counter++;
+        c++;
+        laenge = sqrt((contour_bottom[idx].x - contour_bottom[idx + c].x) * (contour_bottom[idx].x - contour_bottom[idx + c].x) +
+                      (contour_bottom[idx].y - contour_bottom[idx + c].y) * (contour_bottom[idx].y - contour_bottom[idx + c].y));
+        if (laenge > 4) {
+            d++;
+            contour_b.push_back(contour_bottom[idx]);
+            idx = counter;
+            c = 0;
+        }
+        if(correct_count > 500)
+            break;
+    }
+
+    k = 0;
+    correct_count = 0;
+    correct_idx = 0;
+    for(correct_count = 0; correct_count < contour_b.size()-2; correct_count++){
+
+        k = pitch2Points(contour_b[correct_count],contour_b[correct_count+1]);
+       // cout << "bottom _rechts: " << k << endl;
+        if(k <= 2) {
+            correct_idx = correct_count;
+            correct_count = contour_b.size();
+        }
+        if(correct_count > 500)
+            break;
+    }
+    /*-----------------------------------*/
+    if(correct_idx > 0){
+        circle(drawing, contour_b[correct_idx], 8 , Scalar(255, 255, 255), 2, 8);
+        corners[1] = contour_b[correct_idx];
+    }
+    /*-----------------------------------*/
+    vector<Point> contour_b1;
+    laenge = 0;
+    idx = contour_bottom.size()-1, counter = contour_bottom.size()-1, c = 0, d = 0;
+
+    while (counter > 1) {
+        counter--;
+        c--;
+        laenge = sqrt((contour_bottom[idx].x - contour_bottom[idx + c].x) * (contour_bottom[idx].x - contour_bottom[idx + c].x) +
+                      (contour_bottom[idx].y - contour_bottom[idx + c].y) * (contour_bottom[idx].y - contour_bottom[idx + c].y));
+        if (laenge > 4) {
+            contour_b1.push_back(contour_bottom[idx]);
+            idx = counter;
+            c = 0;
+        }
+        if(correct_count > 500)
+            break;
+    }
+    k = 0;
+    correct_idx = 0;
+  //  cout << "unten _links_lange" << contour_b1.size() << endl;
+    for(correct_count = 0; correct_count < contour_b1.size(); correct_count++){
+        k = pitch2Points(contour_b1[correct_count],contour_b1[correct_count+1]);
+        //circle(drawing, contour_l1[correct_count], 8, Scalar(0, 0, 255), 2, 8);
+     //   cout << "oben _links: " << k << endl;
+        if(k < 2) {
+       //     cout << "end_bottom _links " << endl;
+            correct_idx = correct_count;
+            correct_count = contour_b1.size();
+        }
+        if(correct_count > 500)
+            break;
+    }
+    /*-----------------------------------*/
+   // cout << "unten _bottom_correct: " << correct_idx << endl;
+    if(correct_idx > 0){
+        circle(drawing, contour_b1[correct_idx], 8, Scalar(0, 255, 255), 2, 8);
+        corners[0] = contour_b1[correct_idx];
+    }
+    /*-----------------------------------*/
 
     unsigned char tabs = 0;
     circle(drawing,contour_right[max_idx],10,Scalar(255,0,255),2,8);
@@ -560,7 +1031,12 @@ unsigned char analyseParts::analyseContour(vector<Point> corners, vector<Point> 
 
     //cout << bitset<sizeof(char) * CHAR_BIT> (tabs) <<  "b\n";
 
+    for(int i = 0; i < 4; i++){
+        circle(source, corners[i], 8, Scalar(0, 255, 0), 2, 8);
+    }
+
     if(DISPLAY)imshow("corners",drawing);
+    if(DISPLAY)imshow("corrected_corners",source);
     if(DISPLAY)waitKey(0);
     return tabs;
 }
