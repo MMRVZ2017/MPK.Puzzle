@@ -44,8 +44,14 @@ int main(){
     }
 
     // showing the result:
-    Mat solvedImage = resultImage(solvedMx);
+    const char * displayDir = "../images/input/input_display/"; // this is where the displayed pieces are stored in BW jpg format.
+    int MonitorY = 600; // make it smaller than your monitors vertical resolution so the image fits the screen
+    Mat solvedImage = resultImage(solvedMx, displayDir,600);
+    Mat fitSolvedImage = resultImageCropped(solvedMx, displayDir,600);
+    Mat smartSolvedImage = resultImageSmart(solvedMx, displayDir,600);
     imshow("result",solvedImage);
+    imshow("fitResult", fitSolvedImage);
+    imshow("smartResult", smartSolvedImage);
     waitKey(0);
 
     char outputFile1 [100];
@@ -94,7 +100,7 @@ int main(){
     solvedImage = Mat::zeros(solvedImage.size(), CV_8UC3);
 
     // Displaying the second solution described by our 3x3 solution matrix:
-    solvedImage = resultImage(solve3x3);
+    solvedImage = resultImage(solve3x3, displayDir,600);
     imshow("result",solvedImage);
     waitKey(0);
 
