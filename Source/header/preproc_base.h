@@ -48,7 +48,12 @@ Mat correct(Mat, bool = false);
 Mat processRawImage(int fileIndex = 0); // depracated by readimage
 Mat processRawImageBB(int fileIndex = 0); // deprecated by readimage
 Mat saveImage(int , Mat); // deprecated (wasn't working in the first place)
-Mat resultImage( vector<vector< SolutionElement>> solutionMx);
+Mat resultImage( vector<vector< SolutionElement>> solutionMx, const char* displayDir, int Y_size);
+Mat resultImageColor( vector<vector< SolutionElement>> solutionMx, const char* displayDir, int Y_size);
+Mat crop2Contour(const Mat & img);
+Mat crop2ContourInv(const Mat & img);
+Mat resultImageCropped( vector<vector< SolutionElement>> solutionMx, const char* displayDir, int Y_size);
+Mat resultImageSmart( vector<vector< SolutionElement>> solutionMx, const char* displayDir, int Y_size);
 int findOrientation(Mat);
 Contour_t getLongestContour(Mat); //  depracated by getLongestContourIndex
 int getLongestContourIndex(Contour_t);

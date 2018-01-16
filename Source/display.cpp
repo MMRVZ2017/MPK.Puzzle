@@ -27,11 +27,11 @@ using std::endl;
 int main(){
 
 
-    int noRows = 15;
-    int noCols = 15;
+    int noRows = 28;
+    int noCols = 36;
     vector<vector< SolutionElement>> solvedMx;
     solvedMx.resize(noRows);
-    int index = 35; // random
+    int index = 0; // random
     //Making a random 15x15 solution matrix, later this will be provided by the solution groups:
     for(int i = 0; i<noRows;i++){
         for(int j = 0; j<noCols;j++){
@@ -45,18 +45,21 @@ int main(){
 
     // showing the result:
     const char * displayDir = "../images/input/input_display/"; // this is where the displayed pieces are stored in BW jpg format.
+    const char * colorDir = "../images/input/input_color/";
     int MonitorY = 600; // make it smaller than your monitors vertical resolution so the image fits the screen
-    Mat solvedImage = resultImage(solvedMx, displayDir,600);
-    Mat fitSolvedImage = resultImageCropped(solvedMx, displayDir,600);
-    Mat smartSolvedImage = resultImageSmart(solvedMx, displayDir,600);
-    imshow("result",solvedImage);
-    imshow("fitResult", fitSolvedImage);
-    imshow("smartResult", smartSolvedImage);
+   // Mat solvedImage = resultImage(solvedMx, displayDir,600);
+   // Mat fitSolvedImage = resultImageCropped(solvedMx, displayDir,600);
+    Mat colorSolved = resultImageColor(solvedMx, colorDir,600);
+   // Mat smartSolvedImage = resultImageSmart(solvedMx, displayDir,600);
+   // imshow("result",solvedImage);
+    //imshow("fitResult", fitSolvedImage);
+    imshow("colored", colorSolved);
+    //imshow("smartResult", smartSolvedImage);
     waitKey(0);
 
     char outputFile1 [100];
     sprintf(outputFile1,"../images/output/solution1.jpg");
-    imwrite(outputFile1,solvedImage);
+    //imwrite(outputFile1,solvedImage);
     //Making another solution matrix:
     noRows = 3;
     noCols = 3;
@@ -97,17 +100,17 @@ int main(){
     solve3x3[2][2].orientation = 0;
 
     // Recycling the solvedImage object by setting every pixel to zero, this is probably unnecessary:
-    solvedImage = Mat::zeros(solvedImage.size(), CV_8UC3);
+  //  solvedImage = Mat::zeros(solvedImage.size(), CV_8UC3);
 
     // Displaying the second solution described by our 3x3 solution matrix:
-    solvedImage = resultImage(solve3x3, displayDir,600);
-    imshow("result",solvedImage);
+  // solvedImage = resultImage(solve3x3, displayDir,600);
+   // imshow("result",solvedImage);
     waitKey(0);
 
     // saving the result:
     char outputFile2 [100];
-    sprintf(outputFile2,"../images/output/solution2.jpg");
-    imwrite(outputFile2,solvedImage);
+   // sprintf(outputFile2,"../images/output/solution2.jpg");
+   // imwrite(outputFile2,solvedImage);
 
 }
 

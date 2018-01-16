@@ -114,6 +114,20 @@ Mat crop2Contour(const Mat & img){
     int longest = getLongestContourIndex(c);
     Rect croppingRect = boundingRect(c[longest]);
     Mat cropped = img(croppingRect);
+    //imshow("cropped", cropped);
+    return cropped;
+}
+
+Mat crop2ContourInv(const Mat & img){ // for white background images
+    Mat grey;
+    cvtColor(img, grey,CV_BGR2GRAY);
+    Contour_t c; Hierarchy_t h;
+    threshold(grey,grey,200,255,THRESH_BINARY_INV);
+    findContours(grey,c,h,CV_RETR_EXTERNAL,CV_CHAIN_APPROX_SIMPLE);
+    int longest = getLongestContourIndex(c);
+    Rect croppingRect = boundingRect(c[longest]);
+    Mat cropped = img(croppingRect);
+    imshow("cropped", cropped);
     return cropped;
 }
 
@@ -187,6 +201,73 @@ Mat resultImageCropped( vector<vector< SolutionElement>> solutionMx, const char*
     return result;
 }
 
+Mat resultImageColor( vector<vector< SolutionElement>> solutionMx, const char* displayDir, int Y_size){
+    // WARNING: This may only work correctly with Black & White Images!!!
+
+    int separator = 3;
+    int partHeight = 90;
+    int partWidth;
+    auto imageH =  int(round(partHeight* solutionMx.size()));
+
+    if(imageH > Y_size){
+        imageH = Y_size;
+    }
+    partHeight = int(round(imageH /  solutionMx.size()));
+    partWidth = partHeight;
+    auto imageW = int(round( partWidth*solutionMx[1].size()));
+
+    // cout<<"imageW "<<imageW <<endl<<"imageH " <<imageH<<endl<<endl;
+    // cout<<"partW "<<partWidth <<endl<<"partH " <<partHeight<<endl<<endl;
+    Mat result(imageH,imageW,CV_8UC3,Scalar(255,255,255));
+    int topLeft =0;
+    int topRight = 0;
+
+    Mat sampleImg = readImage(solutionMx[2][2].index,displayDir);
+
+    for(size_t i = 0; i<solutionMx.size();i++){
+        for(size_t j = 0; j<solutionMx[i].size();j++){
+            int imageNumber =  solutionMx[i][j].index;
+            //cout<<"imageIndex: "<< imageNumber << endl;
+
+            Mat img = readImage(imageNumber,displayDir);
+            copyMakeBorder(img,img,200,200,300,300,BORDER_CONSTANT,Scalar(255,255,255));
+            Mat invert = Mat::ones(img.size(), CV_8UC3); // invert for rotation to work correctly
+            bitwise_not ( img, invert );
+            int angle = solutionMx[i][j].orientation*90;
+            Point2f center;
+            center.x = invert.cols/2;
+            center.y = invert.rows/2;
+            Mat RotMatrix = getRotationMatrix2D(center,angle,1);
+            warpAffine(invert,invert,RotMatrix, invert.size());
+//            imshow("readImg",img); // you can comment with Ctrl + / did you know? :D
+//            waitKey(0);
+            bitwise_not(invert,img);
+
+
+            Mat cropped = crop2ContourInv(img);
+            //imshow("cropped", cropped);
+            //waitKey(0);
+            float pWidth = cropped.cols;
+            float pHeight = cropped.rows;
+            float aspRatio = pWidth/pHeight;
+
+            auto ROI_X = int(round(j*partWidth));
+            auto ROI_Y = int(round(i*partHeight));
+//            cout<<"ROI X: "<< ROI_X<<endl;
+//            cout<<"ROI Y: "<< ROI_Y<<endl;
+
+            Rect ROI(ROI_X,ROI_Y , partWidth-separator, partHeight-separator); // j is the x coordinate not i!!
+            Mat temp(Scalar(255,255,255));
+            resize(cropped,temp, Size(ROI.width, ROI.height));
+            temp.copyTo(result(ROI));
+
+//            imshow("result",result);
+//            waitKey(0);
+        }
+    }
+    return result;
+}
+
 Mat resultImageSmart( vector<vector< SolutionElement>> solutionMx, const char* displayDir, int Y_size){
     // WARNING: This may only work correctly with Black & White Images!!!
 
@@ -213,7 +294,7 @@ Mat resultImageSmart( vector<vector< SolutionElement>> solutionMx, const char* d
     float displaySize = (partHeight + partWidth) / 2;
     //cout<< "imsize: "<< imageSize<<endl;
    // cout<< "dSize: "<< displaySize<<endl;
-    float shrinkFactor = 1.5 *(displaySize / imageSize);
+    float shrinkFactor = 1.2 *(displaySize / imageSize);
     for(size_t i = 0; i<solutionMx.size();i++){
         for(size_t j = 0; j<solutionMx[i].size();j++){
             int imageNumber =  solutionMx[i][j].index;
