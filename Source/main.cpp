@@ -21,6 +21,9 @@ int main()
     while(next(log, puzzleMat));
 
     cout << "Done!" << endl;
+
+    cout << log.size() << endl;
+    puzzleMat.resultImage(log);
     puzzleMat.printPuzzle();
     return 0;
 }
