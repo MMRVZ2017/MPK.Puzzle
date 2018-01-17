@@ -41,3 +41,8 @@ cmake-build-debug
 .idea
 .DS_Store
 
+
+#Directories
+cmake-build-debug
+.idea
+.DS_Store
