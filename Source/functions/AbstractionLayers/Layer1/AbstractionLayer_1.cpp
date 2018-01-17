@@ -72,7 +72,7 @@ bool AbstractionLayer_1::RemoveConstraintOnPosition(const coor constraintCoordin
 void AbstractionLayer_1::CreateRandomPuzzle()
 {
     std::minstd_rand simple_rand;
-    simple_rand.seed((unsigned int)"dumbo");
+    simple_rand.seed(u_int(std::time(nullptr)));
 
     for(int col = 0; col < m_constraintMatrix.size()-2; col++){
         for(int row = 0; row < (m_constraintMatrix[col].size() - 2);)
