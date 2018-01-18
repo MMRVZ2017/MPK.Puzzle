@@ -1,7 +1,6 @@
 //
 // Created by Raphael Maenle on 21/12/2017.
 //
-
 #include "../../header/solve.h"
 #include "../../header/input.h"
 
@@ -41,7 +40,7 @@ void Puzzle::putIntoBox()
             for(int rotations=0;rotations<4;rotations++)
             {
                 tmpPart.m_a1.shift(1);
-                //TODO! add all other layerswith their rotaionvariance here
+                //TODO! add all other layers with their rotaionvariance here
                 myBox.emplace_back(tmpPart);
 
             }
@@ -148,36 +147,39 @@ Mat Puzzle::resultImage( vector<LogEntry>& log){
     char name[100];
     for (auto it:log)
     {
-        cout << log.size() << endl;
-        cout << log[0].PieceCollector.size() << endl;
 
-            cout << it.PieceCollector[0].second->GetPartID() << endl;
+        cout << "row: " << it.myCoor.row << ", col: " << it.myCoor.col << endl;
+        cout << "ID:" << it.PieceCollector[0].second->GetPartID() << endl;
+        int imageNumber = it.PieceCollector[0].second->GetPartID();
+        //cout<<"imageIndex: "<< imageNumber << endl;
 
-            int imageNumber = it.PieceCollector[0].second->GetPartID();
-            //cout<<"imageIndex: "<< imageNumber << endl;
-
-            sprintf(name, PATH, imageNumber);
-            Mat img = imread(name, 1);
-
-            int angle = it.PieceCollector[0].second->GetNumOfRotations()*90;
-            Point2f center;
-            center.x = img.cols/2;
-            center.y = img.rows/2;
-            Mat RotMatrix = getRotationMatrix2D(center,angle,1);
-            warpAffine(img,img,RotMatrix, img.size());
-//            imshow("readImg",img); // you can comment with Ctrl + / did you know? :D
+        sprintf(name, PATH, imageNumber);
+        Mat img = imread(name, 1);
+        cout << "loc: " << name << endl;
+        cout << "img size: " << img.size() << endl;
+        int angle = it.PieceCollector[0].second->GetNumOfRotations()*90;
+        Point2f center;
+        center.x = img.cols/2;
+        center.y = img.rows/2;
+        Mat RotMatrix = getRotationMatrix2D(center,angle,1);
+        warpAffine(img,img,RotMatrix, img.size());
+        cout << "warped" << endl;
+//            imshow("readImg",img); // you can comment with Ctrl + / did you know? :D nop, but that's useful, tx
 //            waitKey(0);
 
-            auto ROI_X = int(round(it.myCoor.col*partWidth));
-            auto ROI_Y = int(round(it.myCoor.row*partHeight));
+        auto ROI_X = int(round(it.myCoor.col*partWidth));
+        auto ROI_Y = int(round(it.myCoor.row*partHeight));
 //            cout<<"ROI X: "<< ROI_X<<endl;
 //            cout<<"ROI Y: "<< ROI_Y<<endl;
 
-            Rect ROI(ROI_X,ROI_Y , partWidth-separator, partHeight-separator); // j is the x coordinate not i!!
-            Mat temp; resize(img,temp, Size(ROI.width, ROI.height));
-            temp.copyTo(result(ROI));
-
-//            imshow("result",result);
+        cout << "recing" << endl;
+        Rect ROI(ROI_X,ROI_Y , partWidth-separator, partHeight-separator); // j is the x coordinate not i!!
+        cout << "reced" << endl;
+        Mat temp; resize(img,temp, Size(ROI.width, ROI.height));
+        cout << "resized" << endl;
+        temp.copyTo(result(ROI));
+        cout << "copied" << endl;
+            imshow("result",result);
 //            waitKey(0);
 
     }
