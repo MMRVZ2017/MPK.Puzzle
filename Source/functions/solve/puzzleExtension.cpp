@@ -146,6 +146,7 @@ Mat Puzzle::resultImage( vector<LogEntry>& log){
     cout<<"partW "<<partWidth <<endl<<"partH " <<partHeight<<endl<<endl;
     Mat result(imageH,imageW,CV_8UC3);
 
+    char name[100];
     for (auto it:log)
     {
         cout << log.size() << endl;
@@ -156,7 +157,9 @@ Mat Puzzle::resultImage( vector<LogEntry>& log){
             int imageNumber = it.PieceCollector[0].second->GetPartID();
             //cout<<"imageIndex: "<< imageNumber << endl;
 
-            Mat img = readImage(imageNumber,PATH);
+            sprintf(name, PATH, imageNumber);
+            Mat img = imread(name, 1);
+
             int angle = it.PieceCollector[0].second->GetNumOfRotations()*90;
             Point2f center;
             center.x = img.cols/2;
