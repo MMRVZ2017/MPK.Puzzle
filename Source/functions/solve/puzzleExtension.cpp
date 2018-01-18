@@ -128,7 +128,6 @@ Mat Puzzle::readImage(int fileIndex, const char* inputDir){
 }
 
 Mat Puzzle::resultImage( vector<LogEntry>& log){
-
     int Y_size = 600; // chose this to fit your monitor!
     int separator = 1;
     int partHeight = 90;
