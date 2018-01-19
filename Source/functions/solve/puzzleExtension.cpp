@@ -6,9 +6,9 @@
 
 typedef std::vector<std::vector<Point>> Contour_t;
 typedef std::vector<Vec4i> Hierarchy_t; //hierarchy object is needed for drawContours apparently
-
 Mat crop2ContourInv(const Mat & img);
 Contour_t getLongestContour(Mat bw);
+int getLongestContourIndex(Contour_t contours);
 
 void Puzzle::printPuzzle()
 {
@@ -131,7 +131,7 @@ Mat Puzzle::readImage(int fileIndex, const char* inputDir){
     Mat source = imread(inputstr,1);
     return source;
 }
-Mat Puzzle::resultImage_for_merging( vector<LogEntry>& log){
+Mat Puzzle::resultImage( vector<LogEntry>& log){
     int Y_size = 1200; // chose this to fit your monitor!
     int separator = 1;
     int partHeight = 90;
@@ -189,7 +189,7 @@ Mat Puzzle::resultImage_for_merging( vector<LogEntry>& log){
         center.x = img.cols/2;
         center.y = img.rows/2;
         Mat RotMatrix = getRotationMatrix2D(center,angle,1);
-        warpAffine(img,img,RotMatrix, img.size());
+        warpAffine(invert,invert,RotMatrix, invert.size());
         bitwise_not(invert,img);
         Mat cropped = crop2ContourInv(img);
         auto ROI_X = int(round(it.myCoor.col*partWidth));
@@ -220,12 +220,7 @@ Mat crop2ContourInv(const Mat & img){ // for white background images
     return cropped;
 }
 
-Contour_t getLongestContour(Mat bw){
-
-    Mat mask =  Mat::zeros(bw.size(), CV_8UC1);
-    Hierarchy_t hierarchy;
-    Contour_t contours;
-    findContours(bw, contours, hierarchy, CV_RETR_EXTERNAL, CV_CHAIN_APPROX_SIMPLE);
+int getLongestContourIndex(Contour_t contours){
     double area = 0;
     double largestArea = 0;
     size_t largestIndex = 0;
@@ -238,12 +233,5 @@ Contour_t getLongestContour(Mat bw){
             largestIndex = i; // i is type size_t, should be converted to int.
         }
     }
-
-    Contour_t  largestContour;
-    largestContour.resize(contours.size()); //Otherwise it is just a null pointer and the program crashes!
-    size_t index = 0;
-    int strength = 2; // distance between the original contour and the approximated contour
-    approxPolyDP(Mat(contours[largestIndex]), largestContour[index], strength, true);
-    return(largestContour);
+    return(largestIndex);
 }
-
