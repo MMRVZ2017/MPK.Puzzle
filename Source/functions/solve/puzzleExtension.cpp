@@ -4,6 +4,8 @@
 #include "../../header/solve.h"
 #include "../../header/input.h"
 
+typedef std::vector<std::vector<Point>> Contour_t;
+typedef std::vector<Vec4i> Hierarchy_t; //hierarchy object is needed for drawContours apparently
 
 Mat crop2ContourInv(const Mat & img);
 
