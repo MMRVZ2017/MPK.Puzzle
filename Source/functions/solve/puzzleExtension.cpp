@@ -4,6 +4,9 @@
 #include "../../header/solve.h"
 #include "../../header/input.h"
 
+
+Mat crop2ContourInv(const Mat & img);
+
 void Puzzle::printPuzzle()
 {
     cout << "a1: " << endl;
@@ -125,8 +128,7 @@ Mat Puzzle::readImage(int fileIndex, const char* inputDir){
     Mat source = imread(inputstr,1);
     return source;
 }
-
-Mat Puzzle::resultImage( vector<LogEntry>& log){
+Mat Puzzle::resultImage_for_merging( vector<LogEntry>& log){
     int Y_size = 1200; // chose this to fit your monitor!
     int separator = 1;
     int partHeight = 90;
@@ -154,46 +156,63 @@ Mat Puzzle::resultImage( vector<LogEntry>& log){
         if (it.myCoor.col == 12 && it.myCoor.row == 0)
         {
             ;
-           // imshow("result",result);
-           // waitKey(0);
+            // imshow("result",result);
+            // waitKey(0);
         }
         cout << log.size() << endl;
         cout << log[0].PieceCollector.size() << endl;
 
-            cout << it.PieceCollector[0].second->GetPartID() << endl;
+        cout << it.PieceCollector[0].second->GetPartID() << endl;
 
-            int imageNumber = it.PieceCollector[0].second->GetPartID();
-            //cout<<"imageIndex: "<< imageNumber << endl;
+        int imageNumber = it.PieceCollector[0].second->GetPartID();
+        //cout<<"imageIndex: "<< imageNumber << endl;
 
-            sprintf(name, PATH, imageNumber);
-            Mat img = imread(name, 1);
+        sprintf(name, PATH, imageNumber);
+        Mat img = imread(name, 1);
 
-            if (it.myCoor.col == 12 && it.myCoor.row == 0)
-            {
-                //imshow("img",img);
-                //waitKey(0);
-                ;
-            }
+        copyMakeBorder(img,img,200,200,200,200,BORDER_CONSTANT,Scalar(255,255,255));
+        Mat invert = Mat::ones(img.size(), CV_8UC3); // invert for rotation to work correctly
+        bitwise_not ( img, invert );
+        if (it.myCoor.col == 12 && it.myCoor.row == 0)
+        {
+            //imshow("img",img);
+            //waitKey(0);
+            ;
+        }
 
-            int angle = ((int)it.PieceCollector[0].second->GetNumOfRotations())*-90;
-            Point2f center;
-            center.x = img.cols/2;
-            center.y = img.rows/2;
-            Mat RotMatrix = getRotationMatrix2D(center,angle,1);
-            warpAffine(img,img,RotMatrix, img.size());
-//            imshow("readImg",img); // you can comment with Ctrl + / did you know? :D
-//            waitKey(0);
 
+        int angle = ((int)it.PieceCollector[0].second->GetNumOfRotations())*-90;
+        Point2f center;
+        center.x = img.cols/2;
+        center.y = img.rows/2;
+        Mat RotMatrix = getRotationMatrix2D(center,angle,1);
+        warpAffine(img,img,RotMatrix, img.size());
+        bitwise_not(invert,img);
+        Mat cropped = crop2ContourInv(img);
         auto ROI_X = int(round(it.myCoor.col*partWidth));
         auto ROI_Y = int(round(it.myCoor.row*partHeight));
 //            cout<<"ROI X: "<< ROI_X<<endl;
 //            cout<<"ROI Y: "<< ROI_Y<<endl;
 
         Rect ROI(ROI_X,ROI_Y , partWidth-separator, partHeight-separator); // j is the x coordinate not i!!
-        Mat temp; resize(img,temp, Size(ROI.width, ROI.height));
+        Mat temp(Scalar(255,255,255));
+        resize(cropped,temp, Size(ROI.width, ROI.height));
         temp.copyTo(result(ROI));
     }
     imshow("result",result);
     waitKey(0);
     return result;
+}
+
+Mat crop2ContourInv(const Mat & img){ // for white background images
+    Mat grey;
+    cvtColor(img, grey,CV_BGR2GRAY);
+    Contour_t c; Hierarchy_t h;
+    threshold(grey,grey,200,255,THRESH_BINARY_INV);
+    findContours(grey,c,h,CV_RETR_EXTERNAL,CV_CHAIN_APPROX_SIMPLE);
+    int longest = getLongestContourIndex(c);
+    Rect croppingRect = boundingRect(c[longest]);
+    Mat cropped = img(croppingRect);
+    // imshow("cropped", cropped);
+    return cropped;
 }
