@@ -8,9 +8,9 @@ set(SOURCE_FILES
         main.cpp
         header.h
         functions/solve/structure.cpp
-
         functions/AbstractionLayers/AbstraktionLayer_Base.h
         functions/AbstractionLayers/Layer1/AbstractionLayer_1.cpp
+        functions/AbstractionLayers/LayerHistogram/AbstractionLayer_Histogram.cpp
         functions/AbstractionLayers/DestructionPower/DestructionPower.cpp
         header/solve.h
         header/input.h

@@ -4,7 +4,6 @@
 
 #include "AbstractionLayer_1.h"
 #include "../../../header.h"
-
 #include <iostream>
 #include <bitset>
 
@@ -47,6 +46,7 @@ bool AbstractionLayer_1::PreProcessing(coor mySize,  const vector<Part*>* partAr
 //it through qualityVector and removes all that do not trigger PlaceOfPartGood
 bool AbstractionLayer_1::EvaluateQuality (const coor constraintCoordinate, qualityVector& qVector)
 {
+    //evaluateQuality = evaluateProbabilaty
     for(int i = 0;i<qVector.size();i++)
     {
         if(PlaceOfPartGood(constraintCoordinate, qVector[i].second->m_a1.m_connections))
@@ -119,8 +119,6 @@ void AbstractionLayer_1::CreateRandomPuzzle()
     }
 
 }
-
-
 
 //puts all pieces of the current constraint matrix into a puzzlebox
 qualityVector AbstractionLayer_1::returnInBox(vector<Part>& PuzzleBox)
@@ -406,7 +404,6 @@ Point analyseParts::findCenter(Mat img){
     Point center(m.m10/m.m00, m.m01/m.m00);
     return center;
 }
-
 
 vector<Point> analyseParts::findCorners(vector<Point> contour, Point center){
     int minContourPoint = 5;
