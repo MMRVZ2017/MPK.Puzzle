@@ -128,7 +128,7 @@ Mat Puzzle::readImage(int fileIndex, const char* inputDir){
 }
 
 Mat Puzzle::resultImage( vector<LogEntry>& log){
-    int Y_size = 600; // chose this to fit your monitor!
+    int Y_size = 1200; // chose this to fit your monitor!
     int separator = 1;
     int partHeight = 90;
     int partWidth;
@@ -141,6 +141,10 @@ Mat Puzzle::resultImage( vector<LogEntry>& log){
     partWidth= partHeight;
     int imageW = int(round( partWidth*rows));
 
+    int temp = imageW;
+    imageW = imageH;
+    imageH = temp;
+
     cout<<"imageW "<<imageW <<endl<<"imageH " <<imageH<<endl<<endl;
     cout<<"partW "<<partWidth <<endl<<"partH " <<partHeight<<endl<<endl;
     Mat result(imageH,imageW,CV_8UC3);
@@ -148,6 +152,12 @@ Mat Puzzle::resultImage( vector<LogEntry>& log){
     char name[100];
     for (auto it:log)
     {
+        if (it.myCoor.col == 12 && it.myCoor.row == 0)
+        {
+            ;
+           // imshow("result",result);
+           // waitKey(0);
+        }
         cout << log.size() << endl;
         cout << log[0].PieceCollector.size() << endl;
 
@@ -159,7 +169,14 @@ Mat Puzzle::resultImage( vector<LogEntry>& log){
             sprintf(name, PATH, imageNumber);
             Mat img = imread(name, 1);
 
-            int angle = it.PieceCollector[0].second->GetNumOfRotations()*90;
+            if (it.myCoor.col == 12 && it.myCoor.row == 0)
+            {
+                //imshow("img",img);
+                //waitKey(0);
+                ;
+            }
+
+            int angle = ((int)it.PieceCollector[0].second->GetNumOfRotations())*-90;
             Point2f center;
             center.x = img.cols/2;
             center.y = img.rows/2;
@@ -180,6 +197,9 @@ Mat Puzzle::resultImage( vector<LogEntry>& log){
 //            imshow("result",result);
 //            waitKey(0);
 
+
     }
+    imshow("result",result);
+    waitKey(0);
     return result;
 }
