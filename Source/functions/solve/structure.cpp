@@ -106,7 +106,7 @@ void setsolution(vector<LogEntry>& log, Puzzle& puzzleMat)
 	//tell log entry that it is set
 	log.back().Set();
     puzzleMat.setConstraints(log.back().myCoor,log.back().PieceCollector.begin()->second);
-    cout << "set:" << log.back().myCoor.col << "," << log.back().myCoor.row << endl;
+    //cout << "set:" << log.back().myCoor.col << "," << log.back().myCoor.row << endl;
 }
 
 bool backtrack(vector<LogEntry>& log, Puzzle& puzzleMat)

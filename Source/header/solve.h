@@ -58,6 +58,7 @@ public:
     void setConstraints(coor setConstraints, Part *constraintPiece);
     void printPuzzle();
     void printBox();
+    Mat resultImage(vector<LogEntry>&);
 
     void createRandomBox(){
         myBox.clear();p_myBox.clear();
@@ -81,6 +82,7 @@ public:
 
 private:
 
+    Mat readImage(int fileIndex, const char* inputDir);
     unsigned int cols;
     unsigned int rows;
 };

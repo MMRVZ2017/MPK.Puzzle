@@ -24,7 +24,15 @@
 #include <bitset>
 
 #define DISPLAY false
+
+#ifdef _WIN32
 #define PATH "..\\..\\..\\pieces\\%04d.jpg"
+#elif defined __unix__
+#define PATH "..//..//..//pieces//%04d.jpg"
+#elif defined __APPLE__
+    #define PATH "..//..//..//pieces//%04d.jpg"
+#endif
+
 #define IMG_SIZE 400
 #define TOP 6
 #define RIGHT 4
