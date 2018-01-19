@@ -71,7 +71,7 @@ HistogramComparer localImage;
             calcHist(&hsv_img1, 1, channels, Mat(), hist_img1, 2, histSize, ranges, true, false);
             // normalize(hist_img1, hist_img1, 0, 1, NORM_MINMAX, -1, Mat());
 
-            ref_partArray[iterator]->m_aHistogram.image=hsv_img1;
+            ref_partArray[iterator]->m_Histogram.image=hsv_img1;
             iterator++;
 
         }
@@ -89,7 +89,7 @@ bool AbstractionLayer_Histogram::EvaluateQuality (const coor constraintCoordinat
     //evaluateQuality = evaluateProbabilaty
     for(int i = 0;i < qVector.size();i++)
     {
-        if(PlaceOfPartGood(constraintCoordinate, qVector[i].second->m_aHistogram.image))
+        if(PlaceOfPartGood(constraintCoordinate, qVector[i].second->m_Histogram.image))
         {
             qVector[i].first=1;
 
@@ -147,7 +147,7 @@ bool HistogramComparer::CompareHistogram(Mat hist_img1,Mat hist_img2)
 
 bool AbstractionLayer_Histogram::SetConstraintOnPosition(const coor constraintCoordinate, const AbstractionLayer_Histogram_Properties constraint)
 {
-    m_constraintMatrix[constraintCoordinate.col+1][constraintCoordinate.row+1].image=constraint.image;
+    m_constraintMatrix[constraintCoordinate.col][constraintCoordinate.row].image=constraint.image;
     //m_constraintMatrix[constraintCoordinate.col+1][constraintCoordinate.row+1].m_connections=constraint.m_connections;
 }
 
@@ -156,5 +156,5 @@ bool AbstractionLayer_Histogram::SetConstraintOnPosition(const coor constraintCo
 bool AbstractionLayer_Histogram::RemoveConstraintOnPosition(const coor constraintCoordinate)
 {
     Mat dummy(1,1,0);
-    m_constraintMatrix[constraintCoordinate.col+1][constraintCoordinate.row+1].image = dummy;
+    m_constraintMatrix[constraintCoordinate.col][constraintCoordinate.row].image = dummy;
 }

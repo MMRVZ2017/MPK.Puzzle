@@ -35,7 +35,10 @@ bool next(vector<LogEntry>& log,Puzzle& puzzleMat)
 	    		setsolution(log,puzzleMat);
         else
     		setsolution(log,puzzleMat);
+    if(log.back().myCoor.row==26)
+        cout << log.back().myCoor.row << ", " << log.back().myCoor.col << endl;
     return true;
+
 }
 
 void createNextLogElement(vector<LogEntry>& log, Puzzle& puzzleMat)
@@ -55,7 +58,6 @@ coor calculateNextCoor(vector<LogEntry>& log, Puzzle& puzzleMat)
 {
     //level 1:
         //go left to right, then increase current row
-
     if (log.size() == 1)
         return {0,0};
 
@@ -73,11 +75,15 @@ void solve(vector<LogEntry>& log,Puzzle& puzzleMat)
 {
 	log.back().abstractionLevel = puzzleMat.dp.getNextAbstractionLayer(log.back().myCoor,log.back().abstractionLevel); //sets in abstractionLevel
 	//status(log,p_Box,puzzleMat);
+    //TODO!! Add more layers here
     switch(log.back().abstractionLevel)
     {
         case 0://pömpel
             puzzleMat.a1.EvaluateQuality(log.back().myCoor, log.back().PieceCollector);
         break;
+        case 1://
+            puzzleMat.a3.EvaluateQuality(log.back().myCoor,log.back().PieceCollector);
+            break;
         case -1://random
             setsolution(log,puzzleMat);
         return;
@@ -105,6 +111,8 @@ void setsolution(vector<LogEntry>& log, Puzzle& puzzleMat)
     puzzleMat.combinedQualityVector.clear(); //clear data from temp variable
 	//tell log entry that it is set
 	log.back().Set();
+    if(log.back().myCoor.row==27)
+        cout << "hello" << endl;
     puzzleMat.setConstraints(log.back().myCoor,log.back().PieceCollector.begin()->second);
     //cout << "set:" << log.back().myCoor.col << "," << log.back().myCoor.row << endl;
 }
@@ -187,6 +195,9 @@ float capLogElements(vector<LogEntry>& log)
             break;
     }
     int newid=0;
+    //check if all over
+    if(id==log.back().PieceCollector.size())
+        return 0;
     if(id>0)
         newid = --id; //set to the one just over limit
 
@@ -241,6 +252,7 @@ bool SetBestOrMoreLayersArithmetical(vector<LogEntry>& log, qualityVector& cqVec
             case 4: threshold = 0.60; break;
             default: threshold = 0.5; break;
         }
+        //TODO!! add more layers here!
 
         // check Quality of current Puzzle Piece in  combinedQualityVector with Threshold value
         for (qualityVector::iterator it = cqVector.begin(); it != cqVector.end(); it++)
@@ -269,6 +281,7 @@ void CalculateNewCombinedQuality(vector<LogEntry>& log, qualityVector& qVector, 
 {
     bool summarizedVectors = false;
     int countSummarizedVectors = 0;
+    bool removePart=true;
 
     // check if both qualityVectors are not empty
     if(qVector.empty())
@@ -287,19 +300,25 @@ void CalculateNewCombinedQuality(vector<LogEntry>& log, qualityVector& qVector, 
          for (unsigned int i = 0; i < cqVector.size(); i++) {
              for (unsigned int j = 0; j < qVector.size(); j++) {
                  // search same PuzzlePart of qualityVector and combinedQualityVector
-                 if (&cqVector.at(i).second == &qVector.at(j).second) {
+                 if (cqVector.at(i).second->GetPartID() == qVector.at(j).second->GetPartID() && cqVector.at(i).second->GetNumOfRotations() == qVector.at(j).second->GetNumOfRotations()) {
                      // sum Quality of PieceCollector (qualityVector) to combinedQualityVector
                      cqVector.at(j).first += qVector.at(i).first;
                      countSummarizedVectors++;
+                     removePart=false;
                      break; // skip remaining for loop => save time!
                  }
              // remove element at poisition X in combinedQualityVector, because it was not summarized
              // inefficient way to delete element X
              //cqVector->erase(cqVector->begin()+i);
              // efficient way, but no sorted cqVector => wayne //echt? lol
-             swap(cqVector.at(i), cqVector.back());
-             cqVector.pop_back();
+
              }
+             if(removePart)
+             {
+                 swap(cqVector.at(i), cqVector.back());
+                 cqVector.pop_back();
+             }
+
          }
 
          // cqVector should have the same size now as newest qVector

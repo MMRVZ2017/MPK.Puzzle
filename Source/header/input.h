@@ -43,7 +43,7 @@ public:
 
     bool set;
     AbstractionLayer_1_Properties m_a1;
-    AbstractionLayer_Histogram_Properties m_aHistogram;
+    AbstractionLayer_Histogram_Properties m_Histogram;
 private:
     int32_t m_partID;
     uint8_t m_numOfRotations;
