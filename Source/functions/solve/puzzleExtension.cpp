@@ -8,6 +8,7 @@ typedef std::vector<std::vector<Point>> Contour_t;
 typedef std::vector<Vec4i> Hierarchy_t; //hierarchy object is needed for drawContours apparently
 
 Mat crop2ContourInv(const Mat & img);
+Contour_t getLongestContour(Mat bw);
 
 void Puzzle::printPuzzle()
 {
@@ -218,3 +219,31 @@ Mat crop2ContourInv(const Mat & img){ // for white background images
     // imshow("cropped", cropped);
     return cropped;
 }
+
+Contour_t getLongestContour(Mat bw){
+
+    Mat mask =  Mat::zeros(bw.size(), CV_8UC1);
+    Hierarchy_t hierarchy;
+    Contour_t contours;
+    findContours(bw, contours, hierarchy, CV_RETR_EXTERNAL, CV_CHAIN_APPROX_SIMPLE);
+    double area = 0;
+    double largestArea = 0;
+    size_t largestIndex = 0;
+    for (size_t i = 0; i < contours.size(); ++i)
+    {
+        area = contourArea(contours[i]);
+        if (area < 1e2 || 1e5 < area) continue; //
+        if (area > largestArea) {
+            largestArea = area;
+            largestIndex = i; // i is type size_t, should be converted to int.
+        }
+    }
+
+    Contour_t  largestContour;
+    largestContour.resize(contours.size()); //Otherwise it is just a null pointer and the program crashes!
+    size_t index = 0;
+    int strength = 2; // distance between the original contour and the approximated contour
+    approxPolyDP(Mat(contours[largestIndex]), largestContour[index], strength, true);
+    return(largestContour);
+}
+
