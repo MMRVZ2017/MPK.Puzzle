@@ -105,23 +105,21 @@ bool AbstractionLayer_Histogram::PlaceOfPartGood(coor myCoor, Mat& myPart)
 
     HistogramComparer localComparer;
     //sets coordinates to correct position for layer
-    myCoor.row++;
-    myCoor.col++;
 
-    if( myCoor.row == 1 && myCoor.col == 1){return true;}
-    else if(myCoor.col == 1 && myCoor.row >1){
+    if( myCoor.row == 0 && myCoor.col == 0){return true;}
+    else if(myCoor.col == 0 && myCoor.row >0){
         if(localComparer.CompareHistogram(m_constraintMatrix[myCoor.col][myCoor.row-1].image, myPart)){
             return true;
         }
         else return false;
     }
-    else if( myCoor.row == 1 && myCoor.col >1){
+    else if( myCoor.row == 0 && myCoor.col >0){
         if(localComparer.CompareHistogram(m_constraintMatrix[myCoor.col-1][myCoor.row].image, myPart)){
             return true;
         }
         else return false;
     }
-    else if (myCoor.col > 1 && myCoor.row >1){
+    else if (myCoor.col > 0 && myCoor.row >0){
         if(     localComparer.CompareHistogram(m_constraintMatrix[myCoor.col][myCoor.row-1].image, myPart) &&
                 localComparer.CompareHistogram(m_constraintMatrix[myCoor.col-1][myCoor.row].image, myPart)){
             return true;

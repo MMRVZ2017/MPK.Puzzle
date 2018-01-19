@@ -35,8 +35,6 @@ bool next(vector<LogEntry>& log,Puzzle& puzzleMat)
 	    		setsolution(log,puzzleMat);
         else
     		setsolution(log,puzzleMat);
-    if(log.back().myCoor.row==26)
-        cout << log.back().myCoor.row << ", " << log.back().myCoor.col << endl;
     return true;
 
 }
@@ -81,7 +79,7 @@ void solve(vector<LogEntry>& log,Puzzle& puzzleMat)
         case 0://pömpel
             puzzleMat.a1.EvaluateQuality(log.back().myCoor, log.back().PieceCollector);
         break;
-        case 1://
+        case 1://histogram
             puzzleMat.a3.EvaluateQuality(log.back().myCoor,log.back().PieceCollector);
             break;
         case -1://random
@@ -111,8 +109,6 @@ void setsolution(vector<LogEntry>& log, Puzzle& puzzleMat)
     puzzleMat.combinedQualityVector.clear(); //clear data from temp variable
 	//tell log entry that it is set
 	log.back().Set();
-    if(log.back().myCoor.row==27)
-        cout << "hello" << endl;
     puzzleMat.setConstraints(log.back().myCoor,log.back().PieceCollector.begin()->second);
     //cout << "set:" << log.back().myCoor.col << "," << log.back().myCoor.row << endl;
 }

@@ -40,6 +40,7 @@ bool DestructionPower::RemoveConstraintOnPosition(const coor constraintCoordinat
 void DestructionPower::DestructionOfSurrounding(const coor constraintCoordinate) {
 
     for (int i = 0; i < DESTRUCTION_COUNT; ++i) {
+
         m_constraintMatrix[constraintCoordinate.col][constraintCoordinate.row].DestructionArray.push_back(0);
         int divisor=0;
         if(constraintCoordinate.row > 0)
@@ -57,6 +58,9 @@ void DestructionPower::DestructionOfSurrounding(const coor constraintCoordinate)
         else
             //create default destructionPower //TODO find some better solution for default
             m_constraintMatrix[constraintCoordinate.col][constraintCoordinate.row].DestructionArray[i] = m_constraintMatrix[constraintCoordinate.col][constraintCoordinate.row].SpeedTable[i];
+        //aging
+        if(m_constraintMatrix[constraintCoordinate.col][constraintCoordinate.row].DestructionArray[i]<0.9)
+            m_constraintMatrix[constraintCoordinate.col][constraintCoordinate.row].DestructionArray[i]=m_constraintMatrix[constraintCoordinate.col][constraintCoordinate.row].DestructionArray[i]*(float)1.001+(float)0.01;
     }
 }
 
