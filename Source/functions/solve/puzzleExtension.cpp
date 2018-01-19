@@ -1,7 +1,6 @@
 //
 // Created by Raphael Maenle on 21/12/2017.
 //
-
 #include "../../header/solve.h"
 #include "../../header/input.h"
 
@@ -41,7 +40,7 @@ void Puzzle::putIntoBox()
             for(int rotations=0;rotations<4;rotations++)
             {
                 tmpPart.m_a1.shift(1);
-                //TODO! add all other layerswith their rotaionvariance here
+                //TODO! add all other layers with their rotaionvariance here
                 myBox.emplace_back(tmpPart);
 
             }
@@ -185,19 +184,14 @@ Mat Puzzle::resultImage( vector<LogEntry>& log){
 //            imshow("readImg",img); // you can comment with Ctrl + / did you know? :D
 //            waitKey(0);
 
-            auto ROI_X = int(round(it.myCoor.col*partWidth));
-            auto ROI_Y = int(round(it.myCoor.row*partHeight));
+        auto ROI_X = int(round(it.myCoor.col*partWidth));
+        auto ROI_Y = int(round(it.myCoor.row*partHeight));
 //            cout<<"ROI X: "<< ROI_X<<endl;
 //            cout<<"ROI Y: "<< ROI_Y<<endl;
 
-            Rect ROI(ROI_X,ROI_Y , partWidth-separator, partHeight-separator); // j is the x coordinate not i!!
-            Mat temp; resize(img,temp, Size(ROI.width, ROI.height));
-            temp.copyTo(result(ROI));
-
-//            imshow("result",result);
-//            waitKey(0);
-
-
+        Rect ROI(ROI_X,ROI_Y , partWidth-separator, partHeight-separator); // j is the x coordinate not i!!
+        Mat temp; resize(img,temp, Size(ROI.width, ROI.height));
+        temp.copyTo(result(ROI));
     }
     imshow("result",result);
     waitKey(0);
