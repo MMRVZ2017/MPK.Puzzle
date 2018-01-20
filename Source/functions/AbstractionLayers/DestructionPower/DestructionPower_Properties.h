@@ -1,6 +1,3 @@
-//
-// Created by mpapa on 05.12.2017.
-//
 #pragma once
 
 #define DESTRUCTION_INIT 0.5

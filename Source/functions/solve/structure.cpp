@@ -44,11 +44,15 @@ void createNextLogElement(vector<LogEntry>& log, Puzzle& puzzleMat)
 	log.emplace_back(LogEntry(coor(0, 0)));
    	log.back().myCoor = calculateNextCoor(log, puzzleMat);
     puzzleMat.dp.DestructionOfSurrounding(log.back().myCoor);//calculate dp from surrounding
+    cout << "-----------------------" << endl;
+    cout << "destr-array:" << endl;
+    for(auto it:puzzleMat.dp.m_constraintMatrix[log.back().myCoor.col][log.back().myCoor.row].DestructionArray)
+        cout << it << endl;
     //get all not set pieces
     for(auto it:puzzleMat.p_myBox)
         if(!it->set)
             log.back().PieceCollector.emplace_back(pair<float,Part*>(0,it));
-   	solve(log,puzzleMat);
+    solve(log,puzzleMat);
 
 }
 
@@ -72,7 +76,8 @@ coor calculateNextCoor(vector<LogEntry>& log, Puzzle& puzzleMat)
 void solve(vector<LogEntry>& log,Puzzle& puzzleMat)
 {
 	log.back().abstractionLevel = puzzleMat.dp.getNextAbstractionLayer(log.back().myCoor,log.back().abstractionLevel); //sets in abstractionLevel
-	//status(log,p_Box,puzzleMat);
+    cout << "ab: " << log.back().abstractionLevel << endl;
+    //status(log,p_Box,puzzleMat);
     //TODO!! Add more layers here
     switch(log.back().abstractionLevel)
     {
@@ -80,7 +85,7 @@ void solve(vector<LogEntry>& log,Puzzle& puzzleMat)
             puzzleMat.a1.EvaluateQuality(log.back().myCoor, log.back().PieceCollector);
         break;
         case 1://histogram
-            puzzleMat.a3.EvaluateQuality(log.back().myCoor,log.back().PieceCollector);
+            return;
             break;
         case -1://random
             setsolution(log,puzzleMat);
@@ -88,7 +93,6 @@ void solve(vector<LogEntry>& log,Puzzle& puzzleMat)
         default:
         break;
     }
-
     float worth = capLogElements(log);
     calculateTrueDestructionPower(log,puzzleMat, worth);
     CalculateNewCombinedQuality(log, log.back().PieceCollector, puzzleMat.combinedQualityVector);
@@ -110,11 +114,16 @@ void setsolution(vector<LogEntry>& log, Puzzle& puzzleMat)
 	//tell log entry that it is set
 	log.back().Set();
     puzzleMat.setConstraints(log.back().myCoor,log.back().PieceCollector.begin()->second);
-    //cout << "set:" << log.back().myCoor.col << "," << log.back().myCoor.row << endl;
+    cout << "set:" << log.back().myCoor.col << "," << log.back().myCoor.row << endl;
+    cout << "ID: " << log.back().PieceCollector[0].second->GetPartID() << endl;
+    cout << "log:" << endl;
+    for(auto it:log.back().PieceCollector)
+        cout << std::bitset<8>(it.second->m_a1.getConnections()) << "|" << it.second->GetPartID() << endl;
 }
 
 bool backtrack(vector<LogEntry>& log, Puzzle& puzzleMat)
 {
+    cout << "backtracking" ;
     if(log.empty())
     {
         cout << "Puzzle not solveable!" << endl;
@@ -124,10 +133,16 @@ bool backtrack(vector<LogEntry>& log, Puzzle& puzzleMat)
     //if more pieces possible, tset piece as not logged
     if((log.back().PieceCollector.size())>1)
     {
+        cout << " next piece" << endl;
         for(int i=0;i<puzzleMat.p_myBox.size();i++)
             if(puzzleMat.p_myBox[i]->GetPartID()==log.back().PieceCollector.begin()->second->GetPartID())//sets all with partid
                 puzzleMat.p_myBox[i]->set=false;
-        log.back().PieceCollector.erase(log.back().PieceCollector.begin());
+
+        Part myPart = *log.back().PieceCollector[0].second;//tmpsaves bad part
+        log.back().PieceCollector.erase(log.back().PieceCollector.begin());//removes bad part from log
+        puzzleMat.removeSimilar(log.back().PieceCollector,myPart); //removes all pieces from log that are similar to bad part
+        //TODO remove this when further layers are added!!!
+
 
         if(log.back().PieceCollector.size()==1)
             log.back().decreaseRandomed();
@@ -139,6 +154,7 @@ bool backtrack(vector<LogEntry>& log, Puzzle& puzzleMat)
     //else remove log element and backtrack once more
     else
     {
+        cout << " no more pieces" << endl;
         puzzleMat.removeConstrains(log.back().myCoor); //this should remove constraints from all layers
         if((log.back().PieceCollector.size()))
             for(int i=0;i<puzzleMat.p_myBox.size();i++)
@@ -153,7 +169,6 @@ bool backtrack(vector<LogEntry>& log, Puzzle& puzzleMat)
 
 
 //this is addon stuff that should later all be extracted into a sererate cpp as it is not core dispatcher functionality
-
 void calculateTrueDestructionPower(vector<LogEntry>& log, Puzzle& puzzleMat, float Layerworth) {
     float destructionPower = sqrt(
             Layerworth * puzzleMat.dp.m_constraintMatrix[0][0].SpeedTable[log.back().abstractionLevel]);
@@ -170,6 +185,7 @@ void calculateTrueDestructionPower(vector<LogEntry>& log, Puzzle& puzzleMat, flo
 // PART RAUER_WEIDINGER
 float capLogElements(vector<LogEntry>& log)
 {
+
     // Till Now only ground structure -> incorrect variable ans vector names
     double limit = 0.6;
     double diff = 0;

@@ -9,7 +9,6 @@
 
 #include "../functions/AbstractionLayers/Layer1/AbstractionLayer_1.h"
 #include "../functions/AbstractionLayers/DestructionPower/DestructionPower.h"
-#include "../functions/AbstractionLayers/LayerHistogram/AbstractionLayer_Histogram.h"
 
 using namespace std;
 
@@ -47,7 +46,6 @@ public:
         createBox(); createp_box();
         dp.PreProcessing({cols,rows}, nullptr);
         a1.PreProcessing({cols,rows}, &p_myBox);
-        a3.PreProcessing({cols,rows},&p_myBox);
         return true;
     }
 
@@ -55,10 +53,11 @@ public:
 
     DestructionPower dp;
     AbstractionLayer_1 a1;
-    AbstractionLayer_Histogram a3;
 
     void removeConstrains(coor removeCoordinates);
     void setConstraints(coor setConstraints, Part *constraintPiece);
+    int removeSimilar(qualityVector&, Part&);
+
     void printPuzzle();
     void printBox();
     Mat resultImage(vector<LogEntry>&);

@@ -46,6 +46,8 @@ bool AbstractionLayer_1::PreProcessing(coor mySize,  const vector<Part*>* partAr
 //it through qualityVector and removes all that do not trigger PlaceOfPartGood
 bool AbstractionLayer_1::EvaluateQuality (const coor constraintCoordinate, qualityVector& qVector)
 {
+    if(constraintCoordinate.row==23 && constraintCoordinate.col==35)
+        cout << "in" << endl;
     //evaluateQuality = evaluateProbabilaty
     for(int i = 0;i<qVector.size();i++)
     {
@@ -67,6 +69,20 @@ bool AbstractionLayer_1::SetConstraintOnPosition(const coor constraintCoordinate
 bool AbstractionLayer_1::RemoveConstraintOnPosition(const coor constraintCoordinate)
 {
     m_constraintMatrix[constraintCoordinate.col+1][constraintCoordinate.row+1].m_connections=0b11111111;
+}
+
+int AbstractionLayer_1::RemoveSimilar(qualityVector& qVector,uint8_t& constraints)
+{
+    //
+    for(int i=0;i<qVector.size();)
+    {
+    if(qVector[i].second->m_a1.m_connections==constraints)
+        qVector.erase(qVector.begin()+i);
+    else
+        i++;
+
+    }
+
 }
 
 void AbstractionLayer_1::CreateRandomPuzzle()
@@ -182,7 +198,11 @@ bool AbstractionLayer_1::PlaceOfPartGood(coor myCoor, uint8_t& myPart)
                  || ((((negativePart & 0b00000011) == 0b00000011) || ((myPart &  0b00000011) == 0b00000011))  && (((myPart & 0b00000011) != 0b00000000) && (negativePart & 0b00000011) != 0b00000000))
                  ||  (((negativePart & 0b00000011) == 0b00000000) && ((myPart &  0b00000011) == 0b00000000))  )
             )
+    {
+        if(myCoor.row==18 && myCoor.col==35)
+            cout << "gud: " << std::bitset<8>(myPart) << endl;
         return true;
+    }
     return false;
 
 }

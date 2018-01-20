@@ -49,6 +49,8 @@ public:
     bool EvaluateQuality ( coor constraintCoordinate, qualityVector& qVector)override;
     bool SetConstraintOnPosition( coor constraintCoordinate, AbstractionLayer_1_Properties constraint)override;
     bool RemoveConstraintOnPosition( coor constraintCoordinate)override;
+    int RemoveSimilar(qualityVector&,uint8_t&);
+
     bool PlaceOfPartGood(coor myCoor, uint8_t& myPart);
     void shift(uint8_t& Part, int shifts);
     void setEdgeZero();

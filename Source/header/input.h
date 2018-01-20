@@ -8,7 +8,6 @@
 
 #include "../functions/AbstractionLayers/Layer1/AbstractionLayer_1_Properties.h"
 #include "../functions/AbstractionLayers/DestructionPower/DestructionPower_Properties.h"
-#include "../functions/AbstractionLayers/LayerHistogram/AbstractionLayer_Histogram_Properties.h"
 
 class LayerContainer;
 
@@ -43,7 +42,6 @@ public:
 
     bool set;
     AbstractionLayer_1_Properties m_a1;
-    AbstractionLayer_Histogram_Properties m_Histogram;
 private:
     int32_t m_partID;
     uint8_t m_numOfRotations;

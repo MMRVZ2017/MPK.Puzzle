@@ -1,7 +1,3 @@
-//
-// Created by mpapa on 05.12.2017.
-//
-
 #include "DestructionPower.h"
 
 //TODO! Add more layers here!
@@ -39,6 +35,8 @@ bool DestructionPower::RemoveConstraintOnPosition(const coor constraintCoordinat
 //gets destruction power from left and from top if possible and normalizes
 void DestructionPower::DestructionOfSurrounding(const coor constraintCoordinate) {
 
+    for(int i = 0; i < m_constraintMatrix[constraintCoordinate.col][constraintCoordinate.row].DestructionArray.size(); ++i)
+        m_constraintMatrix[constraintCoordinate.col][constraintCoordinate.row].DestructionArray.pop_back();
     for (int i = 0; i < DESTRUCTION_COUNT; ++i) {
 
         m_constraintMatrix[constraintCoordinate.col][constraintCoordinate.row].DestructionArray.push_back(0);
