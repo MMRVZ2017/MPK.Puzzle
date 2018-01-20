@@ -45,10 +45,10 @@ using namespace cv;
 class AbstractionLayer_1 : public AbstractionLayer_Base<AbstractionLayer_1_Properties>
 {
 public:
-    bool PreProcessing(coor mySize, const vector<Part*>* partArray) override ;
-    bool EvaluateQuality ( coor constraintCoordinate, qualityVector& qVector)override;
-    bool SetConstraintOnPosition( coor constraintCoordinate, AbstractionLayer_1_Properties constraint)override;
-    bool RemoveConstraintOnPosition( coor constraintCoordinate)override;
+    bool PreProcessing(coor mySize, const vector<Part*>* partArray) final ;
+    bool EvaluateQuality ( coor constraintCoordinate, qualityVector& qVector)final;
+    bool SetConstraintOnPosition( coor constraintCoordinate, AbstractionLayer_1_Properties constraint)final;
+    bool RemoveConstraintOnPosition( coor constraintCoordinate)final;
     int RemoveSimilar(qualityVector&,uint8_t&);
 
     bool PlaceOfPartGood(coor myCoor, uint8_t& myPart);

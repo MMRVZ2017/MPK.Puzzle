@@ -36,7 +36,7 @@ bool AbstractionLayer_1::PreProcessing(coor mySize,  const vector<Part*>* partAr
 
     //Zugriff auf den vector mit den einzelnen teilen: part[0].getConnenctions() entspricht pömpel von bild 0.jpg und liefert ein unsigned char, poempl Belegung wie ausgemacht
 
-    InitialiseConstraintMatrixSize(mySize.col+2, mySize.row+2); //col row switched in this function
+    InitialiseConstraintMatrixSize(mySize.col+2, mySize.row+2);
     setEdgeZero();
 
     cout << "Done!" << endl;
@@ -73,15 +73,11 @@ int AbstractionLayer_1::PoempelSum(uint8_t constraint)
 //it through qualityVector and removes all that do not trigger PlaceOfPartGood
 bool AbstractionLayer_1::EvaluateQuality (const coor constraintCoordinate, qualityVector& qVector)
 {
-    if(constraintCoordinate.row==23 && constraintCoordinate.col==35)
-        cout << "in" << endl;
-    //evaluateQuality = evaluateProbabilaty
     for(int i = 0;i<qVector.size();i++)
     {
         if(PlaceOfPartGood(constraintCoordinate, qVector[i].second->m_a1.m_connections))
         {
             qVector[i].first=1;
-
             continue;
         }
         qVector[i].first=0;

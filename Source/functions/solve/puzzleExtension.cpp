@@ -37,12 +37,14 @@ void Puzzle::putIntoBox()
         {
 
             tmpPart.m_a1=this->a1.m_constraintMatrix[i+1][j+1];
+            tmpPart.m_a3=this->a3.m_constraintMatrix[i][j];
             //sets part id
             tmpPart.SetPartID(id++);
             // adds all 4 rotations to Box
             for(int rotations=0;rotations<4;rotations++)
             {
                 tmpPart.m_a1.shift(1);
+                tmpPart.m_a3.shift(1);
                 //TODO! add all other layer with their rotaionvariance into "tmpPart"
                 //if it piece is roation invariant no need to do anything
                 myBox.emplace_back(tmpPart);
@@ -63,6 +65,7 @@ void Puzzle::shuffle()
 void Puzzle::removeConstrains(coor removeCoordinates)
 {
     this->a1.RemoveConstraintOnPosition(removeCoordinates);
+    this->a3.RemoveConstraintOnPosition(removeCoordinates);
     //TODO!! Add other layer remove here
 }
 void Puzzle::setConstraints(coor setConstraints, Part* constraintPiece)
@@ -75,6 +78,8 @@ void Puzzle::setConstraints(coor setConstraints, Part* constraintPiece)
     //a1
     this->a1.SetConstraintOnPosition(setConstraints,constraintPiece->m_a1);
 
+    //a3
+    this->a3.SetConstraintOnPosition(setConstraints,constraintPiece->m_a3);
     //TODO!! Add other layer remove here
 }
 
@@ -139,6 +144,7 @@ Mat Puzzle::readImage(int fileIndex, const char* inputDir){
     Mat source = imread(inputstr,1);
     return source;
 }
+
 Mat Puzzle::resultImage( vector<LogEntry>& log){
     int Y_size = 1200; // chose this to fit your monitor!
     int separator = 1;

@@ -10,6 +10,7 @@ set(SOURCE_FILES
         functions/solve/structure.cpp
         functions/AbstractionLayers/AbstraktionLayer_Base.h
         functions/AbstractionLayers/Layer1/AbstractionLayer_1.cpp
+        functions/AbstractionLayers/Layer3_PoempelPosition/AbstractionLayer_PoempelPosition.cpp
         functions/AbstractionLayers/DestructionPower/DestructionPower.cpp
         header/solve.h
         header/input.h
