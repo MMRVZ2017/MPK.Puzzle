@@ -45,10 +45,7 @@ void createNextLogElement(vector<LogEntry>& log, Puzzle& puzzleMat)
    	log.back().myCoor = calculateNextCoor(log, puzzleMat);
     puzzleMat.dp.DestructionOfSurrounding(log.back().myCoor);//calculate dp from surrounding
     cout << "-----------------------" << endl;
-    cout << "destr-array:" << endl;
-    for(auto it:puzzleMat.dp.m_constraintMatrix[log.back().myCoor.col][log.back().myCoor.row].DestructionArray)
-        cout << it << endl;
-    //get all not set pieces
+     //get all not set pieces
     for(auto it:puzzleMat.p_myBox)
         if(!it->set)
             log.back().PieceCollector.emplace_back(pair<float,Part*>(0,it));
@@ -76,7 +73,6 @@ coor calculateNextCoor(vector<LogEntry>& log, Puzzle& puzzleMat)
 void solve(vector<LogEntry>& log,Puzzle& puzzleMat)
 {
 	log.back().abstractionLevel = puzzleMat.dp.getNextAbstractionLayer(log.back().myCoor,log.back().abstractionLevel); //sets in abstractionLevel
-    cout << "ab: " << log.back().abstractionLevel << endl;
     //status(log,p_Box,puzzleMat);
     //TODO!! Add more layers here
     switch(log.back().abstractionLevel)
