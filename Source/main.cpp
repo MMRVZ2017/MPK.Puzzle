@@ -15,14 +15,14 @@ int main()
         return 0;
     }
 
-    puzzleMat.createRandomBox();
+    //puzzleMat.createRandomBox();
 
     cout << "Solving Puzzle now...";
     while(next(log, puzzleMat));
 
     cout << "Done!" << endl;
 
-    //puzzleMat.resultImage(log);
+    puzzleMat.resultImage(log);
 
 
     puzzleMat.printPuzzle();

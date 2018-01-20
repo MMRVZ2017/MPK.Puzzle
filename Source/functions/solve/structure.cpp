@@ -140,7 +140,7 @@ bool backtrack(vector<LogEntry>& log, Puzzle& puzzleMat)
     //if more pieces possible, tset piece as not logged
     if((log.back().PieceCollector.size())>1)
     {
-        cout << " next piece" << endl;
+        //unset puzzlepieces
         int count =0;
         for(int i=0;i<puzzleMat.p_myBox.size();i++)
         {
@@ -150,48 +150,43 @@ bool backtrack(vector<LogEntry>& log, Puzzle& puzzleMat)
                 count++;
             }
         }
+        cout << "removed " << count << endl;
 
-        if (count !=4)
-            cerr << "incorrect set set" << endl;
+        //remove similar in log
         Part myPart = *log.back().PieceCollector[0].second;//tmpsaves bad part
         log.back().PieceCollector.erase(log.back().PieceCollector.begin());//removes bad part from log
         puzzleMat.removeSimilar(log.back().PieceCollector,myPart); //removes all pieces from log that are similar to bad part
         //TODO remove this when further layers are added!!!
-
-
-        if(log.back().PieceCollector.size()==1)
-            log.back().decreaseRandomed();
-
-        setsolution(log,puzzleMat);
-
-        return true;
+        if(log.back().PieceCollector.size()) // this checks if 'removeSimilar' has cleared entire LogElement
+        {
+            cout << " next piece" << endl;
+            if(log.back().PieceCollector.size()==1)
+                log.back().decreaseRandomed();
+            setsolution(log,puzzleMat);
+            return true;
+        }
     }
     //else remove log element and backtrack once more
-    else
+    puzzleMat.removeConstrains(log.back().myCoor); //this should remove constraints from all layers
+    int count =0;
+    if((log.back().PieceCollector.size()))
     {
-
-        puzzleMat.removeConstrains(log.back().myCoor); //this should remove constraints from all layers
-        int count =0;
-        if((log.back().PieceCollector.size()))
+        for(int i=0;i<puzzleMat.p_myBox.size();i++)
         {
-            for(int i=0;i<puzzleMat.p_myBox.size();i++)
+            if(puzzleMat.p_myBox[i]->GetPartID()==log.back().PieceCollector.begin()->second->GetPartID())//sets all with partid
             {
-                if(puzzleMat.p_myBox[i]->GetPartID()==log.back().PieceCollector.begin()->second->GetPartID())//sets all with partid
-                {
-                    puzzleMat.p_myBox[i]->set=false;
-                    count++;
-                }
+                puzzleMat.p_myBox[i]->set=false;
+                count++;
             }
-            if (count !=4)
-                cerr << "incorrect set set" << endl;
         }
-        cout << " no more pieces" << endl;
-
-        log.pop_back();
-        if(!backtrack(log,puzzleMat))
-            return false;
-        return true;
+        cout << "removed " << count << endl;
     }
+    cout << " no more pieces" << endl;
+
+    log.pop_back();
+    if(!backtrack(log,puzzleMat))
+        return false;
+    return true;
 }
 
 
