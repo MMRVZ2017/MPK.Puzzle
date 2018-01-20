@@ -169,7 +169,7 @@ Mat Puzzle::resultImage( vector<LogEntry>& log){
             // waitKey(0);
         }
 
-        cout << it.PieceCollector[0].second->GetPartID() << endl;
+        //cout << it.PieceCollector[0].second->GetPartID() << endl;
 
         int imageNumber = it.PieceCollector[0].second->GetPartID();
         //cout<<"imageIndex: "<< imageNumber << endl;

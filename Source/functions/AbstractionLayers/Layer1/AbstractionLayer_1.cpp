@@ -73,9 +73,7 @@ int AbstractionLayer_1::PoempelSum(uint8_t constraint)
 //it through qualityVector and removes all that do not trigger PlaceOfPartGood
 bool AbstractionLayer_1::EvaluateQuality (const coor constraintCoordinate, qualityVector& qVector)
 {
-    if(constraintCoordinate.row==23 && constraintCoordinate.col==35)
-        cout << "in" << endl;
-    //evaluateQuality = evaluateProbabilaty
+     //evaluateQuality = evaluateProbabilaty
     for(int i = 0;i<qVector.size();i++)
     {
         if(PlaceOfPartGood(constraintCoordinate, qVector[i].second->m_a1.m_connections))
@@ -226,8 +224,6 @@ bool AbstractionLayer_1::PlaceOfPartGood(coor myCoor, uint8_t& myPart)
                  ||  (((negativePart & 0b00000011) == 0b00000000) && ((myPart &  0b00000011) == 0b00000000))  )
             )
     {
-        if(myCoor.row==18 && myCoor.col==35)
-            cout << "gud: " << std::bitset<8>(myPart) << endl;
         return true;
     }
     return false;

@@ -44,7 +44,6 @@ void createNextLogElement(vector<LogEntry>& log, Puzzle& puzzleMat)
 	log.emplace_back(LogEntry(coor(0, 0)));
    	log.back().myCoor = calculateNextCoor(log, puzzleMat);
     puzzleMat.dp.DestructionOfSurrounding(log.back().myCoor);//calculate dp from surrounding
-    cout << "-----------------------" << endl;
      //get all not set pieces
     for(auto it:puzzleMat.p_myBox)
         if(!it->set)
@@ -110,27 +109,13 @@ void setsolution(vector<LogEntry>& log, Puzzle& puzzleMat)
 	//tell log entry that it is set
 	log.back().Set();
     puzzleMat.setConstraints(log.back().myCoor,log.back().PieceCollector.begin()->second);
-    cout << "set:" << log.back().myCoor.col << "," << log.back().myCoor.row << endl;
+    //cout << "set:" << log.back().myCoor.col << "," << log.back().myCoor.row << endl;
     //cout << "ID: " << log.back().PieceCollector[0].second->GetPartID() << endl;
-    int ist=0;
-    for(auto it:puzzleMat.myBox)
-        if(!it.set)
-            ist++;
-
-    int soll = (puzzleMat.getSizeAsCoor().row*puzzleMat.getSizeAsCoor().col*4)-4*((log.back().myCoor.col)*puzzleMat.getSizeAsCoor().row+log.back().myCoor.row+1);
-    if(soll != ist)
-        cerr << "soll not ist!!!" << endl;
-    cout << "ist: " << ist << endl;
-    cout << "soll: " << soll << endl;
-    //cout << "log:" << endl;
-    //for(auto it:log.back().PieceCollector)
-    //    cout << std::bitset<8>(it.second->m_a1.getConnections()) << "|" << it.second->GetPartID() << endl;
 
 }
 
 bool backtrack(vector<LogEntry>& log, Puzzle& puzzleMat)
 {
-    cout << "backtracking" ;
     if(log.empty())
     {
         cout << "Puzzle not solveable!" << endl;
@@ -140,17 +125,10 @@ bool backtrack(vector<LogEntry>& log, Puzzle& puzzleMat)
     //if more pieces possible, tset piece as not logged
     if((log.back().PieceCollector.size())>1)
     {
-        //unset puzzlepieces
-        int count =0;
-        for(int i=0;i<puzzleMat.p_myBox.size();i++)
-        {
+        for(int i=0;i<puzzleMat.p_myBox.size();i++)//unset puzzlepieces
             if(puzzleMat.p_myBox[i]->GetPartID()==log.back().PieceCollector.begin()->second->GetPartID())//sets all with partid
-            {
                 puzzleMat.p_myBox[i]->set=false;
-                count++;
-            }
-        }
-        cout << "removed " << count << endl;
+
 
         //remove similar in log
         Part myPart = *log.back().PieceCollector[0].second;//tmpsaves bad part
@@ -159,7 +137,6 @@ bool backtrack(vector<LogEntry>& log, Puzzle& puzzleMat)
         //TODO remove this when further layers are added!!!
         if(log.back().PieceCollector.size()) // this checks if 'removeSimilar' has cleared entire LogElement
         {
-            cout << " next piece" << endl;
             if(log.back().PieceCollector.size()==1)
                 log.back().decreaseRandomed();
             setsolution(log,puzzleMat);
@@ -168,20 +145,10 @@ bool backtrack(vector<LogEntry>& log, Puzzle& puzzleMat)
     }
     //else remove log element and backtrack once more
     puzzleMat.removeConstrains(log.back().myCoor); //this should remove constraints from all layers
-    int count =0;
-    if((log.back().PieceCollector.size()))
-    {
+    if((log.back().PieceCollector.size())) //unset all
         for(int i=0;i<puzzleMat.p_myBox.size();i++)
-        {
             if(puzzleMat.p_myBox[i]->GetPartID()==log.back().PieceCollector.begin()->second->GetPartID())//sets all with partid
-            {
                 puzzleMat.p_myBox[i]->set=false;
-                count++;
-            }
-        }
-        cout << "removed " << count << endl;
-    }
-    cout << " no more pieces" << endl;
 
     log.pop_back();
     if(!backtrack(log,puzzleMat))
