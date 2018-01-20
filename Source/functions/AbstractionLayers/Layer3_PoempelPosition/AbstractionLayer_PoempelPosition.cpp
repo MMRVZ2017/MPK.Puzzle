@@ -6,7 +6,6 @@ bool AbstractionLayer_PoempelPosition::PreProcessing(coor mySize,  const vector<
     //get layer information here
     cout << "Abstraction Poempel Position Preprocessing...  " << flush;
 
-
     InitialiseConstraintMatrixSize(mySize.col, mySize.row);
 
     cout << "Done" << endl;

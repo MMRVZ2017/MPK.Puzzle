@@ -612,7 +612,7 @@ vector<Point> analyseParts::findCorners(vector<Point> contour, Point center){
     line(drawing,Point(0,center.y-dist),Point((IMG_SIZE/2),center.y-dist),Scalar(255,0,255),3,8);
     circle(drawing,quad_contour[3][max_idx],5,Scalar(50,100,255),5,8);
     if(DISPLAY) imshow("draw",drawing);
-    return corners;
+    return corners; 
 }
 
 unsigned char analyseParts::analyseContour(vector<Point> corners, vector<Point> contour) {
