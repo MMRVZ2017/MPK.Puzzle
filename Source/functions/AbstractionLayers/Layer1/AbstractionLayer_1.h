@@ -55,6 +55,7 @@ public:
     void shift(uint8_t& Part, int shifts);
     void setEdgeZero();
 
+    int PoempelSum(uint8_t constraint);
 
     void CreateRandomPuzzle();
     qualityVector returnInBox(vector<Part>& PuzzleBox);

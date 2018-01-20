@@ -1,6 +1,3 @@
-//
-// Created by Raphael Maenle on 21/12/2017.
-//
 #include "../../header/solve.h"
 #include "../../header/input.h"
 
