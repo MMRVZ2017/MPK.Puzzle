@@ -156,7 +156,7 @@ Mat Puzzle::resultImage( vector<LogEntry>& log){
     char name[100];
     for (auto it:log)
     {
-        if (it.myCoor.col == 12 && it.myCoor.row == 0)
+        if (it.myCoor.col == 27 && it.myCoor.row == 5)
         {
             ;
             // imshow("result",result);
@@ -176,7 +176,8 @@ Mat Puzzle::resultImage( vector<LogEntry>& log){
         copyMakeBorder(img,img,200,200,200,200,BORDER_CONSTANT,Scalar(255,255,255));
         Mat invert = Mat::ones(img.size(), CV_8UC3); // invert for rotation to work correctly
         bitwise_not ( img, invert );
-        if (it.myCoor.col == 12 && it.myCoor.row == 0)
+
+        if (it.myCoor.col == 35 && it.myCoor.row == 5)
         {
             //imshow("img",img);
             //waitKey(0);

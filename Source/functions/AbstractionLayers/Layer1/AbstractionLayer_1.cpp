@@ -358,6 +358,7 @@ bool analyseParts::getImages(){
     vector<vector<Point> > contours;
     vector<Vec4i> hierarchy;
     vector<Point> corners;
+    vector<double> lens;
 
     vector<Mat> puzzleimages;
     vector<vector<Point> > contours1;
@@ -389,6 +390,8 @@ bool analyseParts::getImages(){
         }
         mask.setCorners(corners);
         mask.setTabs(analyseContour(corners,contours[0]));
+        mask.setLens(analyseLens(lens, corners));
+        mask.setMidpoint(calcMidpoint(corners));
         masks.push_back(mask);
         destroyAllWindows();
     }
@@ -407,6 +410,23 @@ Point analyseParts::findCenter(Mat img){
     return center;
 }
 
+float pitch2Points(Point one, Point two) //In Header
+{
+    float pitch=0;
+    float deltay=0;
+    float deltax = 0;
+    deltay = abs(one.y - two.y);
+    deltax = abs(one.x - two.x);
+
+    if(deltax == 0)
+        deltax = 0.1;
+
+    if(deltay == 0)
+        deltay = 0.1;
+
+    pitch = deltay/deltax;
+    return pitch;
+}
 
 vector<Point> analyseParts::findCorners(vector<Point> contour, Point center){
     int minContourPoint = 5;
@@ -574,136 +594,542 @@ vector<Point> analyseParts::findCorners(vector<Point> contour, Point center){
     if(DISPLAY) imshow("draw",drawing);
     return corners;
 }
-
 unsigned char analyseParts::analyseContour(vector<Point> corners, vector<Point> contour) {
     vector<Point> contour_right;
     vector<Point> contour_top;
     vector<Point> contour_left;
     vector<Point> contour_bottom;
-    Mat drawing = createEmpty(Point(IMG_SIZE,IMG_SIZE),1);
+
     int count = 0;
     int corner0 = 0, corner1 = 0, corner2 = 0, corner3 = 0;
     for(int i = 0; i < contour.size(); i++){
+        //cout << "contour " << contour[i] << endl;
         if(contour[i] == corners[0])
             corner0 = i;
-        if(contour[i] == corners[1])
+        else if(contour[i] == corners[1])
             corner1 = i;
-        if(contour[i] == corners[2])
+        else if(contour[i] == corners[2])
             corner2 = i;
-        if(contour[i] == corners[3])
+        else if(contour[i] == corners[3])
             corner3 = i;
     }
+
     count = corner0;
     while(contour[count] != contour[corner2]){
         count++;
         count %= contour.size();
         contour_right.push_back(contour[count]);
-        circle(drawing,contour[count],3,Scalar(255,0,0),2,8);
     }
     count = corner2;
     while(contour[count] != contour[corner3]){
         count++;
         count %= contour.size();
         contour_top.push_back(contour[count]);
-        circle(drawing,contour[count],3,Scalar(0,255,0),2,8);
     }
     count = corner3;
     while(contour[count] != contour[corner1]){
         count++;
         count %= contour.size();
         contour_left.push_back(contour[count]);
-        circle(drawing,contour[count],3,Scalar(0,0,255),2,8);
     }
     count = corner1;
     while(contour[count] != contour[corner0]){
         count++;
         count %= contour.size();
         contour_bottom.push_back(contour[count]);
-        circle(drawing,contour[count],3,Scalar(255,255,255),2,8);
     }
-    float ref_right = (contour[corner0].x+contour[corner2].x)/2;
-    float ref_top = (contour[corner2].y+contour[corner3].y)/2;
-    float ref_left = (contour[corner3].x+contour[corner1].x)/2;
-    float ref_bottom = (contour[corner1].y+contour[corner0].y)/2;
 
+    contour_right.insert(contour_right.begin(),corners[0]);
+    contour_right.push_back(corners[2]);
+
+    contour_top.insert(contour_top.begin(),corners[2]);
+    contour_top.push_back(corners[3]);
+
+    contour_left.insert(contour_left.begin(),corners[3]);
+    contour_left.push_back(corners[1]);
+
+    contour_bottom.insert(contour_bottom.begin(),corners[1]);
+    contour_bottom.push_back(corners[0]);
+
+    /*-------------------------------------*/
+    //ecken Korrektur rechte Kontur
+    /*-------------------------------------*/
+
+    vector<Point> contour_r;
+    double laenge = 0;
+    int idx = 0, counter = 0, c = 0, d = 0;
+
+    while (counter < (contour_right.size()-1)) {
+        counter++;
+        c++;
+        laenge = sqrt((contour_right[idx].x - contour_right[idx + c].x) * (contour_right[idx].x - contour_right[idx + c].x) +
+                      (contour_right[idx].y - contour_right[idx + c].y) * (contour_right[idx].y - contour_right[idx + c].y));
+        if (laenge > 4) {
+            d++;
+            contour_r.push_back(contour_right[idx]);
+            idx = counter;
+            c = 0;
+        }
+    }
+
+    float k = 0;
+    int correct_count = 0;
+    int correct_idx = 0;
+    for(correct_count = 0; correct_count < contour_r.size()-2; correct_count++){
+
+        k = pitch2Points(contour_r[correct_count],contour_r[correct_count+1]);
+        //cout << "unten: " << k << endl;
+        if(k >= 2) {
+            correct_idx = correct_count;
+            correct_count = contour_r.size();
+        }
+        if(correct_count > 500)
+            break;
+    }
+    /*-----------------------------------*/
+    if(correct_idx > 0){
+        corners[0] = contour_r[correct_idx];
+    }
+    /*-----------------------------------*/
+    vector<Point> contour_r1;
+    laenge = 0;
+    idx = contour_right.size()-1, counter = contour_right.size()-1, c = 0, d = 0;
+
+    while (counter > 1) {
+        counter--;
+        c--;
+        laenge = sqrt((contour_right[idx].x - contour_right[idx + c].x) * (contour_right[idx].x - contour_right[idx + c].x) +
+                      (contour_right[idx].y - contour_right[idx + c].y) * (contour_right[idx].y - contour_right[idx + c].y));
+        if (laenge > 4) {
+            contour_r1.push_back(contour_right[idx]);
+            idx = counter;
+            c = 0;
+        }
+    }
+
+
+    k = 0;
+    correct_count = 0;
+    correct_idx = 0;
+    for(correct_count = 0; correct_count < contour_r1.size()-2; correct_count++){
+
+        k = pitch2Points(contour_r1[correct_count],contour_r1[correct_count+1]);
+        // cout << "oben: " << k << endl;
+        if(k >= 2) {
+            correct_idx = correct_count;
+            correct_count = contour_r1.size();
+        }
+    }
+    /*-----------------------------------*/
+    if(correct_idx > 0){
+        corners[2] = contour_r1[correct_idx];
+    }
+    /*-----------------------------------*/
+
+    /*-------------------------------------*/
+    //ecken Korrektur links Kontur
+    /*-------------------------------------*/
+
+    vector<Point> contour_l;
+    laenge = 0;
+    idx = 0, counter = 0, c = 0, d = 0;
+
+    while (counter < (contour_left.size()-1)) {
+        counter++;
+        c++;
+        laenge = sqrt((contour_left[idx].x - contour_left[idx + c].x) * (contour_left[idx].x - contour_left[idx + c].x) +
+                      (contour_left[idx].y - contour_left[idx + c].y) * (contour_left[idx].y - contour_left[idx + c].y));
+        if (laenge > 4) {
+            d++;
+            contour_l.push_back(contour_left[idx]);
+            idx = counter;
+            c = 0;
+        }
+    }
+
+    k = 0;
+    correct_count = 0;
+    correct_idx = 0;
+    for(correct_count = 0; correct_count < contour_l.size()-2; correct_count++){
+
+        k = pitch2Points(contour_l[correct_count],contour_l[correct_count+1]);
+        // cout << "oben _links: " << k << endl;
+        if(k >= 2) {
+            correct_idx = correct_count;
+            correct_count = contour_l.size();
+        }
+        if(correct_count > 500)
+            break;
+    }
+    /*-----------------------------------*/
+    if(correct_idx > 0){
+        corners[3] = contour_l[correct_idx];
+    }
+    /*-----------------------------------*/
+    vector<Point> contour_l1;
+    laenge = 0;
+    idx = contour_left.size()-1, counter = contour_left.size()-1, c = 0, d = 0;
+
+    while (counter > 1) {
+        counter--;
+        c--;
+        laenge = sqrt((contour_left[idx].x - contour_left[idx + c].x) * (contour_left[idx].x - contour_left[idx + c].x) +
+                      (contour_left[idx].y - contour_left[idx + c].y) * (contour_left[idx].y - contour_left[idx + c].y));
+        if (laenge > 4) {
+            contour_l1.push_back(contour_left[idx]);
+            idx = counter;
+            c = 0;
+        }
+        if(correct_count > 500)
+            break;
+    }
+    k = 0;
+    correct_count = 0;
+    correct_idx = 0;
+    for(correct_count = 0; correct_count < contour_l1.size(); correct_count++){
+
+        k = pitch2Points(contour_l1[correct_count],contour_l1[correct_count+1]);
+        if(k >= 2) {
+            //  cout << "end _links: " << endl;
+            correct_idx = correct_count;
+            correct_count = contour_l1.size();
+        }
+        if(correct_count > 500)
+            break;
+    }
+    /*-----------------------------------*/
+    //  cout << "unten _links_correct: " << correct_idx << endl;
+    if(correct_idx > 0){
+        corners[1] = contour_l1[correct_idx];
+    }
+    /*-----------------------------------*/
+
+    /*-------------------------------------*/
+    //ecken Korrektur oben Kontur
+    /*-------------------------------------*/
+
+    vector<Point> contour_t;
+    laenge = 0;
+    idx = 0, counter = 0, c = 0, d = 0;
+
+    while (counter < (contour_top.size()-1)) {
+        counter++;
+        c++;
+        laenge = sqrt((contour_top[idx].x - contour_top[idx + c].x) * (contour_top[idx].x - contour_top[idx + c].x) +
+                      (contour_top[idx].y - contour_top[idx + c].y) * (contour_top[idx].y - contour_top[idx + c].y));
+        if (laenge > 4) {
+            d++;
+            contour_t.push_back(contour_top[idx]);
+            idx = counter;
+            c = 0;
+        }
+        if(correct_count > 500)
+            break;
+    }
+
+    k = 0;
+    correct_count = 0;
+    correct_idx = 0;
+    for(correct_count = 0; correct_count < contour_t.size()-2; correct_count++){
+
+        k = pitch2Points(contour_t[correct_count],contour_t[correct_count+1]);
+        // cout << "top _rechts: " << k << endl;
+        if(k <= 2) {
+            correct_idx = correct_count;
+            correct_count = contour_t.size();
+        }
+        if(correct_count > 500)
+            break;
+    }
+    /*-----------------------------------*/
+    if(correct_idx > 0){
+        corners[2] = contour_t[correct_idx];
+    }
+    /*-----------------------------------*/
+    vector<Point> contour_t1;
+    laenge = 0;
+    idx = contour_top.size()-1, counter = contour_top.size()-1, c = 0, d = 0;
+
+    while (counter > 1) {
+        counter--;
+        c--;
+        laenge = sqrt((contour_top[idx].x - contour_top[idx + c].x) * (contour_top[idx].x - contour_top[idx + c].x) +
+                      (contour_top[idx].y - contour_top[idx + c].y) * (contour_top[idx].y - contour_top[idx + c].y));
+        if (laenge > 4) {
+            contour_t1.push_back(contour_top[idx]);
+            idx = counter;
+            c = 0;
+        }
+        if(correct_count > 500)
+            break;
+    }
+    k = 0;
+    correct_idx = 0;
+    for(correct_count = 0; correct_count < contour_t1.size(); correct_count++){
+        k = pitch2Points(contour_t1[correct_count],contour_t1[correct_count+1]);
+        if(k < 2) {
+            correct_idx = correct_count;
+            correct_count = contour_t1.size();
+        }
+    }
+    /*-----------------------------------*/
+    if(correct_idx > 0){
+        corners[3] = contour_t1[correct_idx];
+    }
+    /*-------------------------------------*/
+
+    /*-------------------------------------*/
+    //ecken Korrektur unten Kontur
+    /*-------------------------------------*/
+
+    vector<Point> contour_b;
+    laenge = 0;
+    idx = 0, counter = 0, c = 0, d = 0;
+
+    while (counter < (contour_bottom.size()-1)) {
+        counter++;
+        c++;
+        laenge = sqrt((contour_bottom[idx].x - contour_bottom[idx + c].x) * (contour_bottom[idx].x - contour_bottom[idx + c].x) +
+                      (contour_bottom[idx].y - contour_bottom[idx + c].y) * (contour_bottom[idx].y - contour_bottom[idx + c].y));
+        if (laenge > 4) {
+            d++;
+            contour_b.push_back(contour_bottom[idx]);
+            idx = counter;
+            c = 0;
+        }
+        if(correct_count > 500)
+            break;
+    }
+
+    k = 0;
+    correct_count = 0;
+    correct_idx = 0;
+    for(correct_count = 0; correct_count < contour_b.size()-2; correct_count++){
+
+        k = pitch2Points(contour_b[correct_count],contour_b[correct_count+1]);
+        // cout << "bottom _rechts: " << k << endl;
+        if(k <= 2) {
+            correct_idx = correct_count;
+            correct_count = contour_b.size();
+        }
+        if(correct_count > 500)
+            break;
+    }
+    /*-----------------------------------*/
+    if(correct_idx > 0){
+        corners[1] = contour_b[correct_idx];
+    }
+    /*-----------------------------------*/
+    vector<Point> contour_b1;
+    laenge = 0;
+    idx = contour_bottom.size()-1, counter = contour_bottom.size()-1, c = 0, d = 0;
+
+    while (counter > 1) {
+        counter--;
+        c--;
+        laenge = sqrt((contour_bottom[idx].x - contour_bottom[idx + c].x) * (contour_bottom[idx].x - contour_bottom[idx + c].x) +
+                      (contour_bottom[idx].y - contour_bottom[idx + c].y) * (contour_bottom[idx].y - contour_bottom[idx + c].y));
+        if (laenge > 4) {
+            contour_b1.push_back(contour_bottom[idx]);
+            idx = counter;
+            c = 0;
+        }
+        if(correct_count > 500)
+            break;
+    }
+    k = 0;
+    correct_idx = 0;
+    for(correct_count = 0; correct_count < contour_b1.size(); correct_count++){
+        k = pitch2Points(contour_b1[correct_count],contour_b1[correct_count+1]);
+        if(k < 2) {
+            correct_idx = correct_count;
+            correct_count = contour_b1.size();
+        }
+        if(correct_count > 500)
+            break;
+    }
+    /*-----------------------------------*/
+    if(correct_idx > 0){
+        corners[0] = contour_b1[correct_idx];
+    }
+    /*-----------------------------------*/
+
+
+    /*Korrektur Contour*/
+
+    vector<Point> contour_right_new;
+    vector<Point> contour_top_new;
+    vector<Point> contour_left_new;
+    vector<Point> contour_bottom_new;
+
+    for(int i = 0; i < contour.size(); i++){
+        if(contour[i] == corners[0])
+            corner0 = i;
+        else if(contour[i] == corners[1])
+            corner1 = i;
+        else if(contour[i] == corners[2])
+            corner2 = i;
+        else if(contour[i] == corners[3])
+            corner3 = i;
+    }
+
+    count = corner0;
+    while(contour[count] != contour[corner2]){
+        count++;
+        count %= contour.size();
+        contour_right_new.push_back(contour[count]);
+    }
+    count = corner2;
+    while(contour[count] != contour[corner3]){
+        count++;
+        count %= contour.size();
+        contour_top_new.push_back(contour[count]);
+    }
+    count = corner3;
+    while(contour[count] != contour[corner1]){
+        count++;
+        count %= contour.size();
+        contour_left_new.push_back(contour[count]);
+    }
+    count = corner1;
+    while(contour[count] != contour[corner0]){
+        count++;
+        count %= contour.size();
+        contour_bottom_new.push_back(contour[count]);
+    }
+
+    contour_right_new.insert(contour_right_new.begin(),corners[0]);
+    contour_right_new.push_back(corners[2]);
+
+    contour_top_new.insert(contour_top_new.begin(),corners[2]);
+    contour_top_new.push_back(corners[3]);
+
+    contour_left_new.insert(contour_left_new.begin(),corners[3]);
+    contour_left_new.push_back(corners[1]);
+
+    contour_bottom_new.insert(contour_bottom_new.begin(),corners[1]);
+    contour_bottom_new.push_back(corners[0]);
+    /*----------------------*/
+
+    float ref_right = (corners[0].x+corners[2].x)/2;
+    float ref_top = (corners[2].y+corners[3].y)/2;
+    float ref_left = (corners[3].x+corners[1].x)/2;
+    float ref_bottom = (corners[1].y+corners[0].y)/2;
+
+    /*---------Suche Poempel Rechts---------------*/
     float max_dist = 0;
     float dist = 0;
-    int max_idx = 0;
-    for(int i = 0; i < contour_right.size(); i++){
-        dist = abs(ref_right-contour_right[i].x);
+    int max_dist_idx = 0;
+    for(int i = 0; i < contour_right_new.size(); i++){
+        dist = abs(ref_right-contour_right_new[i].x);
         if(dist > max_dist) {
             max_dist = dist;
-            max_idx = i;
+            max_dist_idx = i;
         }
     }
-
+    /*-------------------------------------*/
     unsigned char tabs = 0;
-    circle(drawing,contour_right[max_idx],10,Scalar(255,0,255),2,8);
-    if (ref_right - contour_right[max_idx].x <= -20)
+    int poembel_threshold = 15;
+    if (ref_right - contour_right_new[max_dist_idx].x <= -poembel_threshold) {
         tabs |= (2 << RIGHT);
-    if (ref_right - contour_right[max_idx].x >= 20)
+    }
+    if (ref_right - contour_right_new[max_dist_idx].x >= poembel_threshold) {
         tabs |= (1 << RIGHT);
-    if (abs(ref_right - contour_right[max_idx].x) < 20)
+    }
+    if (abs(ref_right - contour_right_new[max_dist_idx].x) < poembel_threshold) {
         tabs |= (0 << RIGHT);
+    }
 
+    /*---------Suche Poempel Oben---------------*/
     max_dist = 0;
     dist = 0;
-    max_idx = 0;
-    for(int i = 0; i < contour_top.size(); i++){
-        dist = abs(ref_top-contour_top[i].y);
+    max_dist_idx = 0;
+    for(int i = 0; i < contour_top_new.size(); i++){
+        dist = abs(ref_top -contour_top_new[i].y);
         if(dist > max_dist) {
             max_dist = dist;
-            max_idx = i;
+            max_dist_idx = i;
         }
     }
-    circle(drawing,contour_top[max_idx],10,Scalar(255,0,255),2,8);
-    if (ref_top - contour_top[max_idx].y <= -20)
+    /*-------------------------------------*/
+
+    if (ref_top - contour_top_new[max_dist_idx].y <= -poembel_threshold) {
         tabs |= (1 << TOP);
-    if (ref_top - contour_top[max_idx].y >= 20)
+    }
+    if (ref_top - contour_top_new[max_dist_idx].y >= poembel_threshold) {
         tabs |= (2 << TOP);
-    if (abs(ref_top - contour_top[max_idx].y) < 20)
+    }
+    if (abs(ref_top - contour_top_new[max_dist_idx].y) < poembel_threshold) {
         tabs |= (0 << TOP);
+    }
 
+    /*---------Suche Poempel Links---------------*/
     max_dist = 0;
     dist = 0;
-    max_idx = 0;
-    for(int i = 0; i < contour_left.size(); i++){
-        dist = abs(ref_left-contour_left[i].x);
+    max_dist_idx = 0;
+    for(int i = 0; i < contour_left_new.size(); i++){
+        dist = abs(ref_left -contour_left_new[i].x);
         if(dist > max_dist) {
             max_dist = dist;
-            max_idx = i;
+            max_dist_idx = i;
         }
     }
-    circle(drawing,contour_left[max_idx],10,Scalar(255,0,255),2,8);
-    if (ref_left - contour_left[max_idx].x <= -20)
+    /*-------------------------------------*/
+    if (ref_left - contour_left_new[max_dist_idx].x <= -poembel_threshold) {
         tabs |= (1 << LEFT);
-    if (ref_left - contour_left[max_idx].x >= 20)
+    }
+    if (ref_left - contour_left_new[max_dist_idx].x >= poembel_threshold) {
         tabs |= (2 << LEFT);
-    if (abs(ref_left - contour_left[max_idx].x) < 20)
+    }
+    if (abs(ref_left - contour_left_new[max_dist_idx].x) < poembel_threshold) {
         tabs |= (0 << LEFT);
+    }
 
+    /*---------Suche Poempel Oben---------------*/
     max_dist = 0;
     dist = 0;
-    max_idx = 0;
-    for(int i = 0; i < contour_bottom.size(); i++){
-        dist = abs(ref_bottom-contour_bottom[i].y);
+    max_dist_idx = 0;
+    for(int i = 0; i < contour_bottom_new.size(); i++){
+        dist = abs(ref_bottom -contour_bottom_new[i].y);
         if(dist > max_dist) {
             max_dist = dist;
-            max_idx = i;
+            max_dist_idx = i;
         }
     }
-    circle(drawing,contour_bottom[max_idx],10,Scalar(255,0,255),2,8);
-    if (ref_bottom - contour_bottom[max_idx].y <= -20)
+    /*-------------------------------------*/
+    if (ref_bottom - contour_bottom_new[max_dist_idx].y <= -poembel_threshold) {
         tabs |= (2 << BOTTOM);
-    if (ref_bottom - contour_bottom[max_idx].y >= 20)
+    }
+    if (ref_bottom - contour_bottom_new[max_dist_idx].y >= poembel_threshold) {
         tabs |= (1 << BOTTOM);
-    if (abs(ref_bottom - contour_bottom[max_idx].y) < 20)
+    }
+    if (abs(ref_bottom - contour_bottom_new[max_dist_idx].y) < poembel_threshold) {
         tabs |= (0 << BOTTOM);
-
-    //cout << bitset<sizeof(char) * CHAR_BIT> (tabs) <<  "b\n";
-
-    if(DISPLAY)imshow("corners",drawing);
-    if(DISPLAY)waitKey(0);
+    }
     return tabs;
 }
 
+
+vector<double> analyseParts::analyseLens(vector<double> lens, vector<Point> corners){
+    Point space = corners[3] - corners[2];
+    double dist1 = sqrt(space.x*space.x+space.y*space.y);
+    lens.push_back(dist1);
+    space = corners[2] - corners[0];
+    dist1 = sqrt(space.x*space.x+space.y*space.y);
+    lens.push_back(dist1);
+    space = corners[0] - corners[1];
+    dist1 = sqrt(space.x*space.x+space.y*space.y);
+    lens.push_back(dist1);
+    space = corners[1] - corners[3];
+    dist1 = sqrt(space.x*space.x+space.y*space.y);
+    lens.push_back(dist1);
+
+    return lens;
+}
+
+Point analyseParts::calcMidpoint(vector<Point> corners){
+    Point midpoint;
+
+    midpoint = (corners[0] + corners[1] + corners[2] + corners[3])/4;
+    return midpoint;
+}

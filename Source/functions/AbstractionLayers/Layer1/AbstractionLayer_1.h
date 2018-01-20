@@ -75,6 +75,10 @@ public:
     void setHierarchy(vector<Vec4i> hier){hierarchy = std::move(hier);}
     void setCorners(vector<Point> cor){corners = std::move(cor);}
     void setTabs(unsigned char t){tabs = t;}
+    vector<double> getLen(){return len;}
+    void setLens(vector<double> l ){len = l;}
+    Point getMidpoint(){return midpoint;}
+    void setMidpoint(Point m ){midpoint = m;}
 
     vector<Point> getCorners(){return corners;}
 
@@ -84,7 +88,9 @@ private:
     vector<vector<Point>> contour;
     vector<Vec4i> hierarchy;
     Point center;
+    vector<double> len;
     unsigned char tabs;
+    Point midpoint;
 };
 
 class analyseParts{
@@ -95,6 +101,10 @@ public:
     Point getCenter(int i){if(i>= nr_parts)return masks[nr_parts-1].getCenter(); else return masks[i].getCenter();}
     vector<Vec4i> getHierarchy(int i){if(i>= nr_parts)return masks[nr_parts-1].getHierarchy(); else return masks[i].getHierarchy();}
     unsigned char getTabs(int i){if(i>= nr_parts)return masks[nr_parts-1].getTabs(); else return masks[i].getTabs();}
+    vector<double> getLen(int i ){return masks[i].getLen();}
+    vector<double> analyseLens(vector<double>, vector<Point>);
+    Point calcMidpoint(vector<Point>);
+    Point getMidpoint(int i){return masks[i].getMidpoint();}
     Point findCenter(Mat);
     vector<Point> findCorners(vector<Point>,Point);
     unsigned char analyseContour(vector<Point>, vector<Point>);

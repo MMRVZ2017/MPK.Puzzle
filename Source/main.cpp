@@ -22,8 +22,9 @@ int main()
 
     cout << "Done!" << endl;
 
-    cout << log.size() << endl;
     puzzleMat.resultImage(log);
+
+
     puzzleMat.printPuzzle();
     return 0;
 }
