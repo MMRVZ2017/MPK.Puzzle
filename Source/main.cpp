@@ -17,13 +17,14 @@ int main()
 
     //puzzleMat.createRandomBox();
 
-    cout << "Solving Puzzle now...";
+    cout << "Solving Puzzle now..." << flush;
     while(next(log, puzzleMat));
 
     cout << "Done!" << endl;
-
-    cout << log.size() << endl;
+    cout << "Printing Puzzle now..." <<flush;
     puzzleMat.resultImage(log);
+
+
     puzzleMat.printPuzzle();
     return 0;
 }

@@ -9,7 +9,7 @@ bool AbstractionLayer_PoempelPosition::PreProcessing(coor mySize,  const vector<
     InitialiseConstraintMatrixSize(mySize.col, mySize.row);
 
     cout << "Done" << endl;
-    return false;
+    return true;
 }
 
 //it through qualityVector and removes all that do not trigger PlaceOfPartGood
@@ -17,7 +17,7 @@ bool AbstractionLayer_PoempelPosition::EvaluateQuality (const coor constraintCoo
 {
     for(int i = 0;i<qVector.size();i++)
     {
-        float value = PlaceOfPartGood(constraintCoordinate, qVector[i].second->m_a3.SideLength));
+        float value = PlaceOfPartGood(constraintCoordinate, qVector[i].second->m_a3.SideLength);
         if(value > 0.8)//TODO find threshold
         {
             qVector[i].first=value;

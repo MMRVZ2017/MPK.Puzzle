@@ -44,6 +44,7 @@ public:
         createBox(); createp_box();
         if(!dp.PreProcessing({cols,rows}, nullptr))  return false;
         if(!a1.PreProcessing({cols,rows}, &p_myBox)) return false;
+        if(!a3.PreProcessing({cols,rows}, &p_myBox)) return false;
 
         return true;
     }
