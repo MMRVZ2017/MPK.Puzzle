@@ -1,6 +1,3 @@
-//
-// Created by Raphael Maenle on 21/12/2017.
-//
 #include "../../header/solve.h"
 #include "../../header/input.h"
 
@@ -46,7 +43,8 @@ void Puzzle::putIntoBox()
             for(int rotations=0;rotations<4;rotations++)
             {
                 tmpPart.m_a1.shift(1);
-                //TODO! add all other layers with their rotaionvariance here
+                //TODO! add all other layer with their rotaionvariance into "tmpPart"
+                //if it piece is roation invariant no need to do anything
                 myBox.emplace_back(tmpPart);
 
             }
@@ -65,6 +63,7 @@ void Puzzle::shuffle()
 void Puzzle::removeConstrains(coor removeCoordinates)
 {
     this->a1.RemoveConstraintOnPosition(removeCoordinates);
+    //TODO!! Add other layer remove here
 }
 void Puzzle::setConstraints(coor setConstraints, Part* constraintPiece)
 {
@@ -75,6 +74,15 @@ void Puzzle::setConstraints(coor setConstraints, Part* constraintPiece)
 
     //a1
     this->a1.SetConstraintOnPosition(setConstraints,constraintPiece->m_a1);
+
+    //TODO!! Add other layer remove here
+}
+
+int Puzzle::removeSimilar(qualityVector& qVector, Part& myPart)
+{
+    //a1
+    uint8_t tmpConnections=myPart.m_a1.getConnections();
+    a1.RemoveSimilar(qVector,tmpConnections);
 }
 
 void Puzzle::createRandomPuzzle()
@@ -149,8 +157,6 @@ Mat Puzzle::resultImage( vector<LogEntry>& log){
     imageW = imageH;
     imageH = temp;
 
-    cout<<"imageW "<<imageW <<endl<<"imageH " <<imageH<<endl<<endl;
-    cout<<"partW "<<partWidth <<endl<<"partH " <<partHeight<<endl<<endl;
     Mat result(imageH,imageW,CV_8UC3);
 
     char name[100];
@@ -162,8 +168,6 @@ Mat Puzzle::resultImage( vector<LogEntry>& log){
             // imshow("result",result);
             // waitKey(0);
         }
-        cout << log.size() << endl;
-        cout << log[0].PieceCollector.size() << endl;
 
         cout << it.PieceCollector[0].second->GetPartID() << endl;
 

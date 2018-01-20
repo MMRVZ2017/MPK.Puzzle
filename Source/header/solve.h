@@ -44,8 +44,9 @@ public:
     bool PreProcessing()
     {
         createBox(); createp_box();
-        dp.PreProcessing({cols,rows}, nullptr);
-        a1.PreProcessing({cols,rows}, &p_myBox);
+        if(!dp.PreProcessing({cols,rows}, nullptr))  return false;
+        if(!a1.PreProcessing({cols,rows}, &p_myBox)) return false;
+
         return true;
     }
 
@@ -56,6 +57,8 @@ public:
 
     void removeConstrains(coor removeCoordinates);
     void setConstraints(coor setConstraints, Part *constraintPiece);
+    int removeSimilar(qualityVector&, Part&);
+
     void printPuzzle();
     void printBox();
     Mat resultImage(vector<LogEntry>&);

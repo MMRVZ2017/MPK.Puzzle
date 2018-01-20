@@ -1,10 +1,5 @@
-//
-// Created by mpapa on 05.12.2017.
-//
-
 #include "AbstractionLayer_1.h"
 #include "../../../header.h"
-
 #include <iostream>
 #include <bitset>
 
@@ -14,6 +9,7 @@ bool AbstractionLayer_1::PreProcessing(coor mySize,  const vector<Part*>* partAr
     const vector<Part*>& ref_partArray = *partArray;
     analyseParts analyse(mySize.row*mySize.col);
     Part buf;
+    int PSum=0;
     int iterator=0;
     if(!analyse.getImages())
     {
@@ -24,7 +20,8 @@ bool AbstractionLayer_1::PreProcessing(coor mySize,  const vector<Part*>* partAr
         //TODO rows and cols
         for(int i = 0; i < mySize.row*mySize.col; i++)
         {
-            unsigned char poempel = analyse.getTabs(i);;
+            unsigned char poempel = analyse.getTabs(i);
+            PSum+=PoempelSum(poempel); //preprocess correct check
             for (int j=0;j<4;j++)
             {
                 ref_partArray[iterator]->m_a1.m_connections=poempel;
@@ -33,9 +30,11 @@ bool AbstractionLayer_1::PreProcessing(coor mySize,  const vector<Part*>* partAr
             }
         }
 
+    if(PREPRO_CHECK && PSum)
+        return false;
+
+
     //Zugriff auf den vector mit den einzelnen teilen: part[0].getConnenctions() entspricht pömpel von bild 0.jpg und liefert ein unsigned char, poempl Belegung wie ausgemacht
-
-
 
     InitialiseConstraintMatrixSize(mySize.col+2, mySize.row+2); //col row switched in this function
     setEdgeZero();
@@ -44,9 +43,39 @@ bool AbstractionLayer_1::PreProcessing(coor mySize,  const vector<Part*>* partAr
     return true;
 }
 
+int AbstractionLayer_1::PoempelSum(uint8_t constraint)
+{
+    int PoempelSum=0;
+    if((constraint & 0b11000000)==0b01000000)
+        PoempelSum--;
+    else if((constraint & 0b11000000)==0b10000000)
+        PoempelSum++;
+
+    if((constraint & 0b00110000)==0b00010000)
+        PoempelSum--;
+    else if((constraint & 0b00110000)==0b00100000)
+        PoempelSum++;
+
+    if((constraint & 0b00001100)==0b00000100)
+        PoempelSum--;
+    else if((constraint & 0b00001100)==0b00001000)
+        PoempelSum++;
+
+    if((constraint & 0b00000011)==0b00000001)
+        PoempelSum--;
+    else if((constraint & 0b00000011)==0b00000010)
+        PoempelSum++;
+
+    return PoempelSum;
+
+}
+
 //it through qualityVector and removes all that do not trigger PlaceOfPartGood
 bool AbstractionLayer_1::EvaluateQuality (const coor constraintCoordinate, qualityVector& qVector)
 {
+    if(constraintCoordinate.row==23 && constraintCoordinate.col==35)
+        cout << "in" << endl;
+    //evaluateQuality = evaluateProbabilaty
     for(int i = 0;i<qVector.size();i++)
     {
         if(PlaceOfPartGood(constraintCoordinate, qVector[i].second->m_a1.m_connections))
@@ -67,6 +96,20 @@ bool AbstractionLayer_1::SetConstraintOnPosition(const coor constraintCoordinate
 bool AbstractionLayer_1::RemoveConstraintOnPosition(const coor constraintCoordinate)
 {
     m_constraintMatrix[constraintCoordinate.col+1][constraintCoordinate.row+1].m_connections=0b11111111;
+}
+
+int AbstractionLayer_1::RemoveSimilar(qualityVector& qVector,uint8_t& constraints)
+{
+    //
+    for(int i=0;i<qVector.size();)
+    {
+    if(qVector[i].second->m_a1.m_connections==constraints)
+        qVector.erase(qVector.begin()+i);
+    else
+        i++;
+
+    }
+
 }
 
 void AbstractionLayer_1::CreateRandomPuzzle()
@@ -119,8 +162,6 @@ void AbstractionLayer_1::CreateRandomPuzzle()
     }
 
 }
-
-
 
 //puts all pieces of the current constraint matrix into a puzzlebox
 qualityVector AbstractionLayer_1::returnInBox(vector<Part>& PuzzleBox)
@@ -184,7 +225,11 @@ bool AbstractionLayer_1::PlaceOfPartGood(coor myCoor, uint8_t& myPart)
                  || ((((negativePart & 0b00000011) == 0b00000011) || ((myPart &  0b00000011) == 0b00000011))  && (((myPart & 0b00000011) != 0b00000000) && (negativePart & 0b00000011) != 0b00000000))
                  ||  (((negativePart & 0b00000011) == 0b00000000) && ((myPart &  0b00000011) == 0b00000000))  )
             )
+    {
+        if(myCoor.row==18 && myCoor.col==35)
+            cout << "gud: " << std::bitset<8>(myPart) << endl;
         return true;
+    }
     return false;
 
 }

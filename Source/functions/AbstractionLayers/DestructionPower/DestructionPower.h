@@ -1,9 +1,5 @@
-//
-// Created by mpapa on 05.12.2017.
-//
-
 #pragma once
-
+//TODO!! increase Destructioncount
 #define DESTRUCTION_COUNT 1
 
 #include "DestructionPower_Properties.h"

@@ -7,6 +7,7 @@
 #include <algorithm>
 #include <random>
 
+#define PREPRO_CHECK false
 using namespace std;
 
 #include "header/input.h"
