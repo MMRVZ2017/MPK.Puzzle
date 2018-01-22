@@ -73,11 +73,11 @@ float AbstractionLayer_PoempelPosition::PlaceOfPartGood(coor myCoor, vector<doub
         sum+=abs(comparePosition[5]-myPart[5]);
 
     }
-    if(sum>100)
+    if(sum>500)
         return 0;
     if(sum==0)
         return 1;
-    sum/=100;
+    sum/=500;
     return 1-sum;
     //check vector against negative part, use sad
     //return of well it fits within threshold
