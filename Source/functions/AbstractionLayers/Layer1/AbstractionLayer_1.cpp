@@ -21,11 +21,14 @@ bool AbstractionLayer_1::PreProcessing(coor mySize,  const vector<Part*>* partAr
         for(int i = 0; i < mySize.row*mySize.col; i++)
         {
             unsigned char poempel = analyse.getTabs(i);
+
             PSum+=PoempelSum(poempel); //preprocess correct check
             for (int j=0;j<4;j++)
             {
                 ref_partArray[iterator]->m_a1.m_connections=poempel;
+                ref_partArray[iterator]->m_a3.SideLength=analyse.getPoempelPosition(i); //do abstraction Layer 3 check
                 shift(poempel,1);
+                ref_partArray[iterator]->m_a3.shift(j);//rotate information
                 iterator++;
             }
         }
@@ -428,7 +431,9 @@ bool analyseParts::getImages(){
             return false;
         }
         mask.setCorners(corners);
-        mask.setTabs(analyseContour(corners,contours[0]));
+        vector<double> tmpPoempelPosition={0,0,0,0,0,0,0,0};//TODO somehow make this code section bearable
+        mask.setTabs(analyseContour(corners,contours[0],tmpPoempelPosition));
+        mask.setPoempelPosition(tmpPoempelPosition);
         mask.setLens(analyseLens(lens, corners));
         mask.setMidpoint(calcMidpoint(corners));
         masks.push_back(mask);
@@ -633,7 +638,8 @@ vector<Point> analyseParts::findCorners(vector<Point> contour, Point center){
     if(DISPLAY) imshow("draw",drawing);
     return corners; 
 }
-unsigned char analyseParts::analyseContour(vector<Point> corners, vector<Point> contour) {
+unsigned char analyseParts::analyseContour(vector<Point> corners, vector<Point> contour,vector<double>& PoempelPosition){
+
     vector<Point> contour_right;
     vector<Point> contour_top;
     vector<Point> contour_left;
@@ -1066,6 +1072,12 @@ unsigned char analyseParts::analyseContour(vector<Point> corners, vector<Point> 
             max_dist_idx = i;
         }
     }
+            //saves length between Corners and Poempel right
+    Point diff = corners[2] - contour_right_new[max_dist_idx];
+    PoempelPosition[2] = cv::sqrt(diff.x*diff.x + diff.y*diff.y);
+    diff = corners[0] - contour_right_new[max_dist_idx];
+    PoempelPosition[3] = cv::sqrt(diff.x*diff.x + diff.y*diff.y);
+
     /*-------------------------------------*/
     unsigned char tabs = 0;
     int poembel_threshold = 15;
@@ -1090,6 +1102,13 @@ unsigned char analyseParts::analyseContour(vector<Point> corners, vector<Point> 
             max_dist_idx = i;
         }
     }
+
+        //saves length between Corners and Poempel
+    diff = corners[3] - contour_top_new[max_dist_idx];
+    PoempelPosition[0] = cv::sqrt(diff.x*diff.x + diff.y*diff.y);
+    diff = corners[2] - contour_top_new[max_dist_idx];
+    PoempelPosition[1] = cv::sqrt(diff.x*diff.x + diff.y*diff.y);
+
     /*-------------------------------------*/
 
     if (ref_top - contour_top_new[max_dist_idx].y <= -poembel_threshold) {
@@ -1113,6 +1132,12 @@ unsigned char analyseParts::analyseContour(vector<Point> corners, vector<Point> 
             max_dist_idx = i;
         }
     }
+
+            //saves length between Corners and Poempel
+    diff = corners[1] - contour_left_new[max_dist_idx];
+    PoempelPosition[6] = cv::sqrt(diff.x*diff.x + diff.y*diff.y);
+    diff = corners[3] - contour_left_new[max_dist_idx];
+    PoempelPosition[7] = cv::sqrt(diff.x*diff.x + diff.y*diff.y);
     /*-------------------------------------*/
     if (ref_left - contour_left_new[max_dist_idx].x <= -poembel_threshold) {
         tabs |= (1 << LEFT);
@@ -1124,7 +1149,7 @@ unsigned char analyseParts::analyseContour(vector<Point> corners, vector<Point> 
         tabs |= (0 << LEFT);
     }
 
-    /*---------Suche Poempel Oben---------------*/
+    /*---------Suche Poempel Unten---------------*/
     max_dist = 0;
     dist = 0;
     max_dist_idx = 0;
@@ -1135,6 +1160,10 @@ unsigned char analyseParts::analyseContour(vector<Point> corners, vector<Point> 
             max_dist_idx = i;
         }
     }
+    diff = corners[0] - contour_bottom_new[max_dist_idx];
+    PoempelPosition[4] = cv::sqrt(diff.x*diff.x + diff.y*diff.y);
+    diff = corners[1] - contour_bottom_new[max_dist_idx];
+    PoempelPosition[5] = cv::sqrt(diff.x*diff.x + diff.y*diff.y);
     /*-------------------------------------*/
     if (ref_bottom - contour_bottom_new[max_dist_idx].y <= -poembel_threshold) {
         tabs |= (2 << BOTTOM);

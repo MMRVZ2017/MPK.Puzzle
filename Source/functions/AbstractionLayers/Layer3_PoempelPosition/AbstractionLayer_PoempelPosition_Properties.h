@@ -10,8 +10,9 @@ public:
     void shift(int i);
 private:
 
-    vector<float> SideLength;
+    vector<double> SideLength;
     friend class AbstractionLayer_PoempelPosition;
+    friend class AbstractionLayer_1;
 };
 
 

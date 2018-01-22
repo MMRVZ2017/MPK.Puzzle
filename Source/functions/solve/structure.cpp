@@ -72,6 +72,7 @@ coor calculateNextCoor(vector<LogEntry>& log, Puzzle& puzzleMat)
 void solve(vector<LogEntry>& log,Puzzle& puzzleMat)
 {
 	log.back().abstractionLevel = puzzleMat.dp.getNextAbstractionLayer(log.back().myCoor,log.back().abstractionLevel); //sets in abstractionLevel
+    cout << "abs: " << log.back().abstractionLevel << endl;
     //status(log,p_Box,puzzleMat);
     //TODO!! Add more layers here
     switch(log.back().abstractionLevel)
@@ -80,7 +81,7 @@ void solve(vector<LogEntry>& log,Puzzle& puzzleMat)
             puzzleMat.a1.EvaluateQuality(log.back().myCoor, log.back().PieceCollector);
         break;
         case 1://histogram
-            return;
+            puzzleMat.a3.EvaluateQuality(log.back().myCoor,log.back().PieceCollector);
             break;
         case -1://random
             setsolution(log,puzzleMat);
@@ -109,7 +110,7 @@ void setsolution(vector<LogEntry>& log, Puzzle& puzzleMat)
 	//tell log entry that it is set
 	log.back().Set();
     puzzleMat.setConstraints(log.back().myCoor,log.back().PieceCollector.begin()->second);
-    //cout << "set:" << log.back().myCoor.col << "," << log.back().myCoor.row << endl;
+    cout << "set:" << log.back().myCoor.col << "," << log.back().myCoor.row << endl;
     //cout << "ID: " << log.back().PieceCollector[0].second->GetPartID() << endl;
 
 }
@@ -131,10 +132,10 @@ bool backtrack(vector<LogEntry>& log, Puzzle& puzzleMat)
 
 
         //remove similar in log
-        Part myPart = *log.back().PieceCollector[0].second;//tmpsaves bad part
-        log.back().PieceCollector.erase(log.back().PieceCollector.begin());//removes bad part from log
-        puzzleMat.removeSimilar(log.back().PieceCollector,myPart); //removes all pieces from log that are similar to bad part
-        //TODO remove this when further layers are added!!!
+         Part myPart = *log.back().PieceCollector[0].second;//tmpsaves bad part
+          log.back().PieceCollector.erase(log.back().PieceCollector.begin());//removes bad part from log
+          puzzleMat.removeSimilar(log.back().PieceCollector,myPart); //removes all pieces from log that are similar to bad part
+        //TODO reprogram similar removal to allow multilayer tracking
         if(log.back().PieceCollector.size()) // this checks if 'removeSimilar' has cleared entire LogElement
         {
             if(log.back().PieceCollector.size()==1)
@@ -298,12 +299,13 @@ void CalculateNewCombinedQuality(vector<LogEntry>& log, qualityVector& qVector, 
     }
      else
      {
-         for (unsigned int i = 0; i < cqVector.size(); i++) {
+         for (unsigned int i = 0; i < cqVector.size();) {
              for (unsigned int j = 0; j < qVector.size(); j++) {
                  // search same PuzzlePart of qualityVector and combinedQualityVector
+                 removePart=true;
                  if (cqVector.at(i).second->GetPartID() == qVector.at(j).second->GetPartID() && cqVector.at(i).second->GetNumOfRotations() == qVector.at(j).second->GetNumOfRotations()) {
                      // sum Quality of PieceCollector (qualityVector) to combinedQualityVector
-                     cqVector.at(j).first += qVector.at(i).first;
+                     cqVector.at(i).first += qVector.at(j).first;
                      countSummarizedVectors++;
                      removePart=false;
                      break; // skip remaining for loop => save time!
@@ -318,7 +320,7 @@ void CalculateNewCombinedQuality(vector<LogEntry>& log, qualityVector& qVector, 
              {
                  swap(cqVector.at(i), cqVector.back());
                  cqVector.pop_back();
-             }
+             } else i++;
 
          }
 

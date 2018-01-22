@@ -16,7 +16,7 @@ public:
     bool SetConstraintOnPosition( coor constraintCoordinate, AbstractionLayer_PoempelPosition_Properties constraint)final;
     bool RemoveConstraintOnPosition( coor constraintCoordinate)final;
 
-    float PlaceOfPartGood(coor myCoor, vector<float> myPart);
+    float PlaceOfPartGood(coor myCoor, vector<double> myPart);
 
 private:
 };

@@ -82,11 +82,13 @@ public:
     void setLens(vector<double> l ){len = l;}
     Point getMidpoint(){return midpoint;}
     void setMidpoint(Point m ){midpoint = m;}
-
+    vector<double> getPoempelPosition(){return PoempelPosition;}
+    void setPoempelPosition(vector<double>& newPP){PoempelPosition=newPP;}
     vector<Point> getCorners(){return corners;}
 
 private:
     Mat image;
+    vector<double> PoempelPosition;
     vector<Point> corners;
     vector<vector<Point>> contour;
     vector<Vec4i> hierarchy;
@@ -105,12 +107,13 @@ public:
     vector<Vec4i> getHierarchy(int i){if(i>= nr_parts)return masks[nr_parts-1].getHierarchy(); else return masks[i].getHierarchy();}
     unsigned char getTabs(int i){if(i>= nr_parts)return masks[nr_parts-1].getTabs(); else return masks[i].getTabs();}
     vector<double> getLen(int i ){return masks[i].getLen();}
+    vector<double> getPoempelPosition(int i){return masks[i].getPoempelPosition();}
     vector<double> analyseLens(vector<double>, vector<Point>);
     Point calcMidpoint(vector<Point>);
     Point getMidpoint(int i){return masks[i].getMidpoint();}
     Point findCenter(Mat);
     vector<Point> findCorners(vector<Point>,Point);
-    unsigned char analyseContour(vector<Point>, vector<Point>);
+    unsigned char analyseContour(vector<Point>, vector<Point>,vector<double>&);
     Mat makeBorder(Mat&);
     Mat readImages(int);
     Mat morphDilateErode(Mat&);
