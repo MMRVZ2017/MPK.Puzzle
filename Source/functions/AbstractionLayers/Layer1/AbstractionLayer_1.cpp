@@ -1078,6 +1078,7 @@ unsigned char analyseParts::analyseContour(vector<Point> corners, vector<Point> 
     diff = corners[0] - contour_right_new[max_dist_idx];
     PoempelPosition[3] = cv::sqrt(diff.x*diff.x + diff.y*diff.y);
 
+
     /*-------------------------------------*/
     unsigned char tabs = 0;
     int poembel_threshold = 15;
@@ -1175,7 +1176,17 @@ unsigned char analyseParts::analyseContour(vector<Point> corners, vector<Point> 
     if (abs(ref_bottom - contour_bottom_new[max_dist_idx].y) < poembel_threshold) {
         tabs |= (0 << BOTTOM);
     }
-    return tabs;
+
+
+    PoempelPosition[0]=0;
+    PoempelPosition[1]=lengthTwoPoints(corners[3],corners[2]);
+    PoempelPosition[2]=0;
+    PoempelPosition[3]=lengthTwoPoints(corners[2],corners[0]);
+    PoempelPosition[5]=0;
+    PoempelPosition[4]=lengthTwoPoints(corners[0],corners[1]);
+    PoempelPosition[6]=0;
+    PoempelPosition[7]=lengthTwoPoints(corners[1],corners[3]);
+   return tabs;
 }
 
 
