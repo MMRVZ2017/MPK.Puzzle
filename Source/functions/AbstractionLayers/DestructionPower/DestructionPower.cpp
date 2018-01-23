@@ -7,7 +7,8 @@ map<int,float> DestructionPower_Properties::SpeedTable =
         {
                 {0,0.99},
                 {1,0.7},
-                {2,0.7}
+                {2,0.7},
+                {3,0.7}
         };
 
 bool DestructionPower::PreProcessing(coor mySize,const vector<Part*>* partArray)
@@ -70,6 +71,11 @@ float DestructionPower::defaultDestructionPower(int i)
 //gets next highest valued abstraction layer down from current one (if first, get highest)
 int DestructionPower::getNextAbstractionLayer(coor newCoordinate, int currentAbstractionLayer)
 {
+    if(++currentAbstractionLayer>=DESTRUCTION_COUNT)
+        return -1;
+    else
+        return currentAbstractionLayer;
+
     float currentPower = 1;
     int nextLayer=-1;
     float nextLayerPower=0;

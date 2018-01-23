@@ -72,6 +72,7 @@ coor calculateNextCoor(vector<LogEntry>& log, Puzzle& puzzleMat)
 void solve(vector<LogEntry>& log,Puzzle& puzzleMat)
 {
 	log.back().abstractionLevel = puzzleMat.dp.getNextAbstractionLayer(log.back().myCoor,log.back().abstractionLevel); //sets in abstractionLevel
+    cout << "abs: " << log.back().abstractionLevel;
     //status(log,p_Box,puzzleMat);
     //TODO!! Add more layers here
     switch(log.back().abstractionLevel)
@@ -79,16 +80,21 @@ void solve(vector<LogEntry>& log,Puzzle& puzzleMat)
         case 0://pömpel
             puzzleMat.a1.EvaluateQuality(log.back().myCoor, log.back().PieceCollector);
         break;
-        case 1://histogram
-            return;
+        case 1://poempelposition
+            puzzleMat.a3.EvaluateQuality(log.back().myCoor,log.back().PieceCollector);
             break;
         case -1://random
+            cout << endl;
             setsolution(log,puzzleMat);
         return;
         default:
         break;
     }
     float worth = capLogElements(log);
+    cout << " | " << worth << endl;
+    if(worth && log.back().abstractionLevel)
+        cerr << "removed something!" << endl;
+
     calculateTrueDestructionPower(log,puzzleMat, worth);
     CalculateNewCombinedQuality(log, log.back().PieceCollector, puzzleMat.combinedQualityVector);
 
@@ -109,18 +115,20 @@ void setsolution(vector<LogEntry>& log, Puzzle& puzzleMat)
 	//tell log entry that it is set
 	log.back().Set();
     puzzleMat.setConstraints(log.back().myCoor,log.back().PieceCollector.begin()->second);
-    //cout << "set:" << log.back().myCoor.col << "," << log.back().myCoor.row << endl;
+    cout << "set:" << log.back().myCoor.col << "," << log.back().myCoor.row << endl;
     //cout << "ID: " << log.back().PieceCollector[0].second->GetPartID() << endl;
-
+    cout << "Size of Log: " << log.back().PieceCollector.size() << endl;
 }
 
 bool backtrack(vector<LogEntry>& log, Puzzle& puzzleMat)
 {
+    cout << "backtrack" << endl;
     if(log.empty())
     {
         cout << "Puzzle not solveable!" << endl;
         return false;
     }
+    cout << "Size of Log: " << log.back().PieceCollector.size() << endl;
     puzzleMat.combinedQualityVector.clear(); //remove all data from temp quality save
     //if more pieces possible, tset piece as not logged
     if((log.back().PieceCollector.size())>1)
@@ -131,18 +139,20 @@ bool backtrack(vector<LogEntry>& log, Puzzle& puzzleMat)
 
 
         //remove similar in log
-        Part myPart = *log.back().PieceCollector[0].second;//tmpsaves bad part
-        log.back().PieceCollector.erase(log.back().PieceCollector.begin());//removes bad part from log
-        puzzleMat.removeSimilar(log.back().PieceCollector,myPart); //removes all pieces from log that are similar to bad part
-        //TODO remove this when further layers are added!!!
+         Part myPart = *log.back().PieceCollector[0].second;//tmpsaves bad part
+          log.back().PieceCollector.erase(log.back().PieceCollector.begin());//removes bad part from log
+          puzzleMat.removeSimilar(log.back().PieceCollector,myPart); //removes all pieces from log that are similar to bad part
+        //TODO reprogram similar removal to allow multilayer tracking
         if(log.back().PieceCollector.size()) // this checks if 'removeSimilar' has cleared entire LogElement
         {
+            cout << "next Piece" << endl;
             if(log.back().PieceCollector.size()==1)
                 log.back().decreaseRandomed();
             setsolution(log,puzzleMat);
             return true;
         }
     }
+    cout << "more backtrack" << endl;
     //else remove log element and backtrack once more
     puzzleMat.removeConstrains(log.back().myCoor); //this should remove constraints from all layers
     if((log.back().PieceCollector.size())) //unset all
@@ -218,6 +228,8 @@ float capLogElements(vector<LogEntry>& log)
 
     vectorsizeAfter = log.back().PieceCollector.size();
     destroyed = ((double)vectorsizeBefore - (double)vectorsizeAfter) / (double)vectorsizeBefore;
+    if(log.back().abstractionLevel==1 && destroyed)
+        cerr << "destroyed something!" << endl;
     return (float)sqrt(destroyed*maxdiff);
 
 
@@ -298,12 +310,13 @@ void CalculateNewCombinedQuality(vector<LogEntry>& log, qualityVector& qVector, 
     }
      else
      {
-         for (unsigned int i = 0; i < cqVector.size(); i++) {
+         for (unsigned int i = 0; i < cqVector.size();) {
              for (unsigned int j = 0; j < qVector.size(); j++) {
                  // search same PuzzlePart of qualityVector and combinedQualityVector
+                 removePart=true;
                  if (cqVector.at(i).second->GetPartID() == qVector.at(j).second->GetPartID() && cqVector.at(i).second->GetNumOfRotations() == qVector.at(j).second->GetNumOfRotations()) {
                      // sum Quality of PieceCollector (qualityVector) to combinedQualityVector
-                     cqVector.at(j).first += qVector.at(i).first;
+                     cqVector.at(i).first += qVector.at(j).first;
                      countSummarizedVectors++;
                      removePart=false;
                      break; // skip remaining for loop => save time!
@@ -318,7 +331,7 @@ void CalculateNewCombinedQuality(vector<LogEntry>& log, qualityVector& qVector, 
              {
                  swap(cqVector.at(i), cqVector.back());
                  cqVector.pop_back();
-             }
+             } else i++;
 
          }
 

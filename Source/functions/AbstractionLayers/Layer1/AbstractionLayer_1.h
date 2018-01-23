@@ -45,10 +45,10 @@ using namespace cv;
 class AbstractionLayer_1 : public AbstractionLayer_Base<AbstractionLayer_1_Properties>
 {
 public:
-    bool PreProcessing(coor mySize, const vector<Part*>* partArray) override ;
-    bool EvaluateQuality ( coor constraintCoordinate, qualityVector& qVector)override;
-    bool SetConstraintOnPosition( coor constraintCoordinate, AbstractionLayer_1_Properties constraint)override;
-    bool RemoveConstraintOnPosition( coor constraintCoordinate)override;
+    bool PreProcessing(coor mySize, const vector<Part*>* partArray) final ;
+    bool EvaluateQuality ( coor constraintCoordinate, qualityVector& qVector)final;
+    bool SetConstraintOnPosition( coor constraintCoordinate, AbstractionLayer_1_Properties constraint)final;
+    bool RemoveConstraintOnPosition( coor constraintCoordinate)final;
     int RemoveSimilar(qualityVector&,uint8_t&);
 
     bool PlaceOfPartGood(coor myCoor, uint8_t& myPart);
@@ -82,11 +82,13 @@ public:
     void setLens(vector<double> l ){len = l;}
     Point getMidpoint(){return midpoint;}
     void setMidpoint(Point m ){midpoint = m;}
-
+    vector<double> getPoempelPosition(){return PoempelPosition;}
+    void setPoempelPosition(vector<double>& newPP){PoempelPosition=newPP;}
     vector<Point> getCorners(){return corners;}
 
 private:
     Mat image;
+    vector<double> PoempelPosition;
     vector<Point> corners;
     vector<vector<Point>> contour;
     vector<Vec4i> hierarchy;
@@ -105,12 +107,13 @@ public:
     vector<Vec4i> getHierarchy(int i){if(i>= nr_parts)return masks[nr_parts-1].getHierarchy(); else return masks[i].getHierarchy();}
     unsigned char getTabs(int i){if(i>= nr_parts)return masks[nr_parts-1].getTabs(); else return masks[i].getTabs();}
     vector<double> getLen(int i ){return masks[i].getLen();}
+    vector<double> getPoempelPosition(int i){return masks[i].getPoempelPosition();}
     vector<double> analyseLens(vector<double>, vector<Point>);
     Point calcMidpoint(vector<Point>);
     Point getMidpoint(int i){return masks[i].getMidpoint();}
     Point findCenter(Mat);
     vector<Point> findCorners(vector<Point>,Point);
-    unsigned char analyseContour(vector<Point>, vector<Point>);
+    unsigned char analyseContour(vector<Point>, vector<Point>,vector<double>&);
     Mat makeBorder(Mat&);
     Mat readImages(int);
     Mat morphDilateErode(Mat&);

@@ -1,6 +1,3 @@
-//
-// Created by mpapa on 05.12.2017.
-//
 #pragma once
 #include <vector>
 #include <iostream>
@@ -8,6 +5,7 @@
 #include <opencv2/imgproc/imgproc.hpp>
 
 #include "../functions/AbstractionLayers/Layer1/AbstractionLayer_1.h"
+#include "../functions/AbstractionLayers/Layer3_PoempelPosition/AbstractionLayer_PoempelPosition.h"
 #include "../functions/AbstractionLayers/Layer_ColorMatching/AbstractionLayer_ColorMatching.h"
 #include "../functions/AbstractionLayers/DestructionPower/DestructionPower.h"
 
@@ -47,7 +45,10 @@ public:
         createBox(); createp_box();
         if(!dp.PreProcessing({cols,rows}, nullptr))  return false;
         if(!a1.PreProcessing({cols,rows}, &p_myBox)) return false;
+        if(!a3.PreProcessing({cols,rows}, &p_myBox)) return false;
         if(!acm.PreProcessing({cols,rows}, &p_myBox)) return false;
+
+
 
         return true;
     }
@@ -56,7 +57,9 @@ public:
 
     DestructionPower dp;
     AbstractionLayer_1 a1;
+    AbstractionLayer_PoempelPosition a3;
     AbstractionLayer_ColorMatching acm;
+
 
     void removeConstrains(coor removeCoordinates);
     void setConstraints(coor setConstraints, Part *constraintPiece);

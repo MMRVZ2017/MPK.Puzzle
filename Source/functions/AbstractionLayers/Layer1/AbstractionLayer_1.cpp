@@ -21,11 +21,14 @@ bool AbstractionLayer_1::PreProcessing(coor mySize,  const vector<Part*>* partAr
         for(int i = 0; i < mySize.row*mySize.col; i++)
         {
             unsigned char poempel = analyse.getTabs(i);
+
             PSum+=PoempelSum(poempel); //preprocess correct check
             for (int j=0;j<4;j++)
             {
                 ref_partArray[iterator]->m_a1.m_connections=poempel;
+                ref_partArray[iterator]->m_a3.SideLength=analyse.getPoempelPosition(i); //do abstraction Layer 3 check
                 shift(poempel,1);
+                ref_partArray[iterator]->m_a3.shift(j);//rotate information
                 iterator++;
             }
         }
@@ -36,7 +39,7 @@ bool AbstractionLayer_1::PreProcessing(coor mySize,  const vector<Part*>* partAr
 
     //Zugriff auf den vector mit den einzelnen teilen: part[0].getConnenctions() entspricht pömpel von bild 0.jpg und liefert ein unsigned char, poempl Belegung wie ausgemacht
 
-    InitialiseConstraintMatrixSize(mySize.col+2, mySize.row+2); //col row switched in this function
+    InitialiseConstraintMatrixSize(mySize.col+2, mySize.row+2);
     setEdgeZero();
 
     cout << "Done!" << endl;
@@ -73,13 +76,11 @@ int AbstractionLayer_1::PoempelSum(uint8_t constraint)
 //it through qualityVector and removes all that do not trigger PlaceOfPartGood
 bool AbstractionLayer_1::EvaluateQuality (const coor constraintCoordinate, qualityVector& qVector)
 {
-     //evaluateQuality = evaluateProbabilaty
     for(int i = 0;i<qVector.size();i++)
     {
         if(PlaceOfPartGood(constraintCoordinate, qVector[i].second->m_a1.m_connections))
         {
             qVector[i].first=1;
-
             continue;
         }
         qVector[i].first=0;
@@ -430,7 +431,9 @@ bool analyseParts::getImages(){
             return false;
         }
         mask.setCorners(corners);
-        mask.setTabs(analyseContour(corners,contours[0]));
+        vector<double> tmpPoempelPosition={0,0,0,0,0,0,0,0};//TODO somehow make this code section bearable
+        mask.setTabs(analyseContour(corners,contours[0],tmpPoempelPosition));
+        mask.setPoempelPosition(tmpPoempelPosition);
         mask.setLens(analyseLens(lens, corners));
         mask.setMidpoint(calcMidpoint(corners));
         masks.push_back(mask);
@@ -633,9 +636,10 @@ vector<Point> analyseParts::findCorners(vector<Point> contour, Point center){
     line(drawing,Point(0,center.y-dist),Point((IMG_SIZE/2),center.y-dist),Scalar(255,0,255),3,8);
     circle(drawing,quad_contour[3][max_idx],5,Scalar(50,100,255),5,8);
     if(DISPLAY) imshow("draw",drawing);
-    return corners;
+    return corners; 
 }
-unsigned char analyseParts::analyseContour(vector<Point> corners, vector<Point> contour) {
+unsigned char analyseParts::analyseContour(vector<Point> corners, vector<Point> contour,vector<double>& PoempelPosition){
+
     vector<Point> contour_right;
     vector<Point> contour_top;
     vector<Point> contour_left;
@@ -1068,6 +1072,12 @@ unsigned char analyseParts::analyseContour(vector<Point> corners, vector<Point> 
             max_dist_idx = i;
         }
     }
+            //saves length between Corners and Poempel right
+    Point diff = corners[2] - contour_right_new[max_dist_idx];
+    PoempelPosition[2] = cv::sqrt(diff.x*diff.x + diff.y*diff.y);
+    diff = corners[0] - contour_right_new[max_dist_idx];
+    PoempelPosition[3] = cv::sqrt(diff.x*diff.x + diff.y*diff.y);
+
     /*-------------------------------------*/
     unsigned char tabs = 0;
     int poembel_threshold = 15;
@@ -1092,6 +1102,13 @@ unsigned char analyseParts::analyseContour(vector<Point> corners, vector<Point> 
             max_dist_idx = i;
         }
     }
+
+        //saves length between Corners and Poempel top
+    diff = corners[3] - contour_top_new[max_dist_idx];
+    PoempelPosition[0] = cv::sqrt(diff.x*diff.x + diff.y*diff.y);
+    diff = corners[2] - contour_top_new[max_dist_idx];
+    PoempelPosition[1] = cv::sqrt(diff.x*diff.x + diff.y*diff.y);
+
     /*-------------------------------------*/
 
     if (ref_top - contour_top_new[max_dist_idx].y <= -poembel_threshold) {
@@ -1115,6 +1132,12 @@ unsigned char analyseParts::analyseContour(vector<Point> corners, vector<Point> 
             max_dist_idx = i;
         }
     }
+
+            //saves length between Corners and Poempel left
+    diff = corners[1] - contour_left_new[max_dist_idx];
+    PoempelPosition[6] = cv::sqrt(diff.x*diff.x + diff.y*diff.y);
+    diff = corners[3] - contour_left_new[max_dist_idx];
+    PoempelPosition[7] = cv::sqrt(diff.x*diff.x + diff.y*diff.y);
     /*-------------------------------------*/
     if (ref_left - contour_left_new[max_dist_idx].x <= -poembel_threshold) {
         tabs |= (1 << LEFT);
@@ -1126,7 +1149,7 @@ unsigned char analyseParts::analyseContour(vector<Point> corners, vector<Point> 
         tabs |= (0 << LEFT);
     }
 
-    /*---------Suche Poempel Oben---------------*/
+    /*---------Suche Poempel Unten---------------*/
     max_dist = 0;
     dist = 0;
     max_dist_idx = 0;
@@ -1137,6 +1160,11 @@ unsigned char analyseParts::analyseContour(vector<Point> corners, vector<Point> 
             max_dist_idx = i;
         }
     }
+        //saves length between Corners and Poempel left
+    diff = corners[0] - contour_bottom_new[max_dist_idx];
+    PoempelPosition[4] = cv::sqrt(diff.x*diff.x + diff.y*diff.y);
+    diff = corners[1] - contour_bottom_new[max_dist_idx];
+    PoempelPosition[5] = cv::sqrt(diff.x*diff.x + diff.y*diff.y);
     /*-------------------------------------*/
     if (ref_bottom - contour_bottom_new[max_dist_idx].y <= -poembel_threshold) {
         tabs |= (2 << BOTTOM);
