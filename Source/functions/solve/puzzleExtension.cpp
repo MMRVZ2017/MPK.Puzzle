@@ -63,6 +63,7 @@ void Puzzle::shuffle()
 void Puzzle::removeConstrains(coor removeCoordinates)
 {
     this->a1.RemoveConstraintOnPosition(removeCoordinates);
+    //Remove call for layer ColorMatching not necessary
     //TODO!! Add other layer remove here
 }
 void Puzzle::setConstraints(coor setConstraints, Part* constraintPiece)
@@ -74,6 +75,7 @@ void Puzzle::setConstraints(coor setConstraints, Part* constraintPiece)
 
     //a1
     this->a1.SetConstraintOnPosition(setConstraints,constraintPiece->m_a1);
+    //Set call for layer ColorMatching not necessary
 
     //TODO!! Add other layer remove here
 }
