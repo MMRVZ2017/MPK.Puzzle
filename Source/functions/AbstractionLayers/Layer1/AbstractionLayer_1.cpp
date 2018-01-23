@@ -1103,7 +1103,7 @@ unsigned char analyseParts::analyseContour(vector<Point> corners, vector<Point> 
         }
     }
 
-        //saves length between Corners and Poempel
+        //saves length between Corners and Poempel top
     diff = corners[3] - contour_top_new[max_dist_idx];
     PoempelPosition[0] = cv::sqrt(diff.x*diff.x + diff.y*diff.y);
     diff = corners[2] - contour_top_new[max_dist_idx];
@@ -1133,7 +1133,7 @@ unsigned char analyseParts::analyseContour(vector<Point> corners, vector<Point> 
         }
     }
 
-            //saves length between Corners and Poempel
+            //saves length between Corners and Poempel left
     diff = corners[1] - contour_left_new[max_dist_idx];
     PoempelPosition[6] = cv::sqrt(diff.x*diff.x + diff.y*diff.y);
     diff = corners[3] - contour_left_new[max_dist_idx];
@@ -1160,6 +1160,7 @@ unsigned char analyseParts::analyseContour(vector<Point> corners, vector<Point> 
             max_dist_idx = i;
         }
     }
+        //saves length between Corners and Poempel left
     diff = corners[0] - contour_bottom_new[max_dist_idx];
     PoempelPosition[4] = cv::sqrt(diff.x*diff.x + diff.y*diff.y);
     diff = corners[1] - contour_bottom_new[max_dist_idx];
