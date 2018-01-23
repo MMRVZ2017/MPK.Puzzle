@@ -8,6 +8,7 @@
 #include <opencv2/imgproc/imgproc.hpp>
 
 #include "../functions/AbstractionLayers/Layer1/AbstractionLayer_1.h"
+#include "../functions/AbstractionLayers/Layer_ColorMatching/AbstractionLayer_ColorMatching.h"
 #include "../functions/AbstractionLayers/DestructionPower/DestructionPower.h"
 
 using namespace std;
@@ -54,6 +55,7 @@ public:
 
     DestructionPower dp;
     AbstractionLayer_1 a1;
+    AbstractionLayer_ColorMatching acm;
 
     void removeConstrains(coor removeCoordinates);
     void setConstraints(coor setConstraints, Part *constraintPiece);
