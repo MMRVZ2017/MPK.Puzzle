@@ -10,14 +10,13 @@
 #include <iostream>
 //#include <bitset>
 //#include <random>
-#include "opencv2/highgui/highgui.hpp" //TODO: Check if Path works for us
+#include "opencv2/highgui/highgui.hpp"
 #include "opencv2/imgproc/imgproc.hpp"
 //#include <cstdio>
 //#include <cstdlib>
 #include <cmath>
 
 
-//#define DISPLAY false
 
 #ifdef _WIN32
 #define PATH "..\\..\\..\\pieces\\%04d.jpg"
@@ -27,11 +26,6 @@
     #define PATH "..//..//..//pieces//%04d.jpg"
 #endif
 
-//#define IMG_SIZE 400
-//#define TOP 6
-//#define RIGHT 4
-//#define BOTTOM 2
-//#define LEFT 0
 
 using namespace std;
 using namespace cv;
@@ -40,21 +34,15 @@ class AbstractionLayer_ColorMatching : public AbstractionLayer_Base<AbstractionL
 {
 public:
     bool PreProcessing(coor mySize, const vector<Part*>* partArray) ;
-    bool EvaluateQuality ( coor constraintCoordinate, qualityVector& qVector);
-    bool SetConstraintOnPosition( coor constraintCoordinate, AbstractionLayer_1_Properties constraint){}
-    bool RemoveConstraintOnPosition( coor constraintCoordinate){}
+    bool EvaluateQuality (const coor constraintCoordinate, qualityVector& qVector);
+    bool SetConstraintOnPosition(const coor constraintCoordinate,const AbstractionLayer_ColorMatching_Properties constraint){}
+    bool RemoveConstraintOnPosition(const coor constraintCoordinate){}
 
     qualityVector returnInBox(vector<Part>& PuzzleBox);
 
 private:
 };
 
-class HSV
-{
-public:
-    HSV(): h(0.0), s(0.0), v(0.0){}
-    double h, s,v;
-};
 
 
 

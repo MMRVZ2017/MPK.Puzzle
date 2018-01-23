@@ -1,9 +1,17 @@
 
-#ifndef SOURCE_ABSTRACTIONLAYER_1_COLORMATCHING_H
-#define SOURCE_ABSTRACTIONLAYER_1_COLORMATCHING_H
+#ifndef SOURCE_ABSTRACTIONLAYER_COLORMATCHING_H
+#define SOURCE_ABSTRACTIONLAYER_COLORMATCHING_H
 
 #include <stdint.h>
-#include "AbstractionLayer_ColorMatching.h" //TODO: Compiler loop!?
+
+class HSV
+{
+public:
+    HSV(): h(0.0), s(0.0), v(0.0){}
+    double h, s,v;
+};
+
+
 
 class AbstractionLayer_ColorMatching_Properties
 {
@@ -12,11 +20,11 @@ public:
 
 
 private:
-    HSV centerColor;
-    HSV partColor
+    HSV m_centerColor;
+    HSV m_partColor;
     friend class AbstractionLayer_ColorMatching;
 };
 
 
 
-#endif //SOURCE_ABSTRACTIONLAYER_1_COLORMATCHING_H
+#endif //SOURCE_ABSTRACTIONLAYER_COLORMATCHING_H
