@@ -111,7 +111,25 @@ bool AbstractionLayer_ColorMatching::PreProcessing(coor mySize, const vector<Par
 
 bool AbstractionLayer_ColorMatching::EvaluateQuality (coor constraintCoordinate, qualityVector& qVector)
 {
+    for(int i = 0;i<qVector.size();i++)
+    {
+        float value = PlaceOfPartGood(constraintCoordinate, qVector[i].second->m_acm.m_partColor);
+        qVector[i].first = value;
+    }
+}
 
-
+float AbstractionLayer_ColorMatching::PlaceOfPartGood(coor myCoor, HSV myPart)
+{
+    //Hue max 360°
+    if(m_constraintMatrix[myCoor.col][myCoor.row].m_partColor.h >= 180)
+    {
+        return 1-abs((m_constraintMatrix[myCoor.col][myCoor.row].m_partColor.h-myPart.h)
+                     /m_constraintMatrix[myCoor.col][myCoor.row].m_partColor.h);
+    }
+    else if(m_constraintMatrix[myCoor.col][myCoor.row].m_partColor.h < 180)
+    {
+        return 1-((myPart.h-m_constraintMatrix[myCoor.col][myCoor.row].m_partColor.h)
+                  /(360-m_constraintMatrix[myCoor.col][myCoor.row].m_partColor.h));
+    }
 
 }
