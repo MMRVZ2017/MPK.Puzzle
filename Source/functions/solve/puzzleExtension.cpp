@@ -46,7 +46,8 @@ void Puzzle::putIntoBox()
             for(int rotations=0;rotations<4;rotations++)
             {
                 tmpPart.m_a1.shift(1);
-                //TODO! add all other layers with their rotaionvariance here
+                //TODO! add all other layer with their rotaionvariance into "tmpPart"
+                //if it piece is roation invariant no need to do anything
                 myBox.emplace_back(tmpPart);
 
             }
@@ -65,6 +66,8 @@ void Puzzle::shuffle()
 void Puzzle::removeConstrains(coor removeCoordinates)
 {
     this->a1.RemoveConstraintOnPosition(removeCoordinates);
+    this->a3.RemoveConstraintOnPosition(removeCoordinates);
+    //TODO!! Add other layer remove here
 }
 void Puzzle::setConstraints(coor setConstraints, Part* constraintPiece)
 {
@@ -75,6 +78,10 @@ void Puzzle::setConstraints(coor setConstraints, Part* constraintPiece)
 
     //a1
     this->a1.SetConstraintOnPosition(setConstraints,constraintPiece->m_a1);
+    //a3
+    this->a3.SetConstraintOnPosition(setConstraints,constraintPiece->m_Histogram);
+
+    //TODO!! Add other layer remove here
 }
 
 void Puzzle::createRandomPuzzle()

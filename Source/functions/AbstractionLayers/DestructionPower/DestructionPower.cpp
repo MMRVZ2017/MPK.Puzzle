@@ -9,9 +9,10 @@
 //sets relations of speed for the different layers
 map<int,float> DestructionPower_Properties::SpeedTable =
         {
-                {0,0.99}
+                {0,0.99},
+                {1,0.7},
+                {2,0.7}
         };
-
 
 bool DestructionPower::PreProcessing(coor mySize,const vector<Part*>* partArray)
 {
@@ -39,6 +40,7 @@ bool DestructionPower::RemoveConstraintOnPosition(const coor constraintCoordinat
 void DestructionPower::DestructionOfSurrounding(const coor constraintCoordinate) {
 
     for (int i = 0; i < DESTRUCTION_COUNT; ++i) {
+
         m_constraintMatrix[constraintCoordinate.col][constraintCoordinate.row].DestructionArray.push_back(0);
         int divisor=0;
         if(constraintCoordinate.row > 0)
@@ -55,7 +57,10 @@ void DestructionPower::DestructionOfSurrounding(const coor constraintCoordinate)
             m_constraintMatrix[constraintCoordinate.col][constraintCoordinate.row].DestructionArray[i] /=divisor;
         else
             //create default destructionPower //TODO find some better solution for default
-            m_constraintMatrix[constraintCoordinate.col][constraintCoordinate.row].DestructionArray[i] =1-m_constraintMatrix[constraintCoordinate.col][constraintCoordinate.row].SpeedTable[i];
+            m_constraintMatrix[constraintCoordinate.col][constraintCoordinate.row].DestructionArray[i] = m_constraintMatrix[constraintCoordinate.col][constraintCoordinate.row].SpeedTable[i];
+        //aging
+        if(m_constraintMatrix[constraintCoordinate.col][constraintCoordinate.row].DestructionArray[i]<0.9)
+            m_constraintMatrix[constraintCoordinate.col][constraintCoordinate.row].DestructionArray[i]=m_constraintMatrix[constraintCoordinate.col][constraintCoordinate.row].DestructionArray[i]*(float)1.001+(float)0.01;
     }
 }
 
@@ -102,6 +107,6 @@ DestructionPower_Properties::DestructionPower_Properties() {
 
     {
         DestructionArray.emplace_back((DestructionPower_Properties::SpeedTable[i]*DESTRUCTION_INIT));
-        DestructionArray.back()<0.99 ? DestructionArray.back()*=aging:DestructionArray.back();
+        DestructionArray.back()<0.8 ? DestructionArray.back()=aging*DestructionArray.back()+(float)0.01:DestructionArray.back();
     }
 }
