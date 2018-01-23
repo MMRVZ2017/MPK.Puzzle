@@ -1182,8 +1182,8 @@ unsigned char analyseParts::analyseContour(vector<Point> corners, vector<Point> 
     PoempelPosition[1]=lengthTwoPoints(corners[3],corners[2]);
     PoempelPosition[2]=0;
     PoempelPosition[3]=lengthTwoPoints(corners[2],corners[0]);
-    PoempelPosition[5]=0;
-    PoempelPosition[4]=lengthTwoPoints(corners[0],corners[1]);
+    PoempelPosition[4]=0;
+    PoempelPosition[5]=lengthTwoPoints(corners[0],corners[1]);
     PoempelPosition[6]=0;
     PoempelPosition[7]=lengthTwoPoints(corners[1],corners[3]);
    return tabs;
