@@ -10,6 +10,8 @@
 #include "../functions/AbstractionLayers/Layer1/AbstractionLayer_1.h"
 #include "../functions/AbstractionLayers/DestructionPower/DestructionPower.h"
 #include "../functions/AbstractionLayers/LayerHistogram/AbstractionLayer_Histogram.h"
+#include "../functions/AbstractionLayers/LayerMeanDifference/AbstractionLayer_MeanDifference.h"
+
 
 using namespace std;
 
@@ -55,7 +57,9 @@ public:
 
     DestructionPower dp;
     AbstractionLayer_1 a1;
-    AbstractionLayer_Histogram a3;
+    AbstractionLayer_Histogram a2;
+    AbstractionLayer_MeanDifference a3;
+
 
     void removeConstrains(coor removeCoordinates);
     void setConstraints(coor setConstraints, Part *constraintPiece);

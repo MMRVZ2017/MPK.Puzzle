@@ -73,12 +73,21 @@ void solve(vector<LogEntry>& log,Puzzle& puzzleMat)
 {
 	log.back().abstractionLevel = puzzleMat.dp.getNextAbstractionLayer(log.back().myCoor,log.back().abstractionLevel); //sets in abstractionLevel
 	//status(log,p_Box,puzzleMat);
+
     switch(log.back().abstractionLevel)
     {
         case 0://pömpel
+            return;
             puzzleMat.a1.EvaluateQuality(log.back().myCoor, log.back().PieceCollector);
         break;
+        case 2:
+            return;
+            puzzleMat.a2.EvaluateQuality(log.back().myCoor, log.back().PieceCollector);
+        case 3:
+            return;
+            puzzleMat.a3.EvaluateQuality(log.back().myCoor, log.back().PieceCollector);
         case -1://random
+            return;
             setsolution(log,puzzleMat);
         return;
         default:

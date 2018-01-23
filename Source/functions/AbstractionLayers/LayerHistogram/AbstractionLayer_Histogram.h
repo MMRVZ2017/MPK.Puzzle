@@ -5,7 +5,8 @@
 #ifndef MPK_PUZZLE_ABSTRACTIONLAYER_HISTOGRAM_H
 #define MPK_PUZZLE_ABSTRACTIONLAYER_HISTOGRAM_H
 #define DISPLAY false
-#define PATH "..\\..\\..\\pieces\\%04d.jpg"
+//#define PATH "..\\..\\..\\pieces\\%04d.jpg"
+#define PATH "C:\\Users\\Niko\\Desktop\\Technikum\\Semester 1\\MPK\\Projekt\\GitHubMMR\\MPK.Puzzle\\Source\\pieces\\%04d.jpg"
 #include "opencv2/highgui/highgui.hpp"
 #include "opencv2/imgproc/imgproc.hpp"
 #include "AbstractionLayer_Histogram_Properties.h"
@@ -24,15 +25,18 @@ public:
     bool SetConstraintOnPosition( coor constraintCoordinate, AbstractionLayer_Histogram_Properties constraint)override;
     qualityVector returnInBox(vector<Part>& PuzzleBox);
     void printConstraintMatrix();
+    bool CompareHistogram(Mat Part, Mat RefPart);
 
 private:
 };
 
 class HistogramComparer{
 public:
+    explicit HistogramComparer(int s = 1008): nr_parts(s){}
     Mat readImages(int);
-    bool CompareHistogram(Mat Part, Mat RefPart);
+    bool getImages();
 private:
+    int nr_parts;
 
 };
 

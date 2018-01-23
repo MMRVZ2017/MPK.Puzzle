@@ -26,7 +26,9 @@
 #define DISPLAY false
 
 #ifdef _WIN32
-#define PATH "..\\..\\..\\pieces\\%04d.jpg"
+//#define PATH "..\\..\\..\\pieces\\%04d.jpg"
+#define PATH "C:\\Users\\Niko\\Desktop\\Technikum\\Semester 1\\MPK\\Projekt\\GitHubMMR\\MPK.Puzzle\\Source\\pieces\\%04d.jpg"
+
 #elif defined __unix__
 #define PATH "..//..//..//pieces//%04d.jpg"
 #elif defined __APPLE__

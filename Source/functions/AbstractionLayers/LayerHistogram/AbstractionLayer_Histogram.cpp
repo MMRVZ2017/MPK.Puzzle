@@ -14,6 +14,8 @@ Mat HistogramComparer::readImages(int count)
 
     sprintf(name, PATH, count);
     Mat src = imread(name, 1);
+   // namedWindow("UP1", WINDOW_AUTOSIZE);
+    //imshow("UP1",src);
     if (!src.data)
     {
         cerr << "Problem loading image!!!" << endl;
@@ -29,10 +31,10 @@ Mat HistogramComparer::readImages(int count)
 }
 
 bool AbstractionLayer_Histogram::PreProcessing(coor mySize,  const vector<Part*>* partArray){
-HistogramComparer localImage;
+   // HistogramComparer localImage;
     cout << "Abstraction 2 Preprocessing...  " << flush;
     const vector<Part*>& ref_partArray = *partArray;
-    analyseParts analyse(mySize.row*mySize.col);
+    HistogramComparer analyse(mySize.row*mySize.col);
     Part buf;
     int iterator=0;
     if(!analyse.getImages())
@@ -45,7 +47,7 @@ HistogramComparer localImage;
 
         for(int i = 0; i < mySize.row*mySize.col; i++)
         {
-            Mat src_img1 = localImage.readImages(i);
+            Mat src_img1 = analyse.readImages(i);
             Mat hsv_img1;
             /// Convert to HSV
             cvtColor(src_img1, hsv_img1, COLOR_BGR2HSV);
@@ -102,28 +104,26 @@ bool AbstractionLayer_Histogram::EvaluateQuality (const coor constraintCoordinat
 }
 bool AbstractionLayer_Histogram::PlaceOfPartGood(coor myCoor, Mat& myPart)
 {
-
-    HistogramComparer localComparer;
     //sets coordinates to correct position for layer
     myCoor.row++;
     myCoor.col++;
 
     if( myCoor.row == 1 && myCoor.col == 1){return true;}
     else if(myCoor.col == 1 && myCoor.row >1){
-        if(localComparer.CompareHistogram(m_constraintMatrix[myCoor.col][myCoor.row-1].image, myPart)){
+        if(CompareHistogram(m_constraintMatrix[myCoor.col][myCoor.row-1].image, myPart)){
             return true;
         }
         else return false;
     }
     else if( myCoor.row == 1 && myCoor.col >1){
-        if(localComparer.CompareHistogram(m_constraintMatrix[myCoor.col-1][myCoor.row].image, myPart)){
+        if(CompareHistogram(m_constraintMatrix[myCoor.col-1][myCoor.row].image, myPart)){
             return true;
         }
         else return false;
     }
     else if (myCoor.col > 1 && myCoor.row >1){
-        if(     localComparer.CompareHistogram(m_constraintMatrix[myCoor.col][myCoor.row-1].image, myPart) &&
-                localComparer.CompareHistogram(m_constraintMatrix[myCoor.col-1][myCoor.row].image, myPart)){
+        if(     CompareHistogram(m_constraintMatrix[myCoor.col][myCoor.row-1].image, myPart) &&
+                CompareHistogram(m_constraintMatrix[myCoor.col-1][myCoor.row].image, myPart)){
             return true;
         }
         else return false;
@@ -132,7 +132,7 @@ bool AbstractionLayer_Histogram::PlaceOfPartGood(coor myCoor, Mat& myPart)
 
 }
 
-bool HistogramComparer::CompareHistogram(Mat hist_img1,Mat hist_img2)
+bool AbstractionLayer_Histogram::CompareHistogram(Mat hist_img1,Mat hist_img2)
 {
     // Correlation
     double Correlation = compareHist(hist_img1, hist_img2, CV_COMP_CORREL);
@@ -151,10 +151,23 @@ bool AbstractionLayer_Histogram::SetConstraintOnPosition(const coor constraintCo
     //m_constraintMatrix[constraintCoordinate.col+1][constraintCoordinate.row+1].m_connections=constraint.m_connections;
 }
 
-
-
 bool AbstractionLayer_Histogram::RemoveConstraintOnPosition(const coor constraintCoordinate)
 {
     Mat dummy(1,1,0);
     m_constraintMatrix[constraintCoordinate.col+1][constraintCoordinate.row+1].image = dummy;
+}
+bool HistogramComparer::getImages() {
+
+    Mat src;
+
+    for (int i = 0; i < nr_parts; i++) {
+        if (DISPLAY) cout << "Bild " << i << endl;
+        Mat img = readImages(i);
+
+        if (!img.data) {
+            cerr << "Error: No pic found!!" << endl;
+            return false;
+        }
+        else return true;
+    }
 }

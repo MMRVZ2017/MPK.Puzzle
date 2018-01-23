@@ -9,6 +9,8 @@
 #include "../functions/AbstractionLayers/Layer1/AbstractionLayer_1_Properties.h"
 #include "../functions/AbstractionLayers/DestructionPower/DestructionPower_Properties.h"
 #include "../functions/AbstractionLayers/LayerHistogram/AbstractionLayer_Histogram_Properties.h"
+#include "../functions/AbstractionLayers/LayerMeanDifference/AbstractionLayer_MeanDifference_Properties.h"
+#include "../functions/AbstractionLayers/LayerCluster/AbstractionLayer_Cluster_Properties.h"
 
 class LayerContainer;
 
@@ -44,6 +46,9 @@ public:
     bool set;
     AbstractionLayer_1_Properties m_a1;
     AbstractionLayer_Histogram_Properties m_aHistogram;
+    AbstractionLayer_MeanDifference_Properties m_aMeanDifference;
+    AbstractionLayer_Cluster_Properties m_aCluster;
+
 private:
     int32_t m_partID;
     uint8_t m_numOfRotations;
