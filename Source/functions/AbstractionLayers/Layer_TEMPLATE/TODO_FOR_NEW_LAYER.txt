@@ -1,0 +1,21 @@
+Todo for new layer:
+
+copy and rename folder "Layer_TEMPLATE" (and files)
+Check all "//TODO:" comments in these files 
+
+header add:
+- add include to new abstractionlayer.h in solve.h
+- add include to properties.h in input.h
+
+code add:
+- add 1 to DESTRUCTION_COUNT in destructionPower.h
+- add SpeedTable information in DestructionPower.cpp
+- add abstractionlayer cpp to puzzle class in solve.h
+- add Properties to Piece class in input.h
+
+- add Preprocessing in 'Preprocessing' in solve.h
+- add remove call in Puzzle::removeConstraints in puzzleExtension.cpp
+- add set call in Puzzle::setConstraints in puzzleExtension.cpp
+- add threshold in SetBestOrMoreLayers in structure.cpp
+- add EvaluateQuality to switchcase in solve in structure.cpp
+- remove - removeSimilar Call from backtrack function in structure.cpp
