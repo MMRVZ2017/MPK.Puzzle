@@ -17,7 +17,6 @@
 #include <cmath>
 
 
-
 #ifdef _WIN32
 #define PATH "..\\..\\..\\pieces\\%04d.jpg"
 #elif defined __unix__
@@ -34,24 +33,15 @@ class AbstractionLayer_ColorMatching : public AbstractionLayer_Base<AbstractionL
 {
 public:
     bool PreProcessing(coor mySize, const vector<Part*>* partArray) ;
-    bool EvaluateQuality ( coor constraintCoordinate, qualityVector& qVector);
-    bool SetConstraintOnPosition( coor constraintCoordinate, AbstractionLayer_1_Properties constraint){}
-    bool RemoveConstraintOnPosition( coor constraintCoordinate){}
-    float PlaceOfPartGood(coor myCoor, HSV myPart);
+    bool EvaluateQuality (const coor constraintCoordinate, qualityVector& qVector);
+    bool SetConstraintOnPosition(const coor constraintCoordinate,const AbstractionLayer_ColorMatching_Properties constraint){}
+    bool RemoveConstraintOnPosition(const coor constraintCoordinate){}
+   float PlaceOfPartGood(coor myCoor, HSV myPart);
 
 
     qualityVector returnInBox(vector<Part>& PuzzleBox);
 
 private:
 };
-
-class HSV
-{
-public:
-    HSV(): h(0.0), s(0.0), v(0.0){}
-    double h, s,v;
-};
-
-
 
 #endif //SOURCE_ABSTRACTIONLAYER_ColorMatching_H

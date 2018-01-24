@@ -77,9 +77,9 @@ bool AbstractionLayer_ColorMatching::PreProcessing(coor mySize, const vector<Par
             Mat PartCropped = Part(Rect(Part.size().width / 3, Part.size().height / 3, Part.size().width / 3,
                                         Part.size().height / 3));
 
-            namedWindow("PartCropped", WINDOW_AUTOSIZE); // Create a window for display.
-            imshow("PartCropped", PartCropped);
-            waitKey(0); // Wait for a keystroke in the window
+            //namedWindow("PartCropped", WINDOW_AUTOSIZE); // Create a window for display.
+            //imshow("PartCropped", PartCropped);
+            //waitKey(0); // Wait for a keystroke in the window
 
             // Create a new matrix to hold the HSV image
             Mat HSVPart;
@@ -94,9 +94,9 @@ bool AbstractionLayer_ColorMatching::PreProcessing(coor mySize, const vector<Par
             tempSaturation = mean(hsv_planes[1]);
             tempValue = mean(hsv_planes[2]);
 
-            cout << "Hue: " << tempHue.val[0] << endl;
-            cout << "Saturation: " << tempSaturation.val[0] << endl;
-            cout << "Value: " << tempValue.val[0] << endl;
+            //cout << "Hue: " << tempHue.val[0] << endl;
+            //cout << "Saturation: " << tempSaturation.val[0] << endl;
+            //cout << "Value: " << tempValue.val[0] << endl;
         }
 
         ref_partArray[iterator]->m_acm.m_centerColor.h = tempHue.val[0];
@@ -109,7 +109,7 @@ bool AbstractionLayer_ColorMatching::PreProcessing(coor mySize, const vector<Par
     return true;
 }
 
-bool AbstractionLayer_ColorMatching::EvaluateQuality (coor constraintCoordinate, qualityVector& qVector)
+bool AbstractionLayer_ColorMatching::EvaluateQuality (const coor constraintCoordinate, qualityVector& qVector)
 {
     for(int i = 0;i<qVector.size();i++)
     {
@@ -123,13 +123,12 @@ float AbstractionLayer_ColorMatching::PlaceOfPartGood(coor myCoor, HSV myPart)
     //Hue max 360°
     if(m_constraintMatrix[myCoor.col][myCoor.row].m_partColor.h >= 180)
     {
-        return 1-abs((m_constraintMatrix[myCoor.col][myCoor.row].m_partColor.h-myPart.h)
-                     /m_constraintMatrix[myCoor.col][myCoor.row].m_partColor.h);
+        return 1-abs((m_constraintMatrix[myCoor.col][myCoor.row].m_centerColor.h-myPart.h)
+                     /m_constraintMatrix[myCoor.col][myCoor.row].m_centerColor.h);
     }
     else if(m_constraintMatrix[myCoor.col][myCoor.row].m_partColor.h < 180)
     {
-        return 1-((myPart.h-m_constraintMatrix[myCoor.col][myCoor.row].m_partColor.h)
-                  /(360-m_constraintMatrix[myCoor.col][myCoor.row].m_partColor.h));
+        return 1-((myPart.h-m_constraintMatrix[myCoor.col][myCoor.row].m_centerColor.h)
+                  /(360-m_constraintMatrix[myCoor.col][myCoor.row].m_centerColor.h));
     }
-
 }
