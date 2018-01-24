@@ -39,16 +39,16 @@ float AbstractionLayer_PoempelPosition::PlaceOfPartGood(coor myCoor, vector<doub
     //create negativePart, watch out for edges
     if(myCoor.col>0 && m_constraintMatrix[myCoor.col-1][myCoor.row].SideLength[3])//get right data from left
     {
-        comparePosition[6]=m_constraintMatrix[myCoor.col-1][myCoor.row].SideLength[3];
-        comparePosition[7]=m_constraintMatrix[myCoor.col-1][myCoor.row].SideLength[2];
+        comparePosition[6]=m_constraintMatrix[myCoor.col-1][myCoor.row].SideLength[2];
+        comparePosition[7]=m_constraintMatrix[myCoor.col-1][myCoor.row].SideLength[3];
         //sum absolute difference
         sum+=abs(comparePosition[6]-myPart[6]);
         sum+=abs(comparePosition[7]-myPart[7]);
     }
     if(myCoor.row>0 && m_constraintMatrix[myCoor.col][myCoor.row-1].SideLength[5])//get bot data from top
     {
-        comparePosition[0]=m_constraintMatrix[myCoor.col][myCoor.row-1].SideLength[5];
-        comparePosition[1]=m_constraintMatrix[myCoor.col][myCoor.row-1].SideLength[4];
+        comparePosition[0]=m_constraintMatrix[myCoor.col][myCoor.row-1].SideLength[4];
+        comparePosition[1]=m_constraintMatrix[myCoor.col][myCoor.row-1].SideLength[5];
         //sum absolute difference
         sum+=abs(comparePosition[0]-myPart[0]);
         sum+=abs(comparePosition[1]-myPart[1]);
@@ -56,8 +56,8 @@ float AbstractionLayer_PoempelPosition::PlaceOfPartGood(coor myCoor, vector<doub
     }
     if(myCoor.col<m_constraintMatrix.size()-1 && m_constraintMatrix[myCoor.col+1][myCoor.row].SideLength[7])// get left data from right
     {
-        comparePosition[2]=m_constraintMatrix[myCoor.col+1][myCoor.row].SideLength[7];
-        comparePosition[3]=m_constraintMatrix[myCoor.col+1][myCoor.row].SideLength[6];
+        comparePosition[2]=m_constraintMatrix[myCoor.col+1][myCoor.row].SideLength[6];
+        comparePosition[3]=m_constraintMatrix[myCoor.col+1][myCoor.row].SideLength[7];
         //sum absolute difference
         sum+=abs(comparePosition[2]-myPart[2]);
         sum+=abs(comparePosition[3]-myPart[3]);
@@ -66,18 +66,18 @@ float AbstractionLayer_PoempelPosition::PlaceOfPartGood(coor myCoor, vector<doub
 
     if(myCoor.row<m_constraintMatrix[0].size()-1 && m_constraintMatrix[myCoor.col][myCoor.row+1].SideLength[1])//get top data from bot
     {
-        comparePosition[4]=m_constraintMatrix[myCoor.col][myCoor.row+1].SideLength[1];
-        comparePosition[5]=m_constraintMatrix[myCoor.col][myCoor.row+1].SideLength[0];
+        comparePosition[4]=m_constraintMatrix[myCoor.col][myCoor.row+1].SideLength[0];
+        comparePosition[5]=m_constraintMatrix[myCoor.col][myCoor.row+1].SideLength[1];
         //sum absolute difference
         sum+=abs(comparePosition[4]-myPart[4]);
         sum+=abs(comparePosition[5]-myPart[5]);
 
     }
-    if(sum>500)
+    if(sum>50)
         return 0;
     if(sum==0)
         return 1;
-    sum/=500;
+    sum/=50;
     return 1-sum;
     //check vector against negative part, use sad
     //return of well it fits within threshold
