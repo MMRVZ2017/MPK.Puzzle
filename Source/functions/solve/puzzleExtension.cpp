@@ -38,6 +38,7 @@ void Puzzle::putIntoBox()
 
             tmpPart.m_a1=this->a1.m_constraintMatrix[i+1][j+1];
             tmpPart.m_a3=this->a3.m_constraintMatrix[i][j];
+            tmpPart.m_a4=this->a4.m_constraintMatrix[i][j];
             //sets part id
             tmpPart.SetPartID(id++);
             // adds all 4 rotations to Box
@@ -66,6 +67,7 @@ void Puzzle::removeConstrains(coor removeCoordinates)
 {
     this->a1.RemoveConstraintOnPosition(removeCoordinates);
     this->a3.RemoveConstraintOnPosition(removeCoordinates);
+    this->a4.RemoveConstraintOnPosition(removeCoordinates);
     //TODO!! Add other layer remove here
 }
 void Puzzle::setConstraints(coor setConstraints, Part* constraintPiece)
@@ -80,6 +82,9 @@ void Puzzle::setConstraints(coor setConstraints, Part* constraintPiece)
 
     //a3
     this->a3.SetConstraintOnPosition(setConstraints,constraintPiece->m_a3);
+
+    //a4
+    this->a4.SetConstraintOnPosition(setConstraints,constraintPiece->m_a4);
     //TODO!! Add other layer remove here
 }
 

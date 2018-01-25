@@ -5,10 +5,11 @@
 #pragma once
 
 #include <cstdint>
-
 #include "../functions/AbstractionLayers/Layer1/AbstractionLayer_1_Properties.h"
 #include "../functions/AbstractionLayers/DestructionPower/DestructionPower_Properties.h"
 #include "../functions/AbstractionLayers/Layer3_PoempelPosition/AbstractionLayer_PoempelPosition_Properties.h"
+#include "../functions/AbstractionLayers/Layer_SURFFeatures/AbstractionLayer_SURFFeatures_Properties.h"
+
 class LayerContainer;
 
 class Part
@@ -43,6 +44,7 @@ public:
     bool set;
     AbstractionLayer_1_Properties m_a1;
     AbstractionLayer_PoempelPosition_Properties m_a3;
+    AbstractionLayer_SURFFeatures_Properties m_a4;
 private:
     int32_t m_partID;
     uint8_t m_numOfRotations;

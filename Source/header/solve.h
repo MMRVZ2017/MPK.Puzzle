@@ -1,4 +1,5 @@
 #pragma once
+
 #include <vector>
 #include <iostream>
 #include <opencv2/highgui/highgui.hpp>
@@ -6,6 +7,7 @@
 
 #include "../functions/AbstractionLayers/Layer1/AbstractionLayer_1.h"
 #include "../functions/AbstractionLayers/Layer3_PoempelPosition/AbstractionLayer_PoempelPosition.h"
+#include "../functions/AbstractionLayers/Layer_SURFFeatures/AbstractionLayer_SURFFeatures.h"
 #include "../functions/AbstractionLayers/DestructionPower/DestructionPower.h"
 
 using namespace std;
@@ -45,6 +47,7 @@ public:
         if(!dp.PreProcessing({cols,rows}, nullptr))  return false;
         if(!a1.PreProcessing({cols,rows}, &p_myBox)) return false;
         if(!a3.PreProcessing({cols,rows}, &p_myBox)) return false;
+        if(!a4.PreProcessing({cols,rows}, &p_myBox)) return false;
 
         return true;
     }
@@ -54,6 +57,7 @@ public:
     DestructionPower dp;
     AbstractionLayer_1 a1;
     AbstractionLayer_PoempelPosition a3;
+    AbstractionLayer_SURFFeatures a4;
 
     void removeConstrains(coor removeCoordinates);
     void setConstraints(coor setConstraints, Part *constraintPiece);

@@ -7,7 +7,8 @@ map<int,float> DestructionPower_Properties::SpeedTable =
         {
                 {0,0.99},
                 {1,0.7},
-                {2,0.7}
+                {2,0.7},
+                {3,0.5}
         };
 
 bool DestructionPower::PreProcessing(coor mySize,const vector<Part*>* partArray)
