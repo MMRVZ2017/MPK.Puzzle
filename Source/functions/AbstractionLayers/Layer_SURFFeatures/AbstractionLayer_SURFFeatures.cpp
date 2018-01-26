@@ -31,7 +31,7 @@ bool AbstractionLayer_SURFFeatures::EvaluateQuality (coor constraintCoordinate, 
     // Calculate absolute difference between constraints and each piece and safe it
     for( int i = 0; i < qVector.size(); i++ )
     {
-        float diff = abs(m_constraintMatrix[constraintCoordinate.row][constraintCoordinate.col].m_numberOfFeaturesDetected - qVector[i].second->m_a4.m_numberOfFeaturesDetected);
+        float diff = abs(m_constraintMatrix[constraintCoordinate.col][constraintCoordinate.row].m_numberOfFeaturesDetected - qVector[i].second->m_a4.m_numberOfFeaturesDetected);
         qVector[i].first = 1 - diff;
         //cout << fixed << qVector[i].first << endl;
     }
@@ -81,8 +81,8 @@ bool AbstractionLayer_SURFFeatures::PreProcessingFullImg(coor mySize)
     goodFeaturesToTrack( image, corners, maxCorners, qualityLevel, minDistance, mask, blockSize, useHarrisDetector, k );
 
     // Empty the matrix
-    for( int j = 0; j < mySize.row ; j++ )
-    { for( int i = 0; i < mySize.col; i++ )
+    for( int j = 0; j < mySize.col ; j++ )
+    { for( int i = 0; i < mySize.row; i++ )
         {
             m_constraintMatrix[j][i].m_numberOfFeaturesDetected = 0;
         }
@@ -94,15 +94,15 @@ bool AbstractionLayer_SURFFeatures::PreProcessingFullImg(coor mySize)
     for( int i = 0; i < corners.size(); i++ )   // For all found features
     {
         // Increment number of found pieces
-        m_constraintMatrix[int(corners[i].y/pieceRowSize)][int(corners[i].x/pieceColSize)].m_numberOfFeaturesDetected++;
+        m_constraintMatrix[int(corners[i].x/pieceColSize)][int(corners[i].y/pieceRowSize)].m_numberOfFeaturesDetected++;
     }
 
     // Get minimal and maximal number of features -> TODO: Do in first loop to safe time?
     int minFeatures = int(m_constraintMatrix[0][0].m_numberOfFeaturesDetected);
     int maxFeatures = int(m_constraintMatrix[0][0].m_numberOfFeaturesDetected);
-    for( int j = 0; j < mySize.row ; j++ )
+    for( int j = 0; j < mySize.col ; j++ )
     {
-        for( int i = 0; i < mySize.col; i++ )
+        for( int i = 0; i < mySize.row; i++ )
         {
             if(m_constraintMatrix[j][i].m_numberOfFeaturesDetected < minFeatures) minFeatures = int(m_constraintMatrix[j][i].m_numberOfFeaturesDetected);
             if(m_constraintMatrix[j][i].m_numberOfFeaturesDetected > maxFeatures) maxFeatures = int(m_constraintMatrix[j][i].m_numberOfFeaturesDetected);
@@ -110,9 +110,9 @@ bool AbstractionLayer_SURFFeatures::PreProcessingFullImg(coor mySize)
     }
 
     // Calculate percentage from 0 to 100% (normalized 0-1) with numberOfFeatures and safe it
-    for( int j = 0; j < mySize.row ; j++ )
+    for( int j = 0; j < mySize.col ; j++ )
     {
-        for( int i = 0; i < mySize.col; i++ )
+        for( int i = 0; i < mySize.row; i++ )
         {
             m_constraintMatrix[j][i].m_numberOfFeaturesDetected = (m_constraintMatrix[j][i].m_numberOfFeaturesDetected - minFeatures) / (maxFeatures - minFeatures);
             //cout << fixed << m_constraintMatrix[i][j].m_numberOfFeaturesDetected << " ";

@@ -187,6 +187,7 @@ Mat Puzzle::resultImage( vector<LogEntry>& log){
 
         sprintf(name, PATH, imageNumber);
         Mat img = imread(name, 1);
+        cout << name << endl;
         copyMakeBorder(img,img,200,200,200,200,BORDER_CONSTANT,Scalar(255,255,255));
         Mat invert = Mat::ones(img.size(), CV_8UC3); // invert for rotation to work correctly
         bitwise_not ( img, invert );
