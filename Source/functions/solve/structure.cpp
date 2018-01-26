@@ -86,7 +86,6 @@ void solve(vector<LogEntry>& log,Puzzle& puzzleMat)
             puzzleMat.a3.EvaluateQuality(log.back().myCoor,log.back().PieceCollector);
             break;
         case 4://SURFFeature
-
             break;
         case -1://random
             cout << endl;
