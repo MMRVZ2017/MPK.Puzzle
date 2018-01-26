@@ -27,10 +27,18 @@ bool AbstractionLayer_SURFFeatures::PreProcessing(coor mySize, const vector<Part
 
 bool AbstractionLayer_SURFFeatures::EvaluateQuality (coor constraintCoordinate, qualityVector& qVector)
 {
-    //TODO: Vergleichen, welche der in qualityVector erhaltenen ähnlich viele Features besitzen, wie an der jeweiligen constraintCoordinate in der m_constraintMatrix gespeichert sind
+    // Calculate absolute difference between constraints and each piece and safe it
+    for( int i = 0; i < qVector.size(); i++ )
+    {
+        float diff = abs(m_constraintMatrix[constraintCoordinate.row][constraintCoordinate.col].m_numberOfFeaturesDetected - qVector[i].second->m_a4.m_numberOfFeaturesDetected);
+        qVector[i].first = 1 - diff;
+        //cout << fixed << qVector[i].first << " ";
+    }
+
+    return true;
 }
 
-bool AbstractionLayer_SURFFeatures::SetConstraintOnPosition(const coor constraintCoordinate,const AbstractionLayer_SURFFeatures_Properties constraint)
+bool AbstractionLayer_SURFFeatures::SetConstraintOnPosition(const coor constraintCoordinate, const AbstractionLayer_SURFFeatures_Properties constraint)
 {
     //TODO: Benötigen wir nicht unbedint.
     //TODO: Hier erhalten wir vom Dispatcher welches Teil an welche Position gesetzt wird und wir könnten hier die Features des Bilds in die m_constraintMatrix speichern
