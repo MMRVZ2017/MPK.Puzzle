@@ -9,7 +9,7 @@ public:
     AbstractionLayer_SURFFeatures_Properties() {}
 
 private:
-    uint16_t m_numberOfFeaturesDetected;
+    float m_numberOfFeaturesDetected;
     friend class AbstractionLayer_SURFFeatures;
 };
 
