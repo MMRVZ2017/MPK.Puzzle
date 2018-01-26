@@ -19,13 +19,40 @@ using namespace std;
 bool AbstractionLayer_SURFFeatures::PreProcessing(coor mySize, const vector<Part*>* partArray)
 {
     InitialiseConstraintMatrixSize(mySize.col, mySize.row);
+    if(!PreProcessingFullImg(mySize)) return false;
+    if(!PreProcessingPieces(mySize, partArray)) return false;
+
+    return true;
+}
+
+bool AbstractionLayer_SURFFeatures::EvaluateQuality (coor constraintCoordinate, qualityVector& qVector)
+{
+    //TODO: Vergleichen, welche der in qualityVector erhaltenen ähnlich viele Features besitzen, wie an der jeweiligen constraintCoordinate in der m_constraintMatrix gespeichert sind
+}
+
+bool AbstractionLayer_SURFFeatures::SetConstraintOnPosition(const coor constraintCoordinate,const AbstractionLayer_SURFFeatures_Properties constraint)
+{
+    //TODO: Benötigen wir nicht unbedint.
+    //TODO: Hier erhalten wir vom Dispatcher welches Teil an welche Position gesetzt wird und wir könnten hier die Features des Bilds in die m_constraintMatrix speichern
+}
+
+bool AbstractionLayer_SURFFeatures::RemoveConstraintOnPosition(const coor constraintCoordinate)
+{
+    //TODO: Wie auch beim SetConstraint sollte uns das hier nicht wirklich interessieren.
+    //TODO: Außer wir setzen etwas in die Contraintmatrix.
+    //TODO: Dann ruft uns der Dispatcher beim Backtrack hier auf und wir müssten das jeweilige PuzzlePart hier wieder rauslöschen.
+}
+
+bool AbstractionLayer_SURFFeatures::PreProcessingFullImg(coor mySize)
+{
     std::vector< cv::Point2f > corners;                         // Variable to store corner-positions at
 
-
-    // -- Complete puzzle image processing ---------------------------------------------------------------------------------------------
-    // ---------------------------------------------------------------------------------------------------------------------------------
     // Load and resize image, so that number of parts in row and col fit in
     cv::Mat image = cv::imread(PATH_FULL_PUZZLE, IMREAD_GRAYSCALE);
+    if (!image.data) {
+        cerr << "Problem loading image of complete puzzle!" << endl;
+        return false;
+    }
     //cout << "PRE:  " << image.cols << " x " << image.rows << endl;
     cv::resize(image, image, Size(int(ceil(double(image.cols)/mySize.col)*mySize.col), int(ceil(double(image.rows)/mySize.row)*mySize.row)));
     //cout << "POST: " << image.cols << " x " << image.rows << endl;
@@ -92,34 +119,38 @@ bool AbstractionLayer_SURFFeatures::PreProcessing(coor mySize, const vector<Part
 
     cv::waitKey(0);*/
 
+    return true;
+}
 
-
-    // -- Puzzle piece image processing ------------------------------------------------------------------------------------------------
-    // ---------------------------------------------------------------------------------------------------------------------------------
-
-    int count = 0;
-    char name[100];
+bool AbstractionLayer_SURFFeatures::PreProcessingPieces(coor mySize, const vector<Part*>* partArray)
+{
+    std::vector< cv::Point2f > corners;                         // Variable to store corner-positions at
 
     // PARAMETERS (for description see top of file)
-    maxCorners = 500;
-    qualityLevel = 0.05;
-    minDistance = .5;
+    int maxCorners = 500;
+    double qualityLevel = 0.05;
+    double minDistance = .5;
+    cv::Mat mask;
+    int blockSize = 3;
+    bool useHarrisDetector = false;
+    double k = 0.04;
 
-    minFeatures = maxCorners;
-    maxFeatures = 0;
+    int minFeatures = maxCorners;
+    int maxFeatures = 0;
+    char name[100];
 
-    // For each piece
-    for (count = 0; count < mySize.col*mySize.row; count++) { //cols*rows
-        sprintf(name, PATH, count);
+    for (unsigned imgID = 0; imgID < mySize.col*mySize.row; imgID++) {
+        sprintf(name, PATH, imgID);
         Mat src = cv::imread(name, IMREAD_GRAYSCALE);
         if (!src.data) {
-            cerr << "Problem loading image!!!" << endl;
+            cerr << "Problem loading image of puzzle piece!" << endl;
             return false;
         } else {
-            cv::goodFeaturesToTrack( src, corners, maxCorners, qualityLevel, minDistance, mask, blockSize, useHarrisDetector, k );
-            if(corners.size() < minFeatures) minFeatures = corners.size();
-            if(corners.size() > maxFeatures) maxFeatures = corners.size();
-            partArray->at(count)->m_a4.m_numberOfFeaturesDetected = corners.size();
+            cv::goodFeaturesToTrack(src, corners, maxCorners, qualityLevel, minDistance, mask, blockSize,
+                                    useHarrisDetector, k);
+            if (corners.size() < minFeatures) minFeatures = corners.size();
+            if (corners.size() > maxFeatures) maxFeatures = corners.size();
+            partArray->at(imgID)->m_a4.m_numberOfFeaturesDetected = corners.size();
             /*for( size_t i = 0; i < corners.size(); i++ ) {
                 cv::circle( src, corners[i], 2, cv::Scalar( 255. ), -1 );
             }
@@ -131,30 +162,11 @@ bool AbstractionLayer_SURFFeatures::PreProcessing(coor mySize, const vector<Part
     }
 
     // Calculate percentage from 0 to 100% (normalized 0-1) with numberOfFeatures and safe it
-    for( int i = 0; i < mySize.col*mySize.row; i++ )
+    for( unsigned i = 0; i < mySize.col*mySize.row; i++ )
     {
         partArray->at(i)->m_a4.m_numberOfFeaturesDetected = (partArray->at(i)->m_a4.m_numberOfFeaturesDetected - minFeatures) / (maxFeatures - minFeatures);
         cout << fixed << partArray->at(i)->m_a4.m_numberOfFeaturesDetected << endl;
     }
     cout << endl;
-
     return true;
-}
-
-bool AbstractionLayer_SURFFeatures::EvaluateQuality (coor constraintCoordinate, qualityVector& qVector)
-{
-    //TODO: Vergleichen, welche der in qualityVector erhaltenen ähnlich viele Features besitzen, wie an der jeweiligen constraintCoordinate in der m_constraintMatrix gespeichert sind
-}
-
-bool AbstractionLayer_SURFFeatures::SetConstraintOnPosition(const coor constraintCoordinate,const AbstractionLayer_SURFFeatures_Properties constraint)
-{
-    //TODO: Benötigen wir nicht unbedint.
-    //TODO: Hier erhalten wir vom Dispatcher welches Teil an welche Position gesetzt wird und wir könnten hier die Features des Bilds in die m_constraintMatrix speichern
-}
-
-bool AbstractionLayer_SURFFeatures::RemoveConstraintOnPosition(const coor constraintCoordinate)
-{
-    //TODO: Wie auch beim SetConstraint sollte uns das hier nicht wirklich interessieren.
-    //TODO: Außer wir setzen etwas in die Contraintmatrix.
-    //TODO: Dann ruft uns der Dispatcher beim Backtrack hier auf und wir müssten das jeweilige PuzzlePart hier wieder rauslöschen.
 }

@@ -26,6 +26,8 @@ class AbstractionLayer_SURFFeatures : public AbstractionLayer_Base<AbstractionLa
 {
 public:
     bool PreProcessing(coor mySize, const vector<Part*>* partArray) ;
+    bool PreProcessingFullImg(coor mySize) ;
+    bool PreProcessingPieces(coor mySize, const vector<Part*>* partArray) ;
     bool EvaluateQuality (const coor constraintCoordinate, qualityVector& qVector);
     bool SetConstraintOnPosition(const coor constraintCoordinate,const AbstractionLayer_SURFFeatures_Properties constraint);
     bool RemoveConstraintOnPosition(const coor constraintCoordinate);
