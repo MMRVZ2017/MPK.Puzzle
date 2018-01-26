@@ -48,6 +48,14 @@ bool AbstractionLayer_SURFFeatures::PreProcessing(coor mySize, const vector<Part
     // Detect features - this is where the magic happens
     cv::goodFeaturesToTrack( image, corners, maxCorners, qualityLevel, minDistance, mask, blockSize, useHarrisDetector, k );
 
+    // Empty the matrix
+    for( int j = 0; j < mySize.row ; j++ )
+    { for( int i = 0; i < mySize.col; i++ )
+        {
+            m_constraintMatrix[j][i].m_numberOfFeaturesDetected = 0;
+        }
+    }
+
     int pieceColSize = image.cols/mySize.col;
     int pieceRowSize = image.rows/mySize.row;
     // Calculate number of features for each piece-position
