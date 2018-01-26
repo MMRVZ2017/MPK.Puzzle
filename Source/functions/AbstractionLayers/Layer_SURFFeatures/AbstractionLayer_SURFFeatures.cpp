@@ -2,7 +2,7 @@
 
 bool AbstractionLayer_SURFFeatures::PreProcessing(coor mySize, const vector<Part*>* partArray)
 {
-    InitialiseConstraintMatrixSize(mySize.col+2, mySize.row+2);
+    InitialiseConstraintMatrixSize(mySize.col, mySize.row);
 
     //TODO: Gesamtbild mit OpenCV einlesen
     //TODO: Gesamtbild anhand der berechneten Spalten und Zeilen auseinander schneiden (Sind in der puzzleKlasse gespeichert)
