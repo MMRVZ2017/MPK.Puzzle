@@ -54,7 +54,7 @@ bool AbstractionLayer_SURFFeatures::PreProcessing(coor mySize, const vector<Part
     for( int i = 0; i < corners.size(); i++ )   // For all found features
     {
         // Increment number of found pieces
-        m_constraintMatrix[int(ceil(corners[i].x/pieceColSize))-1][int(ceil(corners[i].y/pieceRowSize))-1].m_numberOfFeaturesDetected++;
+        m_constraintMatrix[int(corners[i].y/pieceRowSize)][int(corners[i].x/pieceColSize)].m_numberOfFeaturesDetected++;
     }
 
     // Get minimal and maximal number of features -> TODO: Do in first loop to safe time?
@@ -64,8 +64,8 @@ bool AbstractionLayer_SURFFeatures::PreProcessing(coor mySize, const vector<Part
     {
         for( int i = 0; i < mySize.col; i++ )
         {
-            if(m_constraintMatrix[i][j].m_numberOfFeaturesDetected < minFeatures) minFeatures = int(m_constraintMatrix[i][j].m_numberOfFeaturesDetected);
-            if(m_constraintMatrix[i][j].m_numberOfFeaturesDetected > maxFeatures) maxFeatures = int(m_constraintMatrix[i][j].m_numberOfFeaturesDetected);
+            if(m_constraintMatrix[j][i].m_numberOfFeaturesDetected < minFeatures) minFeatures = int(m_constraintMatrix[j][i].m_numberOfFeaturesDetected);
+            if(m_constraintMatrix[j][i].m_numberOfFeaturesDetected > maxFeatures) maxFeatures = int(m_constraintMatrix[j][i].m_numberOfFeaturesDetected);
         }
     }
 
@@ -74,7 +74,7 @@ bool AbstractionLayer_SURFFeatures::PreProcessing(coor mySize, const vector<Part
     {
         for( int i = 0; i < mySize.col; i++ )
         {
-            m_constraintMatrix[i][j].m_numberOfFeaturesDetected = (m_constraintMatrix[i][j].m_numberOfFeaturesDetected - minFeatures) / (maxFeatures - minFeatures);
+            m_constraintMatrix[j][i].m_numberOfFeaturesDetected = (m_constraintMatrix[j][i].m_numberOfFeaturesDetected - minFeatures) / (maxFeatures - minFeatures);
             //cout << fixed << m_constraintMatrix[i][j].m_numberOfFeaturesDetected << " ";
         }
         //cout << endl;
