@@ -10,14 +10,15 @@
 // k – Free parameter of Harris detector
 
 #include <iostream>
-#include "opencv2/highgui.hpp"
-#include "opencv2/imgproc.hpp"
+#include "opencv2/highgui/highgui.hpp"
+#include "opencv2/imgproc/imgproc.hpp"
 
 using namespace cv;
 using namespace std;
 
 bool AbstractionLayer_SURFFeatures::PreProcessing(coor mySize, const vector<Part*>* partArray)
 {
+    cout << "Abstraction 4 (Features) Preprocessing...  " << flush;
     InitialiseConstraintMatrixSize(mySize.col, mySize.row);
     if(!PreProcessingFullImg(mySize)) return false;
     if(!PreProcessingPieces(mySize, partArray)) return false;
@@ -32,7 +33,7 @@ bool AbstractionLayer_SURFFeatures::EvaluateQuality (coor constraintCoordinate, 
     {
         float diff = abs(m_constraintMatrix[constraintCoordinate.row][constraintCoordinate.col].m_numberOfFeaturesDetected - qVector[i].second->m_a4.m_numberOfFeaturesDetected);
         qVector[i].first = 1 - diff;
-        //cout << fixed << qVector[i].first << " ";
+        //cout << fixed << qVector[i].first << endl;
     }
 
     return true;
@@ -42,6 +43,7 @@ bool AbstractionLayer_SURFFeatures::SetConstraintOnPosition(const coor constrain
 {
     //TODO: Benötigen wir nicht unbedint.
     //TODO: Hier erhalten wir vom Dispatcher welches Teil an welche Position gesetzt wird und wir könnten hier die Features des Bilds in die m_constraintMatrix speichern
+    return true;
 }
 
 bool AbstractionLayer_SURFFeatures::RemoveConstraintOnPosition(const coor constraintCoordinate)
@@ -49,6 +51,7 @@ bool AbstractionLayer_SURFFeatures::RemoveConstraintOnPosition(const coor constr
     //TODO: Wie auch beim SetConstraint sollte uns das hier nicht wirklich interessieren.
     //TODO: Außer wir setzen etwas in die Contraintmatrix.
     //TODO: Dann ruft uns der Dispatcher beim Backtrack hier auf und wir müssten das jeweilige PuzzlePart hier wieder rauslöschen.
+    return true;
 }
 
 bool AbstractionLayer_SURFFeatures::PreProcessingFullImg(coor mySize)
@@ -56,26 +59,26 @@ bool AbstractionLayer_SURFFeatures::PreProcessingFullImg(coor mySize)
     std::vector< cv::Point2f > corners;                         // Variable to store corner-positions at
 
     // Load and resize image, so that number of parts in row and col fit in
-    cv::Mat image = cv::imread(PATH_FULL_PUZZLE, IMREAD_GRAYSCALE);
+    Mat image = imread(PATH_FULL_PUZZLE, IMREAD_GRAYSCALE);
     if (!image.data) {
         cerr << "Problem loading image of complete puzzle!" << endl;
         return false;
     }
     //cout << "PRE:  " << image.cols << " x " << image.rows << endl;
-    cv::resize(image, image, Size(int(ceil(double(image.cols)/mySize.col)*mySize.col), int(ceil(double(image.rows)/mySize.row)*mySize.row)));
+    resize(image, image, Size(int(ceil(double(image.cols)/mySize.col)*mySize.col), int(ceil(double(image.rows)/mySize.row)*mySize.row)));
     //cout << "POST: " << image.cols << " x " << image.rows << endl;
 
     // PARAMETERS (for description see top of file)
     int maxCorners = 10000;
     double qualityLevel = 0.01;
     double minDistance = .5;
-    cv::Mat mask;
+    Mat mask;
     int blockSize = 3;
     bool useHarrisDetector = false;
     double k = 0.04;
 
     // Detect features - this is where the magic happens
-    cv::goodFeaturesToTrack( image, corners, maxCorners, qualityLevel, minDistance, mask, blockSize, useHarrisDetector, k );
+    goodFeaturesToTrack( image, corners, maxCorners, qualityLevel, minDistance, mask, blockSize, useHarrisDetector, k );
 
     // Empty the matrix
     for( int j = 0; j < mySize.row ; j++ )
@@ -138,7 +141,7 @@ bool AbstractionLayer_SURFFeatures::PreProcessingPieces(coor mySize, const vecto
     int maxCorners = 500;
     double qualityLevel = 0.05;
     double minDistance = .5;
-    cv::Mat mask;
+    Mat mask;
     int blockSize = 3;
     bool useHarrisDetector = false;
     double k = 0.04;
@@ -148,13 +151,13 @@ bool AbstractionLayer_SURFFeatures::PreProcessingPieces(coor mySize, const vecto
     char name[100];
 
     for (unsigned imgID = 0; imgID < mySize.col*mySize.row; imgID++) {
-        sprintf(name, PATH, imgID);
-        Mat src = cv::imread(name, IMREAD_GRAYSCALE);
+        sprintf(name, PATH1, imgID);
+        Mat src = imread(name, IMREAD_GRAYSCALE);
         if (!src.data) {
             cerr << "Problem loading image of puzzle piece!" << endl;
             return false;
         } else {
-            cv::goodFeaturesToTrack(src, corners, maxCorners, qualityLevel, minDistance, mask, blockSize,
+            goodFeaturesToTrack(src, corners, maxCorners, qualityLevel, minDistance, mask, blockSize,
                                     useHarrisDetector, k);
             if (corners.size() < minFeatures) minFeatures = corners.size();
             if (corners.size() > maxFeatures) maxFeatures = corners.size();
@@ -173,8 +176,8 @@ bool AbstractionLayer_SURFFeatures::PreProcessingPieces(coor mySize, const vecto
     for( unsigned i = 0; i < mySize.col*mySize.row; i++ )
     {
         partArray->at(i)->m_a4.m_numberOfFeaturesDetected = (partArray->at(i)->m_a4.m_numberOfFeaturesDetected - minFeatures) / (maxFeatures - minFeatures);
-        cout << fixed << partArray->at(i)->m_a4.m_numberOfFeaturesDetected << endl;
+        //cout << fixed << partArray->at(i)->m_a4.m_numberOfFeaturesDetected << endl;
     }
-    cout << endl;
+    //cout << endl;
     return true;
 }

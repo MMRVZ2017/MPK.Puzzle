@@ -12,11 +12,11 @@
 #endif
 
 #ifdef _WIN32   //TODO: Code duplicate from AbstractionLayer_1.h
-#define PATH "..\\..\\..\\pieces\\%04d.jpg"
+#define PATH1 "..\\..\\..\\pieces\\%04d.jpg"
 #elif defined __unix__
-#define PATH "..//..//..//pieces//%04d.jpg"
+#define PATH1 "..//..//..//pieces//%04d.jpg"
 #elif defined __APPLE__
-    #define PATH "..//..//..//pieces//%04d.jpg"
+    #define PATH1 "..//..//..//pieces//%04d.jpg"
 #endif
 
 
