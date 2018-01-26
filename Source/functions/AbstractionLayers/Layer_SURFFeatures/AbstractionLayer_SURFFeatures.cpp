@@ -2,11 +2,18 @@
 
 bool AbstractionLayer_SURFFeatures::PreProcessing(coor mySize, const vector<Part*>* partArray)
 {
+    InitialiseConstraintMatrixSize(mySize.col+2, mySize.row+2);
+
     //TODO: Gesamtbild mit OpenCV einlesen
     //TODO: Gesamtbild anhand der berechneten Spalten und Zeilen auseinander schneiden (Sind in der puzzleKlasse gespeichert)
     //TODO: Features der einzelnen Felder des ausgeschnittenen Gesamtbildes in der m_constraintMatrix speichern
 
+    // Speichert die Features der linken oberen Ecke des Gesamtpuzzles in die constraintMatrix
+    m_constraintMatrix[0][0].m_numberOfFeaturesDetected = 50;
+
     //TODO: Alle Bilder mit OpenCV öffnen und deren erkannten Features in SURFFeature_Properties der Part-Klasse speichern
+    // Speichert die erkannten Features des jeweiligen Bilds im partArray an der Stelle (->at(xxx))
+    partArray->at(0)->m_a4.m_numberOfFeaturesDetected = 40;
 }
 
 bool AbstractionLayer_SURFFeatures::EvaluateQuality (coor constraintCoordinate, qualityVector& qVector)
