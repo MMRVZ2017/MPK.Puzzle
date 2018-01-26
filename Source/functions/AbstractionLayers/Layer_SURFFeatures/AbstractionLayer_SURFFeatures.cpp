@@ -13,14 +13,6 @@
 #include "opencv2/highgui.hpp"
 #include "opencv2/imgproc.hpp"
 
-#ifdef _WIN32
-#define PATH_FULL_PUZZLE "..\\..\\..\\puzzle_img\\puzzle1.jpg"
-#elif defined __unix__
-#define PATH_FULL_PUZZLE "..//..//..//puzzle_img//puzzle1.jpg"
-#elif defined __APPLE__
-    #define PATH_FULL_PUZZLE "..//..//..//puzzle_img//puzzle1.jpg"
-#endif
-
 using namespace cv;
 using namespace std;
 
@@ -29,11 +21,13 @@ bool AbstractionLayer_SURFFeatures::PreProcessing(coor mySize, const vector<Part
     InitialiseConstraintMatrixSize(mySize.col, mySize.row);
     std::vector< cv::Point2f > corners;                         // Variable to store corner-positions at
 
-    // -- Complete puzzle image processing --
+
+    // -- Complete puzzle image processing ---------------------------------------------------------------------------------------------
+    // ---------------------------------------------------------------------------------------------------------------------------------
     // Load and resize image, so that number of parts in row and col fit in
     cv::Mat image = cv::imread(PATH_FULL_PUZZLE, IMREAD_GRAYSCALE);
     //cout << "PRE:  " << image.cols << " x " << image.rows << endl;
-    cv::resize(image, image, Size(int(ceil(double(image.cols)/mySize.col)*mySize.row), int(ceil(double(image.rows)/mySize.row)*mySize.row)));
+    cv::resize(image, image, Size(int(ceil(double(image.cols)/mySize.col)*mySize.col), int(ceil(double(image.rows)/mySize.row)*mySize.row)));
     //cout << "POST: " << image.cols << " x " << image.rows << endl;
 
     // PARAMETERS (for description see top of file)
@@ -77,7 +71,7 @@ bool AbstractionLayer_SURFFeatures::PreProcessing(coor mySize, const vector<Part
         }
     }
 
-    // Calculate percentage from 0 to 100% with numberOfFeatures and safe it
+    // Calculate percentage from 0 to 100% (normalized 0-1) with numberOfFeatures and safe it
     for( int j = 0; j < mySize.row ; j++ )
     {
         for( int i = 0; i < mySize.col; i++ )
@@ -98,9 +92,53 @@ bool AbstractionLayer_SURFFeatures::PreProcessing(coor mySize, const vector<Part
 
     cv::waitKey(0);*/
 
-    //TODO: Alle Bilder mit OpenCV öffnen und deren erkannten Features in SURFFeature_Properties der Part-Klasse speichern
-    // Speichert die erkannten Features des jeweiligen Bilds im partArray an der Stelle (->at(xxx))
-    partArray->at(0)->m_a4.m_numberOfFeaturesDetected = 40;
+
+
+    // -- Puzzle piece image processing ------------------------------------------------------------------------------------------------
+    // ---------------------------------------------------------------------------------------------------------------------------------
+
+    int count = 0;
+    char name[100];
+
+    // PARAMETERS (for description see top of file)
+    maxCorners = 500;
+    qualityLevel = 0.05;
+    minDistance = .5;
+
+    minFeatures = maxCorners;
+    maxFeatures = 0;
+
+    // For each piece
+    for (count = 0; count < mySize.col*mySize.row; count++) { //cols*rows
+        sprintf(name, PATH, count);
+        Mat src = cv::imread(name, IMREAD_GRAYSCALE);
+        if (!src.data) {
+            cerr << "Problem loading image!!!" << endl;
+            return false;
+        } else {
+            cv::goodFeaturesToTrack( src, corners, maxCorners, qualityLevel, minDistance, mask, blockSize, useHarrisDetector, k );
+            if(corners.size() < minFeatures) minFeatures = corners.size();
+            if(corners.size() > maxFeatures) maxFeatures = corners.size();
+            partArray->at(count)->m_a4.m_numberOfFeaturesDetected = corners.size();
+            /*for( size_t i = 0; i < corners.size(); i++ ) {
+                cv::circle( src, corners[i], 2, cv::Scalar( 255. ), -1 );
+            }
+            cv::namedWindow( "Output", CV_WINDOW_AUTOSIZE );
+            cv::imshow( "Output", src );
+            cout << count << " " << corners.size() << endl;
+            cv::waitKey(0);*/
+        }
+    }
+
+    // Calculate percentage from 0 to 100% (normalized 0-1) with numberOfFeatures and safe it
+    for( int i = 0; i < mySize.col*mySize.row; i++ )
+    {
+        partArray->at(i)->m_a4.m_numberOfFeaturesDetected = (partArray->at(i)->m_a4.m_numberOfFeaturesDetected - minFeatures) / (maxFeatures - minFeatures);
+        cout << fixed << partArray->at(i)->m_a4.m_numberOfFeaturesDetected << endl;
+    }
+    cout << endl;
+
+    return true;
 }
 
 bool AbstractionLayer_SURFFeatures::EvaluateQuality (coor constraintCoordinate, qualityVector& qVector)
