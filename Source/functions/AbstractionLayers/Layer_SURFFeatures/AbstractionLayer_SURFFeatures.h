@@ -2,6 +2,8 @@
 #define SOURCE_ABSTRACTIONLAYER_SURFFEATURES_H
 
 #include "../AbstraktionLayer_Base.h"
+#include "opencv2/highgui/highgui.hpp"
+#include "opencv2/imgproc/imgproc.hpp"
 
 #ifdef _WIN32
 #define PATH_FULL_PUZZLE "..\\..\\..\\puzzle_img\\puzzle1.jpg"

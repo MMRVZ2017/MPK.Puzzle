@@ -1,7 +1,3 @@
-//
-// Created by mpapa on 05.12.2017.
-//
-
 #ifndef SOURCE_ABSTRACTIONLAYER_1_H
 #define SOURCE_ABSTRACTIONLAYER_1_H
 

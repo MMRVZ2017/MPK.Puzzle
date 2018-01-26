@@ -65,23 +65,23 @@ void Puzzle::shuffle()
 //deletes all constraints from all abstractionlayers
 void Puzzle::removeConstrains(coor removeCoordinates)
 {
-    this->a1.RemoveConstraintOnPosition(removeCoordinates);
-    this->a3.RemoveConstraintOnPosition(removeCoordinates);
+//    this->a1.RemoveConstraintOnPosition(removeCoordinates);
+//    this->a3.RemoveConstraintOnPosition(removeCoordinates);
     this->a4.RemoveConstraintOnPosition(removeCoordinates);
     //TODO!! Add other layer remove here
 }
 void Puzzle::setConstraints(coor setConstraints, Part* constraintPiece)
 {
     //dp
-    this->dp.m_constraintMatrix[setConstraints.col][setConstraints.row].DestructionArray.clear();
-    for(auto it:this->tmp_destructionArray)
-    this->dp.m_constraintMatrix[setConstraints.col][setConstraints.row].DestructionArray.emplace_back(it);
+//    this->dp.m_constraintMatrix[setConstraints.col][setConstraints.row].DestructionArray.clear();
+//    for(auto it:this->tmp_destructionArray)
+//    this->dp.m_constraintMatrix[setConstraints.col][setConstraints.row].DestructionArray.emplace_back(it);
 
     //a1
-    this->a1.SetConstraintOnPosition(setConstraints,constraintPiece->m_a1);
+    //this->a1.SetConstraintOnPosition(setConstraints,constraintPiece->m_a1);
 
     //a3
-    this->a3.SetConstraintOnPosition(setConstraints,constraintPiece->m_a3);
+    //this->a3.SetConstraintOnPosition(setConstraints,constraintPiece->m_a3);
 
     //a4
     this->a4.SetConstraintOnPosition(setConstraints,constraintPiece->m_a4);
@@ -187,7 +187,6 @@ Mat Puzzle::resultImage( vector<LogEntry>& log){
 
         sprintf(name, PATH, imageNumber);
         Mat img = imread(name, 1);
-
         copyMakeBorder(img,img,200,200,200,200,BORDER_CONSTANT,Scalar(255,255,255));
         Mat invert = Mat::ones(img.size(), CV_8UC3); // invert for rotation to work correctly
         bitwise_not ( img, invert );

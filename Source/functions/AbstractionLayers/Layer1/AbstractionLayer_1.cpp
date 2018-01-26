@@ -271,7 +271,7 @@ Mat analyseParts::readImages(int count)
         return src;
     }
 
-    if(DISPLAY)imshow("src",src);
+    //if(DISPLAY)imshow("src",src);
 
     Mat im_gray, im_bw;
     cvtColor(src, im_gray, CV_RGB2GRAY);

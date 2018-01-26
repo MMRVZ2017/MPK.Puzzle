@@ -43,7 +43,7 @@ void createNextLogElement(vector<LogEntry>& log, Puzzle& puzzleMat)
 {
 	log.emplace_back(LogEntry(coor(0, 0)));
    	log.back().myCoor = calculateNextCoor(log, puzzleMat);
-    puzzleMat.dp.DestructionOfSurrounding(log.back().myCoor);//calculate dp from surrounding
+//    puzzleMat.dp.DestructionOfSurrounding(log.back().myCoor);//calculate dp from surrounding
      //get all not set pieces
     for(auto it:puzzleMat.p_myBox)
         if(!it->set)
@@ -78,13 +78,15 @@ void solve(vector<LogEntry>& log,Puzzle& puzzleMat)
     switch(log.back().abstractionLevel)
     {
         case 0://pömpel
-            puzzleMat.a1.EvaluateQuality(log.back().myCoor, log.back().PieceCollector);
+            puzzleMat.a4.EvaluateQuality(log.back().myCoor,log.back().PieceCollector);
+            //puzzleMat.a1.EvaluateQuality(log.back().myCoor, log.back().PieceCollector);
         break;
         case 1://poempelposition
+            return;
             puzzleMat.a3.EvaluateQuality(log.back().myCoor,log.back().PieceCollector);
             break;
         case 4://SURFFeature
-            puzzleMat.a3.EvaluateQuality(log.back().myCoor,log.back().PieceCollector);
+
             break;
         case -1://random
             cout << endl;
@@ -95,10 +97,8 @@ void solve(vector<LogEntry>& log,Puzzle& puzzleMat)
     }
     float worth = capLogElements(log);
     cout << " | " << worth << endl;
-    if(worth && log.back().abstractionLevel)
-        cerr << "removed something!" << endl;
 
-    calculateTrueDestructionPower(log,puzzleMat, worth);
+//    calculateTrueDestructionPower(log,puzzleMat, worth);
     CalculateNewCombinedQuality(log, log.back().PieceCollector, puzzleMat.combinedQualityVector);
 
 }
@@ -227,7 +227,7 @@ float capLogElements(vector<LogEntry>& log)
             newid = id;
         }
     }
-    cut(log,newid);
+    //cut(log,newid);
 
     vectorsizeAfter = log.back().PieceCollector.size();
     destroyed = ((double)vectorsizeBefore - (double)vectorsizeAfter) / (double)vectorsizeBefore;
@@ -241,7 +241,11 @@ float capLogElements(vector<LogEntry>& log)
 void cut(vector<LogEntry>& log, int& cutID)
 {
     while(cutID<log.back().PieceCollector.size())
+    {
+        cerr << "!";
         log.back().PieceCollector.erase(log.back().PieceCollector.begin()+cutID);
+    }
+    cerr << endl;
 }
 
 // --------------------  Part David: SetBest and CalculateCombinedQuality --------------------

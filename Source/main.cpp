@@ -25,6 +25,6 @@ int main()
     puzzleMat.resultImage(log);
 
 
-    puzzleMat.printPuzzle();
+    //puzzleMat.printPuzzle();
     return 0;
 }
