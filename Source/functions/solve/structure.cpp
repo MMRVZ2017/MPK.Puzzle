@@ -71,8 +71,10 @@ coor calculateNextCoor(vector<LogEntry>& log, Puzzle& puzzleMat)
 
 void solve(vector<LogEntry>& log,Puzzle& puzzleMat)
 {
-	log.back().abstractionLevel = puzzleMat.dp.getNextAbstractionLayer(log.back().myCoor,log.back().abstractionLevel); //sets in abstractionLevel
-   //status(log,p_Box,puzzleMat);
+    log.back().abstractionLevel = puzzleMat.dp.getNextAbstractionLayer(log.back().myCoor,log.back().abstractionLevel); //sets in abstractionLevel
+    cout << "a: " << log.back().abstractionLevel << endl;
+
+    //status(log,p_Box,puzzleMat);
     //TODO!! Add more layers here
     switch(log.back().abstractionLevel)
     {
@@ -80,7 +82,7 @@ void solve(vector<LogEntry>& log,Puzzle& puzzleMat)
             puzzleMat.a1.EvaluateQuality(log.back().myCoor,log.back().PieceCollector);
             //puzzleMat.a1.EvaluateQuality(log.back().myCoor, log.back().PieceCollector);
         break;
-        case 2://SURFFeature
+        case 1://SURFFeature
 //            return;
             puzzleMat.a4.EvaluateQuality(log.back().myCoor,log.back().PieceCollector);
             break;
@@ -88,8 +90,8 @@ void solve(vector<LogEntry>& log,Puzzle& puzzleMat)
             return;
             puzzleMat.a3.EvaluateQuality(log.back().myCoor,log.back().PieceCollector);
             break;
-        case 1://color
-            puzzleMat.a4.EvaluateQuality(log.back().myCoor,log.back().PieceCollector);
+        case 2://color
+            puzzleMat.acm.EvaluateQuality(log.back().myCoor,log.back().PieceCollector);
             break;
         case -1://random
             setsolution(log,puzzleMat);
@@ -185,7 +187,7 @@ float capLogElements(vector<LogEntry>& log)
 {
 
     // Till Now only ground structure -> incorrect variable ans vector names
-    double limit = 0.6;
+    double limit = 0.9;
     double diff = 0;
 
     int id=0;
@@ -211,6 +213,10 @@ float capLogElements(vector<LogEntry>& log)
     if(id>0)
         newid = --id; //set to the one just over limit
 
+
+    cut(log,++newid);//this only for test
+    return 1;//this only for test
+
     while(id<(log.back().PieceCollector.size()-1)) //find maximum difference in function
     {
         if(!log.back().PieceCollector[id].first)
@@ -223,8 +229,7 @@ float capLogElements(vector<LogEntry>& log)
             newid = id;
         }
     }
-    if(log.back().abstractionLevel==0)
-        cut(log,newid);
+    cut(log,newid);
 
     vectorsizeAfter = log.back().PieceCollector.size();
     destroyed = ((double)vectorsizeBefore - (double)vectorsizeAfter) / (double)vectorsizeBefore;
@@ -244,6 +249,7 @@ void cut(vector<LogEntry>& log, int& cutID)
 // geeignete Threshold values muessen noch getestet werden
 bool SetBestOrMoreLayersArithmetical(vector<LogEntry>& log, qualityVector& cqVector)
 {
+    return false;
     float threshold, tempBest = 0.0;
     unsigned int countHigherThreshold = 0;
 
@@ -315,6 +321,7 @@ void CalculateNewCombinedQuality(vector<LogEntry>& log, qualityVector& qVector, 
                  if (cqVector.at(i).second->GetPartID() == qVector.at(j).second->GetPartID() && cqVector.at(i).second->GetNumOfRotations() == qVector.at(j).second->GetNumOfRotations()) {
                      // sum Quality of PieceCollector (qualityVector) to combinedQualityVector
                      cqVector.at(i).first += qVector.at(j).first;
+                     qVector.at(j).first = cqVector.at(i).first/DESTRUCTION_COUNT;
                      countSummarizedVectors++;
                      removePart=false;
                      break; // skip remaining for loop => save time!

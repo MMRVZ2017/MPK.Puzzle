@@ -49,6 +49,7 @@ public:
         if(!a1.PreProcessing({cols,rows}, &p_myBox)) return false;
         if(!a3.PreProcessing({cols,rows}, &p_myBox)) return false;
         if(!a4.PreProcessing({cols,rows}, &p_myBox)) return false;
+        if(!acm.PreProcessing({cols,rows}, &p_myBox)) return false;
 
         return true;
     }
