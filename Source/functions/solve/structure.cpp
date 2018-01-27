@@ -78,12 +78,12 @@ void solve(vector<LogEntry>& log,Puzzle& puzzleMat)
     switch(log.back().abstractionLevel)
     {
         case 0://pömpel
-            puzzleMat.a4.EvaluateQuality(log.back().myCoor,log.back().PieceCollector);
+            puzzleMat.a1.EvaluateQuality(log.back().myCoor,log.back().PieceCollector);
             //puzzleMat.a1.EvaluateQuality(log.back().myCoor, log.back().PieceCollector);
         break;
         case 1://poempelposition
-            return;
-            puzzleMat.a3.EvaluateQuality(log.back().myCoor,log.back().PieceCollector);
+//            return;
+            puzzleMat.a4.EvaluateQuality(log.back().myCoor,log.back().PieceCollector);
             break;
         case 4://SURFFeature
             break;
