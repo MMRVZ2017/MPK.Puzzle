@@ -23,6 +23,7 @@ bool AbstractionLayer_SURFFeatures::PreProcessing(coor mySize, const vector<Part
     if(!PreProcessingFullImg(mySize)) return false;
     if(!PreProcessingPieces(mySize, partArray)) return false;
 
+    cout << "Done!" << endl;
     return true;
 }
 
@@ -33,8 +34,9 @@ bool AbstractionLayer_SURFFeatures::EvaluateQuality (coor constraintCoordinate, 
     {
         float diff = abs(m_constraintMatrix[constraintCoordinate.col][constraintCoordinate.row].m_numberOfFeaturesDetected - qVector[i].second->m_a4.m_numberOfFeaturesDetected);
         qVector[i].first = 1 - diff;
-        //cout << fixed << qVector[i].first << endl;
+     //   cout << i << " " << fixed << qVector[i].first << endl;
     }
+   // cout << " Matrix: " << m_constraintMatrix[constraintCoordinate.col][constraintCoordinate.row].m_numberOfFeaturesDetected << endl;
 
     return true;
 }
@@ -69,7 +71,7 @@ bool AbstractionLayer_SURFFeatures::PreProcessingFullImg(coor mySize)
     //cout << "POST: " << image.cols << " x " << image.rows << endl;
 
     // PARAMETERS (for description see top of file)
-    int maxCorners = 10000;
+    int maxCorners = 12000;
     double qualityLevel = 0.01;
     double minDistance = .5;
     Mat mask;
@@ -81,11 +83,13 @@ bool AbstractionLayer_SURFFeatures::PreProcessingFullImg(coor mySize)
     goodFeaturesToTrack( image, corners, maxCorners, qualityLevel, minDistance, mask, blockSize, useHarrisDetector, k );
 
     // Empty the matrix
-    for( int j = 0; j < mySize.col ; j++ )
-    { for( int i = 0; i < mySize.row; i++ )
+    for( int j = 0; j < mySize.row ; j++ )
+    { for( int i = 0; i < mySize.col; i++ )
         {
-            m_constraintMatrix[j][i].m_numberOfFeaturesDetected = 0;
+            m_constraintMatrix[i][j].m_numberOfFeaturesDetected = 0;
+            //cout << m_constraintMatrix[i][j].m_numberOfFeaturesDetected << " ";
         }
+        //cout << endl;
     }
 
     int pieceColSize = image.cols/mySize.col;
@@ -100,21 +104,23 @@ bool AbstractionLayer_SURFFeatures::PreProcessingFullImg(coor mySize)
     // Get minimal and maximal number of features -> TODO: Do in first loop to safe time?
     int minFeatures = int(m_constraintMatrix[0][0].m_numberOfFeaturesDetected);
     int maxFeatures = int(m_constraintMatrix[0][0].m_numberOfFeaturesDetected);
-    for( int j = 0; j < mySize.col ; j++ )
+    for( int j = 0; j < mySize.row ; j++ )
     {
-        for( int i = 0; i < mySize.row; i++ )
+        for( int i = 0; i < mySize.col; i++ )
         {
-            if(m_constraintMatrix[j][i].m_numberOfFeaturesDetected < minFeatures) minFeatures = int(m_constraintMatrix[j][i].m_numberOfFeaturesDetected);
-            if(m_constraintMatrix[j][i].m_numberOfFeaturesDetected > maxFeatures) maxFeatures = int(m_constraintMatrix[j][i].m_numberOfFeaturesDetected);
+            if(m_constraintMatrix[i][j].m_numberOfFeaturesDetected < minFeatures) minFeatures = int(m_constraintMatrix[i][j].m_numberOfFeaturesDetected);
+            if(m_constraintMatrix[i][j].m_numberOfFeaturesDetected > maxFeatures) maxFeatures = int(m_constraintMatrix[i][j].m_numberOfFeaturesDetected);
+            //cout << fixed << m_constraintMatrix[i][j].m_numberOfFeaturesDetected << " ";
         }
+        //cout << endl;
     }
 
     // Calculate percentage from 0 to 100% (normalized 0-1) with numberOfFeatures and safe it
-    for( int j = 0; j < mySize.col ; j++ )
+    for( int j = 0; j < mySize.row ; j++ )
     {
-        for( int i = 0; i < mySize.row; i++ )
+        for( int i = 0; i < mySize.col; i++ )
         {
-            m_constraintMatrix[j][i].m_numberOfFeaturesDetected = (m_constraintMatrix[j][i].m_numberOfFeaturesDetected - minFeatures) / (maxFeatures - minFeatures);
+            m_constraintMatrix[i][j].m_numberOfFeaturesDetected = (m_constraintMatrix[i][j].m_numberOfFeaturesDetected - minFeatures) / (maxFeatures - minFeatures);
             //cout << fixed << m_constraintMatrix[i][j].m_numberOfFeaturesDetected << " ";
         }
         //cout << endl;
@@ -161,19 +167,21 @@ bool AbstractionLayer_SURFFeatures::PreProcessingPieces(coor mySize, const vecto
                                     useHarrisDetector, k);
             if (corners.size() < minFeatures) minFeatures = corners.size();
             if (corners.size() > maxFeatures) maxFeatures = corners.size();
-            partArray->at(imgID)->m_a4.m_numberOfFeaturesDetected = corners.size();
+            for(int rotate = 0; rotate < 4; rotate++)
+                partArray->at(imgID*4 + rotate)->m_a4.m_numberOfFeaturesDetected = corners.size();
+            //cout << imgID << ":" << partArray->at(imgID*4)->m_a4.m_numberOfFeaturesDetected << endl;
+            //cout << imgID << " " << corners.size() << endl;
             /*for( size_t i = 0; i < corners.size(); i++ ) {
                 cv::circle( src, corners[i], 2, cv::Scalar( 255. ), -1 );
             }
             cv::namedWindow( "Output", CV_WINDOW_AUTOSIZE );
             cv::imshow( "Output", src );
-            cout << count << " " << corners.size() << endl;
             cv::waitKey(0);*/
         }
     }
 
     // Calculate percentage from 0 to 100% (normalized 0-1) with numberOfFeatures and safe it
-    for( unsigned i = 0; i < mySize.col*mySize.row; i++ )
+    for( unsigned i = 0; i < partArray->size(); i++ )
     {
         partArray->at(i)->m_a4.m_numberOfFeaturesDetected = (partArray->at(i)->m_a4.m_numberOfFeaturesDetected - minFeatures) / (maxFeatures - minFeatures);
         //cout << fixed << partArray->at(i)->m_a4.m_numberOfFeaturesDetected << endl;
