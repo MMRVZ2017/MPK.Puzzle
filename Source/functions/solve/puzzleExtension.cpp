@@ -65,8 +65,8 @@ void Puzzle::shuffle()
 //deletes all constraints from all abstractionlayers
 void Puzzle::removeConstrains(coor removeCoordinates)
 {
-//    this->a1.RemoveConstraintOnPosition(removeCoordinates);
-//    this->a3.RemoveConstraintOnPosition(removeCoordinates);
+    this->a1.RemoveConstraintOnPosition(removeCoordinates);
+    //this->a3.RemoveConstraintOnPosition(removeCoordinates);
     this->a4.RemoveConstraintOnPosition(removeCoordinates);
     //TODO!! Add other layer remove here
 }
@@ -78,7 +78,7 @@ void Puzzle::setConstraints(coor setConstraints, Part* constraintPiece)
 //    this->dp.m_constraintMatrix[setConstraints.col][setConstraints.row].DestructionArray.emplace_back(it);
 
     //a1
-    //this->a1.SetConstraintOnPosition(setConstraints,constraintPiece->m_a1);
+    this->a1.SetConstraintOnPosition(setConstraints,constraintPiece->m_a1);
 
     //a3
     //this->a3.SetConstraintOnPosition(setConstraints,constraintPiece->m_a3);
@@ -192,12 +192,6 @@ Mat Puzzle::resultImage( vector<LogEntry>& log){
         Mat invert = Mat::ones(img.size(), CV_8UC3); // invert for rotation to work correctly
         bitwise_not ( img, invert );
 
-        if (it.myCoor.col == 35 && it.myCoor.row == 5)
-        {
-            //imshow("img",img);
-            //waitKey(0);
-            ;
-        }
 
 
         int angle = ((int)it.PieceCollector[0].second->GetNumOfRotations())*-90;

@@ -95,8 +95,6 @@ void solve(vector<LogEntry>& log,Puzzle& puzzleMat)
         break;
     }
     float worth = capLogElements(log);
-    cout << " | " << worth << endl;
-
 //    calculateTrueDestructionPower(log,puzzleMat, worth);
     CalculateNewCombinedQuality(log, log.back().PieceCollector, puzzleMat.combinedQualityVector);
 
@@ -120,6 +118,11 @@ void setsolution(vector<LogEntry>& log, Puzzle& puzzleMat)
     cout << "set:" << log.back().myCoor.col << "," << log.back().myCoor.row << endl;
     //cout << "ID: " << log.back().PieceCollector[0].second->GetPartID() << endl;
     cout << "Size of Log: " << log.back().PieceCollector.size() << endl;
+    //if(log.back().myCoor.col==32 && log.back().myCoor.row==16)
+    //{
+//        puzzleMat.resultImage(log);
+//        waitKey(0);
+//    }
 }
 
 bool backtrack(vector<LogEntry>& log, Puzzle& puzzleMat)
