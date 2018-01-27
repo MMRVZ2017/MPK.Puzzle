@@ -100,6 +100,7 @@ void solve(vector<LogEntry>& log,Puzzle& puzzleMat)
         break;
     }
     float worth = capLogElements(log);
+    cout << "remaining: " << log.back().PieceCollector.size() << endl;
 //    calculateTrueDestructionPower(log,puzzleMat, worth);
     CalculateNewCombinedQuality(log, log.back().PieceCollector, puzzleMat.combinedQualityVector);
 
@@ -213,6 +214,8 @@ float capLogElements(vector<LogEntry>& log)
     if(id>0)
         newid = --id; //set to the one just over limit
 
+    else//this only for test
+        cut(log,newid);//this only for test
 
     cut(log,++newid);//this only for test
     return 1;//this only for test
