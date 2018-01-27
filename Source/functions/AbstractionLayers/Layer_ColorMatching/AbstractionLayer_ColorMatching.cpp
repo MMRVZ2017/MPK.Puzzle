@@ -120,15 +120,29 @@ bool AbstractionLayer_ColorMatching::EvaluateQuality (const coor constraintCoord
 
 float AbstractionLayer_ColorMatching::PlaceOfPartGood(coor myCoor, HSV myPart)
 {
-    //Hue max 360°
-    if(m_constraintMatrix[myCoor.col][myCoor.row].m_partColor.h >= 180)
+    //Hue max 180°
+    if(m_constraintMatrix[myCoor.col][myCoor.row].m_partColor.h >= myPart.h)
     {
-        return 1-abs((m_constraintMatrix[myCoor.col][myCoor.row].m_centerColor.h-myPart.h)
-                     /m_constraintMatrix[myCoor.col][myCoor.row].m_centerColor.h);
+        if((m_constraintMatrix[myCoor.col][myCoor.row].m_partColor.h-myPart.h) > 90)
+        {
+            return 1-((myPart.h+180-m_constraintMatrix[myCoor.col][myCoor.row].m_centerColor.h)
+                      /90);
+        } else
+        {
+            return 1-((m_constraintMatrix[myCoor.col][myCoor.row].m_centerColor.h-myPart.h)
+                         /90);
+        }
     }
-    else if(m_constraintMatrix[myCoor.col][myCoor.row].m_partColor.h < 180)
+    else if(m_constraintMatrix[myCoor.col][myCoor.row].m_partColor.h < myPart.h)
     {
-        return 1-((myPart.h-m_constraintMatrix[myCoor.col][myCoor.row].m_centerColor.h)
-                  /(360-m_constraintMatrix[myCoor.col][myCoor.row].m_centerColor.h));
+        if((myPart.h-m_constraintMatrix[myCoor.col][myCoor.row].m_partColor.h) > 90)
+        {
+            return 1-abs((myPart.h-180-m_constraintMatrix[myCoor.col][myCoor.row].m_centerColor.h)
+                      /90);
+        } else
+        {
+            return 1-((myPart.h-m_constraintMatrix[myCoor.col][myCoor.row].m_centerColor.h)
+                      /90);
+        }
     }
 }
