@@ -80,12 +80,16 @@ void solve(vector<LogEntry>& log,Puzzle& puzzleMat)
             puzzleMat.a1.EvaluateQuality(log.back().myCoor,log.back().PieceCollector);
             //puzzleMat.a1.EvaluateQuality(log.back().myCoor, log.back().PieceCollector);
         break;
-        case 1://SURFFeature
+        case 2://SURFFeature
 //            return;
             puzzleMat.a4.EvaluateQuality(log.back().myCoor,log.back().PieceCollector);
             break;
-        case 2://poempelposition
+        case 3://poempelposition
+            return;
             puzzleMat.a3.EvaluateQuality(log.back().myCoor,log.back().PieceCollector);
+            break;
+        case 1://color
+            puzzleMat.a4.EvaluateQuality(log.back().myCoor,log.back().PieceCollector);
             break;
         case -1://random
             setsolution(log,puzzleMat);
@@ -116,11 +120,6 @@ void setsolution(vector<LogEntry>& log, Puzzle& puzzleMat)
     puzzleMat.setConstraints(log.back().myCoor,log.back().PieceCollector.begin()->second);
     cout << "set:" << log.back().myCoor.col << "," << log.back().myCoor.row << endl;
     //cout << "ID: " << log.back().PieceCollector[0].second->GetPartID() << endl;
-    if(log.back().myCoor.col==32 && log.back().myCoor.row==16)
-    {
-        puzzleMat.resultImage(log);
-        waitKey(0);
-    }
 }
 
 bool backtrack(vector<LogEntry>& log, Puzzle& puzzleMat)
@@ -141,9 +140,9 @@ bool backtrack(vector<LogEntry>& log, Puzzle& puzzleMat)
 
 
         //remove similar in log
-         //Part myPart = *log.back().PieceCollector[0].second;//tmpsaves bad part
+         Part myPart = *log.back().PieceCollector[0].second;//tmpsaves bad part
           log.back().PieceCollector.erase(log.back().PieceCollector.begin());//removes bad part from log
-          //puzzleMat.removeSimilar(log.back().PieceCollector,myPart); //removes all pieces from log that are similar to bad part
+          puzzleMat.removeSimilar(log.back().PieceCollector,myPart); //removes all pieces from log that are similar to bad part
         //TODO reprogram similar removal to allow multilayer tracking
         if(log.back().PieceCollector.size()) // this checks if 'removeSimilar' has cleared entire LogElement
         {
@@ -224,13 +223,11 @@ float capLogElements(vector<LogEntry>& log)
             newid = id;
         }
     }
-//    if(log.back().abstractionLevel==0)
+    if(log.back().abstractionLevel==0)
         cut(log,newid);
 
     vectorsizeAfter = log.back().PieceCollector.size();
     destroyed = ((double)vectorsizeBefore - (double)vectorsizeAfter) / (double)vectorsizeBefore;
-    if(log.back().abstractionLevel==1 && destroyed)
-        cerr << "destroyed something!" << endl;
     return (float)sqrt(destroyed*maxdiff);
 
 

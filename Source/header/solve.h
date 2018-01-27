@@ -8,6 +8,7 @@
 #include "../functions/AbstractionLayers/Layer1/AbstractionLayer_1.h"
 #include "../functions/AbstractionLayers/Layer3_PoempelPosition/AbstractionLayer_PoempelPosition.h"
 #include "../functions/AbstractionLayers/Layer_SURFFeatures/AbstractionLayer_SURFFeatures.h"
+#include "../functions/AbstractionLayers/Layer_ColorMatching/AbstractionLayer_ColorMatching.h"
 #include "../functions/AbstractionLayers/DestructionPower/DestructionPower.h"
 
 using namespace std;
@@ -58,6 +59,7 @@ public:
     AbstractionLayer_1 a1;
     AbstractionLayer_PoempelPosition a3;
     AbstractionLayer_SURFFeatures a4;
+    AbstractionLayer_ColorMatching acm;
 
     void removeConstrains(coor removeCoordinates);
     void setConstraints(coor setConstraints, Part *constraintPiece);

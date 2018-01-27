@@ -12,6 +12,7 @@ set(SOURCE_FILES
         functions/AbstractionLayers/Layer1/AbstractionLayer_1.cpp
         functions/AbstractionLayers/Layer3_PoempelPosition/AbstractionLayer_PoempelPosition.cpp
         functions/AbstractionLayers/Layer_SURFFeatures/AbstractionLayer_SURFFeatures.cpp
+        functions/AbstractionLayers/Layer_ColorMatching/AbstractionLayer_ColorMatching.cpp
         functions/AbstractionLayers/DestructionPower/DestructionPower.cpp
         header/solve.h
         header/input.h
