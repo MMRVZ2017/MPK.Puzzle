@@ -226,7 +226,7 @@ float capLogElements(vector<LogEntry>& log)
             newid = id;
         }
     }
-    //cut(log,newid);
+    cut(log,newid);
 
     vectorsizeAfter = log.back().PieceCollector.size();
     destroyed = ((double)vectorsizeBefore - (double)vectorsizeAfter) / (double)vectorsizeBefore;
@@ -241,7 +241,6 @@ void cut(vector<LogEntry>& log, int& cutID)
 {
     while(cutID<log.back().PieceCollector.size())
     {
-        cerr << "!";
         log.back().PieceCollector.erase(log.back().PieceCollector.begin()+cutID);
     }
     cerr << endl;

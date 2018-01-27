@@ -6,7 +6,7 @@
 #include "opencv2/imgproc/imgproc.hpp"
 
 #ifdef _WIN32
-#define PATH_FULL_PUZZLE "..\\..\\..\\puzzle_img\\puzzle2.jpg"
+#define PATH_FULL_PUZZLE "..\\..\\..\\puzzle_img\\puzzle1.jpg"
 #elif defined __unix__
 #define PATH_FULL_PUZZLE "..//..//..//puzzle_img//puzzle1.jpg"
 #elif defined __APPLE__
