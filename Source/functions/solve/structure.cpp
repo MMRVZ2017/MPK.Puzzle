@@ -207,18 +207,14 @@ float capLogElements(vector<LogEntry>& log)
         if(log.back().PieceCollector[id].first < limit)
             break;
     }
+    cut(log,id);//for debugging
+    return 0;//for debugging
     int newid=0;
     //check if all over
     if(id==log.back().PieceCollector.size())
         return 0;
     if(id>0)
         newid = --id; //set to the one just over limit
-
-    else//this only for test
-        cut(log,newid);//this only for test
-
-    cut(log,++newid);//this only for test
-    return 1;//this only for test
 
     while(id<(log.back().PieceCollector.size()-1)) //find maximum difference in function
     {
