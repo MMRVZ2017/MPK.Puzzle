@@ -6,7 +6,7 @@
 #include "opencv2/imgproc/imgproc.hpp"
 
 #ifdef _WIN32
-#define PATH_FULL_PUZZLE "..\\..\\..\\puzzle_img\\puzzle2.jpg"
+#define PATH_FULL_PUZZLE "..\\..\\..\\puzzle_img_bb\\puzzle2.jpg"
 #elif defined __unix__
 #define PATH_FULL_PUZZLE "..//..//..//puzzle_img//puzzle1.jpg"
 #elif defined __APPLE__
@@ -14,7 +14,7 @@
 #endif
 
 #ifdef _WIN32   //TODO: Code duplicate from AbstractionLayer_1.h
-#define PATH1 "..\\..\\..\\pieces\\%04d.jpg"
+#define PATH1 "..\\..\\..\\pieces_bb\\%04d.jpg"
 #elif defined __unix__
 #define PATH1 "..//..//..//pieces//%04d.jpg"
 #elif defined __APPLE__

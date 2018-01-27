@@ -22,7 +22,7 @@
 #define DISPLAY false
 
 #ifdef _WIN32
-#define PATH "..\\..\\..\\pieces\\%04d.jpg"
+#define PATH "..\\..\\..\\pieces_bb\\%04d.jpg"
 #elif defined __unix__
 #define PATH "..//..//..//pieces//%04d.jpg"
 #elif defined __APPLE__

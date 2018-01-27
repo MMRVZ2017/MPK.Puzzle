@@ -72,8 +72,7 @@ coor calculateNextCoor(vector<LogEntry>& log, Puzzle& puzzleMat)
 void solve(vector<LogEntry>& log,Puzzle& puzzleMat)
 {
 	log.back().abstractionLevel = puzzleMat.dp.getNextAbstractionLayer(log.back().myCoor,log.back().abstractionLevel); //sets in abstractionLevel
-    cout << "abs: " << log.back().abstractionLevel;
-    //status(log,p_Box,puzzleMat);
+   //status(log,p_Box,puzzleMat);
     //TODO!! Add more layers here
     switch(log.back().abstractionLevel)
     {
@@ -81,14 +80,14 @@ void solve(vector<LogEntry>& log,Puzzle& puzzleMat)
             puzzleMat.a1.EvaluateQuality(log.back().myCoor,log.back().PieceCollector);
             //puzzleMat.a1.EvaluateQuality(log.back().myCoor, log.back().PieceCollector);
         break;
-        case 1://poempelposition
+        case 1://SURFFeature
 //            return;
             puzzleMat.a4.EvaluateQuality(log.back().myCoor,log.back().PieceCollector);
             break;
-        case 4://SURFFeature
+        case 2://poempelposition
+            puzzleMat.a3.EvaluateQuality(log.back().myCoor,log.back().PieceCollector);
             break;
         case -1://random
-            cout << endl;
             setsolution(log,puzzleMat);
         return;
         default:
@@ -117,12 +116,11 @@ void setsolution(vector<LogEntry>& log, Puzzle& puzzleMat)
     puzzleMat.setConstraints(log.back().myCoor,log.back().PieceCollector.begin()->second);
     cout << "set:" << log.back().myCoor.col << "," << log.back().myCoor.row << endl;
     //cout << "ID: " << log.back().PieceCollector[0].second->GetPartID() << endl;
-    cout << "Size of Log: " << log.back().PieceCollector.size() << endl;
-    //if(log.back().myCoor.col==32 && log.back().myCoor.row==16)
-    //{
-//        puzzleMat.resultImage(log);
-//        waitKey(0);
-//    }
+    if(log.back().myCoor.col==32 && log.back().myCoor.row==16)
+    {
+        puzzleMat.resultImage(log);
+        waitKey(0);
+    }
 }
 
 bool backtrack(vector<LogEntry>& log, Puzzle& puzzleMat)
@@ -133,7 +131,6 @@ bool backtrack(vector<LogEntry>& log, Puzzle& puzzleMat)
         cout << "Puzzle not solveable!" << endl;
         return false;
     }
-    cout << "Size of Log: " << log.back().PieceCollector.size() << endl;
     puzzleMat.combinedQualityVector.clear(); //remove all data from temp quality save
     //if more pieces possible, tset piece as not logged
     if((log.back().PieceCollector.size())>1)
@@ -144,20 +141,18 @@ bool backtrack(vector<LogEntry>& log, Puzzle& puzzleMat)
 
 
         //remove similar in log
-         Part myPart = *log.back().PieceCollector[0].second;//tmpsaves bad part
+         //Part myPart = *log.back().PieceCollector[0].second;//tmpsaves bad part
           log.back().PieceCollector.erase(log.back().PieceCollector.begin());//removes bad part from log
-          puzzleMat.removeSimilar(log.back().PieceCollector,myPart); //removes all pieces from log that are similar to bad part
+          //puzzleMat.removeSimilar(log.back().PieceCollector,myPart); //removes all pieces from log that are similar to bad part
         //TODO reprogram similar removal to allow multilayer tracking
         if(log.back().PieceCollector.size()) // this checks if 'removeSimilar' has cleared entire LogElement
         {
-            cout << "next Piece" << endl;
             if(log.back().PieceCollector.size()==1)
                 log.back().decreaseRandomed();
             setsolution(log,puzzleMat);
             return true;
         }
     }
-    cout << "more backtrack" << endl;
     //else remove log element and backtrack once more
     puzzleMat.removeConstrains(log.back().myCoor); //this should remove constraints from all layers
     if((log.back().PieceCollector.size())) //unset all
@@ -229,7 +224,8 @@ float capLogElements(vector<LogEntry>& log)
             newid = id;
         }
     }
-    cut(log,newid);
+//    if(log.back().abstractionLevel==0)
+        cut(log,newid);
 
     vectorsizeAfter = log.back().PieceCollector.size();
     destroyed = ((double)vectorsizeBefore - (double)vectorsizeAfter) / (double)vectorsizeBefore;
@@ -243,10 +239,7 @@ float capLogElements(vector<LogEntry>& log)
 void cut(vector<LogEntry>& log, int& cutID)
 {
     while(cutID<log.back().PieceCollector.size())
-    {
         log.back().PieceCollector.erase(log.back().PieceCollector.begin()+cutID);
-    }
-    cerr << endl;
 }
 
 // --------------------  Part David: SetBest and CalculateCombinedQuality --------------------
