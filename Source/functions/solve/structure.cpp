@@ -79,9 +79,12 @@ void solve(vector<LogEntry>& log,Puzzle& puzzleMat)
     {
         case 0://pömpel
             puzzleMat.a1.EvaluateQuality(log.back().myCoor, log.back().PieceCollector);
-        break;
+            break;
         case 1://poempelposition
             puzzleMat.a3.EvaluateQuality(log.back().myCoor,log.back().PieceCollector);
+            break;
+        case 2://colorMatching
+            puzzleMat.acm.EvaluateQuality(log.back().myCoor,log.back().PieceCollector);
             break;
         case -1://random
             cout << endl;
