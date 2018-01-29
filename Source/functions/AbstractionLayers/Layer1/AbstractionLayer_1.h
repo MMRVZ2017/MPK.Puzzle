@@ -29,7 +29,7 @@
     #define PATH "..//..//..//pieces//%04d.jpg"
 #endif
 
-#define IMG_SIZE 400
+#define IMG_SIZE 400 // 400
 #define TOP 6
 #define RIGHT 4
 #define BOTTOM 2

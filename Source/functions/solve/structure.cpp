@@ -78,11 +78,12 @@ void solve(vector<LogEntry>& log,Puzzle& puzzleMat)
     switch(log.back().abstractionLevel)
     {
         case 0://pömpel
-            puzzleMat.a1.EvaluateQuality(log.back().myCoor,log.back().PieceCollector);
-            //puzzleMat.a1.EvaluateQuality(log.back().myCoor, log.back().PieceCollector);
+            puzzleMat.a1.EvaluateQuality(log.back().myCoor, log.back().PieceCollector);
         break;
         case 1://poempelposition
-//            return;
+            puzzleMat.a3.EvaluateQuality(log.back().myCoor,log.back().PieceCollector);
+            break;
+        case 2://poempelposition
             puzzleMat.a4.EvaluateQuality(log.back().myCoor,log.back().PieceCollector);
             break;
         case 4://SURFFeature
@@ -229,7 +230,8 @@ float capLogElements(vector<LogEntry>& log)
             newid = id;
         }
     }
-    cut(log,newid);
+    if(log.back().abstractionLevel == 0)
+        cut(log,newid);
 
     vectorsizeAfter = log.back().PieceCollector.size();
     destroyed = ((double)vectorsizeBefore - (double)vectorsizeAfter) / (double)vectorsizeBefore;

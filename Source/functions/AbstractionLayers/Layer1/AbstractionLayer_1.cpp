@@ -271,11 +271,13 @@ Mat analyseParts::readImages(int count)
         return src;
     }
 
-    //if(DISPLAY)imshow("src",src);
+    //cout << count << endl;
+    //imshow("src",src);
+    //waitKey(0);
 
     Mat im_gray, im_bw;
     cvtColor(src, im_gray, CV_RGB2GRAY);
-    im_bw = (im_gray > 220);
+    im_bw = (im_gray > 150); // 220
     im_bw = 255 - im_bw;
     im_bw = makeBorder(im_bw);
     return im_bw;
@@ -635,7 +637,9 @@ vector<Point> analyseParts::findCorners(vector<Point> contour, Point center){
     line(drawing,Point(center.x-dist,(IMG_SIZE/2)),Point(center.x-dist,0),Scalar(255,0,255),3,8);
     line(drawing,Point(0,center.y-dist),Point((IMG_SIZE/2),center.y-dist),Scalar(255,0,255),3,8);
     circle(drawing,quad_contour[3][max_idx],5,Scalar(50,100,255),5,8);
-    if(DISPLAY) imshow("draw",drawing);
+
+    //imshow("draw",drawing);
+    //waitKey(0);
     return corners; 
 }
 unsigned char analyseParts::analyseContour(vector<Point> corners, vector<Point> contour,vector<double>& PoempelPosition){

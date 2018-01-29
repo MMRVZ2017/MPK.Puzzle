@@ -71,8 +71,8 @@ bool AbstractionLayer_SURFFeatures::PreProcessingFullImg(coor mySize)
     //cout << "POST: " << image.cols << " x " << image.rows << endl;
 
     // PARAMETERS (for description see top of file)
-    int maxCorners = 12000;
-    double qualityLevel = 0.01;
+    int maxCorners = 20000;
+    double qualityLevel = 0.001;
     double minDistance = .5;
     Mat mask;
     int blockSize = 3;
@@ -145,11 +145,11 @@ bool AbstractionLayer_SURFFeatures::PreProcessingPieces(coor mySize, const vecto
 
     // PARAMETERS (for description see top of file)
     int maxCorners = 500;
-    double qualityLevel = 0.05;
+    double qualityLevel = 0.0025;
     double minDistance = .5;
     Mat mask;
     int blockSize = 3;
-    bool useHarrisDetector = false;
+    bool useHarrisDetector = true;
     double k = 0.04;
 
     int minFeatures = maxCorners;
@@ -157,7 +157,7 @@ bool AbstractionLayer_SURFFeatures::PreProcessingPieces(coor mySize, const vecto
     char name[100];
 
     for (unsigned imgID = 0; imgID < mySize.col*mySize.row; imgID++) {
-        sprintf(name, PATH1, imgID);
+        sprintf(name, PATH2, imgID); // PATH1
         Mat src = imread(name, IMREAD_GRAYSCALE);
         if (!src.data) {
             cerr << "Problem loading image of puzzle piece!" << endl;
@@ -170,13 +170,26 @@ bool AbstractionLayer_SURFFeatures::PreProcessingPieces(coor mySize, const vecto
             for(int rotate = 0; rotate < 4; rotate++)
                 partArray->at(imgID*4 + rotate)->m_a4.m_numberOfFeaturesDetected = corners.size();
             //cout << imgID << ":" << partArray->at(imgID*4)->m_a4.m_numberOfFeaturesDetected << endl;
-            //cout << imgID << " " << corners.size() << endl;
-            /*for( size_t i = 0; i < corners.size(); i++ ) {
+
+/*
+            cout << imgID << " " << corners.size() << endl;
+            for( size_t i = 0; i < corners.size(); i++ ) {
                 cv::circle( src, corners[i], 2, cv::Scalar( 255. ), -1 );
             }
             cv::namedWindow( "Output", CV_WINDOW_AUTOSIZE );
             cv::imshow( "Output", src );
-            cv::waitKey(0);*/
+            cv::waitKey(0);
+*/
+            /*
+            if (imgID == 56)
+            {
+                cout << imgID << ":" << partArray->at(imgID*4)->m_a4.m_numberOfFeaturesDetected << endl;
+                cv::namedWindow( "Output", CV_WINDOW_AUTOSIZE );
+                cv::imshow( "Output", src );
+                cv::waitKey(0);
+                ;
+            }*/
+
         }
     }
 

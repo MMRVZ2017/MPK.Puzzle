@@ -10,7 +10,7 @@
 #elif defined __unix__
 #define PATH_FULL_PUZZLE "..//..//..//puzzle_img//puzzle1.jpg"
 #elif defined __APPLE__
-    #define PATH_FULL_PUZZLE "..//..//..//puzzle_img//puzzle1.jpg"
+    #define PATH_FULL_PUZZLE "..//..//..//puzzle_img//puzzle3.png"
 #endif
 
 #ifdef _WIN32   //TODO: Code duplicate from AbstractionLayer_1.h
@@ -19,6 +19,7 @@
 #define PATH1 "..//..//..//pieces//%04d.jpg"
 #elif defined __APPLE__
     #define PATH1 "..//..//..//pieces//%04d.jpg"
+    #define PATH2 "..//..//..//pieces_a4//%04d.jpg"
 #endif
 
 
