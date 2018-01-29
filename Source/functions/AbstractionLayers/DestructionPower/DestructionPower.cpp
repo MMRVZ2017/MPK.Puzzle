@@ -71,10 +71,10 @@ float DestructionPower::defaultDestructionPower(int i)
 //gets next highest valued abstraction layer down from current one (if first, get highest)
 int DestructionPower::getNextAbstractionLayer(coor newCoordinate, int currentAbstractionLayer)
 {
-    if(++currentAbstractionLayer>=DESTRUCTION_COUNT)
-        return -1;
-    else
-        return currentAbstractionLayer;
+    //hardcode advance
+    if(currentAbstractionLayer<DESTRUCTION_COUNT)
+        return ++currentAbstractionLayer;
+    return -1;
 
     float currentPower = 1;
     int nextLayer=-1;

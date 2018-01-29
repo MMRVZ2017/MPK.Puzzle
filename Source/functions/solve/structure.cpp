@@ -43,7 +43,7 @@ void createNextLogElement(vector<LogEntry>& log, Puzzle& puzzleMat)
 {
 	log.emplace_back(LogEntry(coor(0, 0)));
    	log.back().myCoor = calculateNextCoor(log, puzzleMat);
-//    puzzleMat.dp.DestructionOfSurrounding(log.back().myCoor);//calculate dp from surrounding
+    puzzleMat.dp.DestructionOfSurrounding(log.back().myCoor);//calculate dp from surrounding
      //get all not set pieces
     for(auto it:puzzleMat.p_myBox)
         if(!it->set)
@@ -80,17 +80,15 @@ void solve(vector<LogEntry>& log,Puzzle& puzzleMat)
     {
         case 0://pömpel
             puzzleMat.a1.EvaluateQuality(log.back().myCoor,log.back().PieceCollector);
-            //puzzleMat.a1.EvaluateQuality(log.back().myCoor, log.back().PieceCollector);
         break;
         case 1://SURFFeature
 //            return;
             puzzleMat.a4.EvaluateQuality(log.back().myCoor,log.back().PieceCollector);
             break;
-        case 3://poempelposition
-            return;
+        case 2://poempelposition
             puzzleMat.a3.EvaluateQuality(log.back().myCoor,log.back().PieceCollector);
             break;
-        case 2://color
+        case 3://color
             puzzleMat.acm.EvaluateQuality(log.back().myCoor,log.back().PieceCollector);
             break;
         case -1://random
@@ -101,7 +99,7 @@ void solve(vector<LogEntry>& log,Puzzle& puzzleMat)
     }
     float worth = capLogElements(log);
     cout << "remaining: " << log.back().PieceCollector.size() << endl;
-//    calculateTrueDestructionPower(log,puzzleMat, worth);
+    calculateTrueDestructionPower(log,puzzleMat, worth);
     CalculateNewCombinedQuality(log, log.back().PieceCollector, puzzleMat.combinedQualityVector);
 
 }
@@ -123,12 +121,14 @@ void setsolution(vector<LogEntry>& log, Puzzle& puzzleMat)
     puzzleMat.setConstraints(log.back().myCoor,log.back().PieceCollector.begin()->second);
     cout << "set:" << log.back().myCoor.col << "," << log.back().myCoor.row << endl;
     //cout << "ID: " << log.back().PieceCollector[0].second->GetPartID() << endl;
+    if(log.back().myCoor.col>=31 && log.back().myCoor.row==5)
+        puzzleMat.resultImage(log);
+
 }
 
 bool backtrack(vector<LogEntry>& log, Puzzle& puzzleMat)
 {
-    puzzleMat.resultImage(log);
-    cout << "backtrack" << endl;
+   cout << "backtrack" << endl;
     if(log.empty())
     {
         cout << "Puzzle not solveable!" << endl;
@@ -164,8 +164,11 @@ bool backtrack(vector<LogEntry>& log, Puzzle& puzzleMat)
                 puzzleMat.p_myBox[i]->set=false;
 
     log.pop_back();
-    if(!backtrack(log,puzzleMat))
+     if(!backtrack(log,puzzleMat))
+    {
         return false;
+
+    }
     return true;
 }
 
@@ -189,7 +192,7 @@ float capLogElements(vector<LogEntry>& log)
 {
 
     // Till Now only ground structure -> incorrect variable ans vector names
-    double limit = 0.9;
+    double limit = 0.6;
     double diff = 0;
 
     int id=0;

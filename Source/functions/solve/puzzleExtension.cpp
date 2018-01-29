@@ -177,12 +177,6 @@ Mat Puzzle::resultImage( vector<LogEntry>& log){
     char name[100];
     for (auto it:log)
     {
-        if (it.myCoor.col == 27 && it.myCoor.row == 5)
-        {
-            ;
-            // imshow("result",result);
-            // waitKey(0);
-        }
 
         //cout << it.PieceCollector[0].second->GetPartID() << endl;
 
