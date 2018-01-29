@@ -65,6 +65,7 @@ void Puzzle::shuffle()
 //deletes all constraints from all abstractionlayers
 void Puzzle::removeConstrains(coor removeCoordinates)
 {
+    this->dp.RemoveConstraintOnPosition(removeCoordinates);
     this->a1.RemoveConstraintOnPosition(removeCoordinates);
     this->a3.RemoveConstraintOnPosition(removeCoordinates);
     this->a4.RemoveConstraintOnPosition(removeCoordinates);
@@ -74,9 +75,9 @@ void Puzzle::removeConstrains(coor removeCoordinates)
 void Puzzle::setConstraints(coor setConstraints, Part* constraintPiece)
 {
     //dp
-//    this->dp.m_constraintMatrix[setConstraints.col][setConstraints.row].DestructionArray.clear();
-//    for(auto it:this->tmp_destructionArray)
-//    this->dp.m_constraintMatrix[setConstraints.col][setConstraints.row].DestructionArray.emplace_back(it);
+    this->dp.m_constraintMatrix[setConstraints.col][setConstraints.row].DestructionArray.clear();
+    for(auto it:this->tmp_destructionArray)
+    this->dp.m_constraintMatrix[setConstraints.col][setConstraints.row].DestructionArray.emplace_back(it);
 
     //a1
     this->a1.SetConstraintOnPosition(setConstraints,constraintPiece->m_a1);

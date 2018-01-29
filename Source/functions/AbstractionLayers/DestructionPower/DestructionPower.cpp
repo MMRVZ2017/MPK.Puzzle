@@ -16,6 +16,11 @@ bool DestructionPower::PreProcessing(coor mySize,const vector<Part*>* partArray)
     cout << "DestructionPower Preprocessing...  ";
 
     InitialiseConstraintMatrixSize(mySize.col,mySize.row);
+
+    for(auto& it:m_constraintMatrix)
+        for(auto& ti:it)
+            for(int i=0;i<DESTRUCTION_COUNT;i++)
+                ti.DestructionArray.push_back(0);
     cout << "Done!" << endl;
     return true;
 }
@@ -31,27 +36,36 @@ bool DestructionPower::SetConstraintOnPosition(const coor constraintCoordinate, 
 
 bool DestructionPower::RemoveConstraintOnPosition(const coor constraintCoordinate)
 {
+    for(int i=0;i<m_constraintMatrix[constraintCoordinate.col][constraintCoordinate.row].DestructionArray.size();i++)
+    m_constraintMatrix[constraintCoordinate.col][constraintCoordinate.row].DestructionArray[i]=0;
 }
 
 //gets destruction power from left and from top if possible and normalizes
 void DestructionPower::DestructionOfSurrounding(const coor constraintCoordinate) {
 
-    for(int i = 0; i < m_constraintMatrix[constraintCoordinate.col][constraintCoordinate.row].DestructionArray.size(); ++i)
-        m_constraintMatrix[constraintCoordinate.col][constraintCoordinate.row].DestructionArray.pop_back();
-    for (int i = 0; i < DESTRUCTION_COUNT; ++i) {
-
-        m_constraintMatrix[constraintCoordinate.col][constraintCoordinate.row].DestructionArray.push_back(0);
+   for (int i = 0; i < DESTRUCTION_COUNT; ++i) {
         int divisor=0;
-        if(constraintCoordinate.row > 0)
+       //check if not at edge and if information is valid
+        if(constraintCoordinate.row > 0 && m_constraintMatrix[constraintCoordinate.col][constraintCoordinate.row-1].DestructionArray[i] > 0)
         {
             divisor++;
             m_constraintMatrix[constraintCoordinate.col][constraintCoordinate.row].DestructionArray[i] += m_constraintMatrix[constraintCoordinate.col][constraintCoordinate.row-1].DestructionArray[i];
         }
-        if(constraintCoordinate.col > 0)
+        if(constraintCoordinate.col > 0 && m_constraintMatrix[constraintCoordinate.col-1][constraintCoordinate.row].DestructionArray[i] > 0)
         {
             divisor++;
             m_constraintMatrix[constraintCoordinate.col][constraintCoordinate.row].DestructionArray[i] += m_constraintMatrix[constraintCoordinate.col-1][constraintCoordinate.row].DestructionArray[i];
         }
+       if(constraintCoordinate.col < m_constraintMatrix.size()-1 && m_constraintMatrix[constraintCoordinate.col+1][constraintCoordinate.row].DestructionArray[i] > 0)
+       {
+           divisor++;
+           m_constraintMatrix[constraintCoordinate.col][constraintCoordinate.row].DestructionArray[i] += m_constraintMatrix[constraintCoordinate.col+1][constraintCoordinate.row].DestructionArray[i];
+       }
+       if(constraintCoordinate.row < m_constraintMatrix[i].size()-1 && m_constraintMatrix[constraintCoordinate.col][constraintCoordinate.row+1].DestructionArray[i] > 0)
+       {
+           divisor++;
+           m_constraintMatrix[constraintCoordinate.col][constraintCoordinate.row].DestructionArray[i] += m_constraintMatrix[constraintCoordinate.col-1][constraintCoordinate.row].DestructionArray[i];
+       }
         if(divisor)
             m_constraintMatrix[constraintCoordinate.col][constraintCoordinate.row].DestructionArray[i] /=divisor;
         else
@@ -63,19 +77,16 @@ void DestructionPower::DestructionOfSurrounding(const coor constraintCoordinate)
     }
 }
 
-float DestructionPower::defaultDestructionPower(int i)
-{
-
-}
-
 //gets next highest valued abstraction layer down from current one (if first, get highest)
 int DestructionPower::getNextAbstractionLayer(coor newCoordinate, int currentAbstractionLayer)
 {
     //hardcode advance
-    if(currentAbstractionLayer<DESTRUCTION_COUNT)
-        return ++currentAbstractionLayer;
-    return -1;
+//    if(currentAbstractionLayer<DESTRUCTION_COUNT-1)
+//        return ++currentAbstractionLayer;
+//    return -1;
 
+    if(currentAbstractionLayer==-1)
+        return 0;//poempel in out
     float currentPower = 1;
     int nextLayer=-1;
     float nextLayerPower=0;

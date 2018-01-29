@@ -54,14 +54,38 @@ void createNextLogElement(vector<LogEntry>& log, Puzzle& puzzleMat)
 
 coor calculateNextCoor(vector<LogEntry>& log, Puzzle& puzzleMat)
 {
-    //level 1:
-        //go left to right, then increase current row
+
     if (log.size() == 1)
         return {0,0};
 
 
-	unsigned int col= log.rbegin()[1].myCoor.col;
-	unsigned int row= log.rbegin()[1].myCoor.row;
+    unsigned int col= log.rbegin()[1].myCoor.col;
+    unsigned int row= log.rbegin()[1].myCoor.row;
+    //level 2 edges first
+
+    if(col == 0 && row < 27)
+        return {col,++row};
+    if(row== 27 && col < 35)
+        return {++col,row};
+    if(col == 35 && row >0)
+        return {col, --row};
+    if(col >1&& row ==0)
+        return{--col,row};
+    if(col==1 && row==0)
+        return {1,1};
+
+
+    log.pop_back();//vis only!!!
+    puzzleMat.resultImage(log);//vis only!!!
+
+
+    if(row<puzzleMat.getSizeAsCoor().row-2) row++;
+    else if(col<puzzleMat.getSizeAsCoor().col-2){ row=1; col++;}
+    return	{col,row};
+
+    //level 1:
+        //go left to right, then increase current row
+
 
 
 	if(row<puzzleMat.getSizeAsCoor().row-1) row++;
@@ -81,11 +105,11 @@ void solve(vector<LogEntry>& log,Puzzle& puzzleMat)
         case 0://pömpel
             puzzleMat.a1.EvaluateQuality(log.back().myCoor,log.back().PieceCollector);
         break;
-        case 3://SURFFeature
+        case 2://SURFFeature
 //            return;
             puzzleMat.a4.EvaluateQuality(log.back().myCoor,log.back().PieceCollector);
             break;
-        case 2://poempelposition
+        case 3://poempelposition
             puzzleMat.a3.EvaluateQuality(log.back().myCoor,log.back().PieceCollector);
             break;
         case 1://color
@@ -121,8 +145,7 @@ void setsolution(vector<LogEntry>& log, Puzzle& puzzleMat)
     puzzleMat.setConstraints(log.back().myCoor,log.back().PieceCollector.begin()->second);
     cout << "set:" << log.back().myCoor.col << "," << log.back().myCoor.row << endl;
     //cout << "ID: " << log.back().PieceCollector[0].second->GetPartID() << endl;
-    if(log.back().myCoor.col>=3 && log.back().myCoor.row==2)
-        puzzleMat.resultImage(log);
+    puzzleMat.resultImage(log);
 
 }
 
@@ -144,9 +167,9 @@ bool backtrack(vector<LogEntry>& log, Puzzle& puzzleMat)
 
 
         //remove similar in log
-         Part myPart = *log.back().PieceCollector[0].second;//tmpsaves bad part
-          log.back().PieceCollector.erase(log.back().PieceCollector.begin());//removes bad part from log
-          puzzleMat.removeSimilar(log.back().PieceCollector,myPart); //removes all pieces from log that are similar to bad part
+        Part myPart = *log.back().PieceCollector[0].second;//tmpsaves bad part
+        log.back().PieceCollector.erase(log.back().PieceCollector.begin());//removes bad part from log
+         puzzleMat.removeSimilar(log.back().PieceCollector,myPart); //removes all pieces from log that are similar to bad part
         //TODO reprogram similar removal to allow multilayer tracking
         if(log.back().PieceCollector.size()) // this checks if 'removeSimilar' has cleared entire LogElement
         {
@@ -173,7 +196,6 @@ bool backtrack(vector<LogEntry>& log, Puzzle& puzzleMat)
 }
 
 
-//this is addon stuff that should later all be extracted into a sererate cpp as it is not core dispatcher functionality
 void calculateTrueDestructionPower(vector<LogEntry>& log, Puzzle& puzzleMat, float Layerworth) {
     float destructionPower = sqrt(
             Layerworth * puzzleMat.dp.m_constraintMatrix[0][0].SpeedTable[log.back().abstractionLevel]);
@@ -211,8 +233,6 @@ float capLogElements(vector<LogEntry>& log)
         if(log.back().PieceCollector[id].first < limit)
             break;
     }
-    cut(log,id);//for debugging
-    return 0;//for debugging
 
     int newid=0;
     //check if all over
@@ -253,7 +273,6 @@ void cut(vector<LogEntry>& log, int& cutID)
 // geeignete Threshold values muessen noch getestet werden
 bool SetBestOrMoreLayersArithmetical(vector<LogEntry>& log, qualityVector& cqVector)
 {
-    return false;
     float threshold, tempBest = 0.0;
     unsigned int countHigherThreshold = 0;
 

@@ -21,13 +21,12 @@ bool AbstractionLayer_ColorMatching::PreProcessing(coor mySize, const vector<Par
 
     for (int r = 0; r < mySize.row; r++) {
         for (int c = 0; c < mySize.col; c++) {
-            Mat ExtPart = puzzle(CvRect(c*X, r*Y, X, Y));
+            Mat ExtPart = puzzle(CvRect(c * X, r * Y, X, Y));
 
             // crop image to ROI
             Mat ExtPartCropped = ExtPart(
                     Rect(ExtPart.size().width / 3, ExtPart.size().height / 3, ExtPart.size().width / 3,
                          ExtPart.size().height / 3));
-
             // Create a new matrix to hold the HSV image
             Mat HSVExtPart;
             // convert RGB image to HSV
@@ -166,14 +165,19 @@ bool AbstractionLayer_ColorMatching::EvaluateQuality (const coor constraintCoord
 {
     for(int i = 0;i<qVector.size();i++)
     {
-        float value1 = PlaceOfPartGood(constraintCoordinate, qVector[i].second->m_acm.m_centerColor);
+       //float value1 = PlaceOfPartGood(constraintCoordinate, qVector[i].second->m_acm.m_centerColor);
 
+        if(constraintCoordinate.col==5 && constraintCoordinate.row ==27)
+        {
+            ;
+        }
 
+        float value1 = (float)(1-(abs(m_constraintMatrix[constraintCoordinate.col][constraintCoordinate.row].m_centerColor.h-qVector[i].second->m_acm.m_centerColor.h))/180);
         float value2 = (float)(1-(abs(m_constraintMatrix[constraintCoordinate.col][constraintCoordinate.row].m_centerColor.s-qVector[i].second->m_acm.m_centerColor.s))/255);
         float value3 = (float)(1-(abs(m_constraintMatrix[constraintCoordinate.col][constraintCoordinate.row].m_centerColor.v-qVector[i].second->m_acm.m_centerColor.v))/255);
 
 
-        qVector[i].first = (value1+value2+value3)/3;
+        qVector[i].first = (value1*4+value2*2+value3*1)/6;
     }
 }
 
