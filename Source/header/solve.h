@@ -36,6 +36,12 @@ private:
     static int randomed;
 };
 
+struct combinedQualityTop2 {
+    Part* qualityID;
+    float quality1 = 0.0;
+    float quality2 = 0.0;
+};
+
 class Puzzle
 {
 public:
@@ -87,6 +93,7 @@ public:
     vector<Part*> p_myBox;
 
     qualityVector combinedQualityVector;
+    vector<combinedQualityTop2> combinedQualityTop2Vector;
 
     vector<float> tmp_destructionArray;
 

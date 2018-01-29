@@ -4,6 +4,8 @@ void calculateTrueDestructionPower(vector<LogEntry>& log, Puzzle& puzzleMat, flo
 void cut(vector<LogEntry>& log, int& cutID);
 float capLogElements(vector<LogEntry>& log);
 void CalculateNewCombinedQuality(vector<LogEntry>& log, qualityVector& qVector, qualityVector& cqVector);
+bool SetBestOrMoreLayersTop2(vector<LogEntry>& log, vector<combinedQualityTop2>& cqVectorTop2);
+void CalculateNewCombinedQualityTop2(vector<LogEntry>& log, qualityVector& qVector, vector<combinedQualityTop2>& cqVectorTop2);
 
 bool next(vector<LogEntry>& log,Puzzle& puzzleMat)
 {
@@ -371,4 +373,116 @@ void CalculateNewCombinedQuality(vector<LogEntry>& log, qualityVector& qVector, 
              cout << "Size of countSummarizedVectors: " << countSummarizedVectors << endl;
          }
      }
+}
+
+// New Stuff
+// Use combinedQuality- and setBest-Arithmetical or the following combinedQualityTop2 and setBestTop2
+bool SetBestOrMoreLayersTop2(vector<LogEntry>& log, vector<combinedQualityTop2>& cqVectorTop2)
+{
+    float threshold, tempBest = 0.0;
+    unsigned int countHigherThreshold = 0;
+
+    if(cqVectorTop2.empty())
+    {
+        //cerr << "combinedQualityVector is empty." << endl;  // should not be empty => backtrack?
+        return false; // Warning: can only return true or false. What return for error?
+    }
+    else
+    {
+        // change threshold level at half of used layeers
+        if (log.back().abstractionLevel < 2)
+        {
+            threshold = 0.90;
+        }
+        else
+        {
+            threshold = 0.80;
+        }
+
+        // check Quality of current Puzzle Piece in  combinedQualityTop2Vector with Threshold value
+        for (auto it = cqVectorTop2.begin(); it != cqVectorTop2.end(); it++)
+        {
+            if ( ((cqVectorTop2.back().quality1 + cqVectorTop2.back().quality2) / 2) >= threshold) // const threshold values
+            {
+                // count how many Pieces are greater than the threshold value
+                countHigherThreshold++;
+            }
+            else
+            {
+                if ( ((cqVectorTop2.back().quality1 + cqVectorTop2.back().quality2) / 2) > tempBest)
+                    tempBest = cqVectorTop2.back().quality1 + cqVectorTop2.back().quality2;  // could be used, for additional constraints
+            }
+        }
+
+        // return true if only one piece is left
+        if (1 == countHigherThreshold)
+        {
+            return true;
+        }
+        else
+        {
+            return false;
+        }
+    }
+}
+
+void CalculateNewCombinedQualityTop2(vector<LogEntry>& log, qualityVector& qVector, vector<combinedQualityTop2>& cqVectorTop2)
+{
+    int countCheckedVectors = 0;
+    bool removePart=true;
+
+    // check if both qualityVectors are not empty
+    if(qVector.empty())
+    {
+        //cerr << "qualityVector is empty." << endl;  // should not be empty => backtrack?
+        return;
+    }
+
+    if(cqVectorTop2.empty())
+    {
+        //cout << "combinedQualityVector was initialized." << endl;  //first layer stuff eh
+        for (unsigned int j = 0; j < qVector.size(); j++)
+        {
+            cqVectorTop2.at(j).qualityID = qVector.at(j).second;
+            cqVectorTop2.at(j).quality1 = qVector.at(j).first;
+        }
+    }
+
+    else
+    {
+        for (unsigned int i = 0; i < cqVectorTop2.size();) {
+            for (unsigned int j = 0; j < qVector.size(); j++) {
+                // search same PuzzlePart of qualityVector and combinedQualityVector
+                removePart=true;
+                if (cqVectorTop2.at(i).qualityID->GetPartID() == qVector.at(j).second->GetPartID() && cqVectorTop2.at(i).qualityID->GetNumOfRotations() == qVector.at(j).second->GetNumOfRotations()) {
+                    // if current Quality of PieceCollector (qualityVector) is Higher than cqVectorTop2 than replace quality
+                    if (qVector.at(j).first > cqVectorTop2.at(i).quality1)
+                    {
+                        cqVectorTop2.at(i).quality2 = cqVectorTop2.at(i).quality1;
+                        cqVectorTop2.at(i).quality1 = qVector.at(j).first;
+                    }
+                    else if (qVector.at(j).first > cqVectorTop2.at(i).quality2)
+                        cqVectorTop2.at(i).quality2 = qVector.at(j).first;
+
+                    countCheckedVectors++;
+                    removePart=false;
+                    break; // skip remaining for loop => save time!
+                }
+            }
+
+            if(removePart)
+            {
+                swap(cqVectorTop2.at(i), cqVectorTop2.back());
+                cqVectorTop2.pop_back();
+            } else i++;
+        }
+
+        // cqVectorTop2 should have the same size now as newest qVector
+        if (cqVectorTop2.size() != qVector.size()) {
+            cerr << "Size of combinedQualityTop2Vector doesnt match with size of qualityVector!" << endl;
+            cout << "Size of combinedQualityTop2Vector: " << cqVectorTop2.size() << endl;
+            cout << "Size of qualityVector: " << qVector.size() << endl;
+            cout << "Size of countCheckedVectors: " << countCheckedVectors << endl;
+        }
+    }
 }
