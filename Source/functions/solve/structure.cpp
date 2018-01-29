@@ -81,14 +81,14 @@ void solve(vector<LogEntry>& log,Puzzle& puzzleMat)
         case 0://pömpel
             puzzleMat.a1.EvaluateQuality(log.back().myCoor,log.back().PieceCollector);
         break;
-        case 1://SURFFeature
+        case 3://SURFFeature
 //            return;
             puzzleMat.a4.EvaluateQuality(log.back().myCoor,log.back().PieceCollector);
             break;
         case 2://poempelposition
             puzzleMat.a3.EvaluateQuality(log.back().myCoor,log.back().PieceCollector);
             break;
-        case 3://color
+        case 1://color
             puzzleMat.acm.EvaluateQuality(log.back().myCoor,log.back().PieceCollector);
             break;
         case -1://random
@@ -121,7 +121,7 @@ void setsolution(vector<LogEntry>& log, Puzzle& puzzleMat)
     puzzleMat.setConstraints(log.back().myCoor,log.back().PieceCollector.begin()->second);
     cout << "set:" << log.back().myCoor.col << "," << log.back().myCoor.row << endl;
     //cout << "ID: " << log.back().PieceCollector[0].second->GetPartID() << endl;
-    if(log.back().myCoor.col>=31 && log.back().myCoor.row==5)
+    if(log.back().myCoor.col>=3 && log.back().myCoor.row==2)
         puzzleMat.resultImage(log);
 
 }
@@ -192,7 +192,7 @@ float capLogElements(vector<LogEntry>& log)
 {
 
     // Till Now only ground structure -> incorrect variable ans vector names
-    double limit = 0.6;
+    double limit = 0.1;
     double diff = 0;
 
     int id=0;

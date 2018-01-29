@@ -1,6 +1,6 @@
 #pragma once
 //TODO!! increase Destructioncount
-#define DESTRUCTION_COUNT 4
+#define DESTRUCTION_COUNT 2
 
 #include "DestructionPower_Properties.h"
 #include "../AbstraktionLayer_Base.h"
