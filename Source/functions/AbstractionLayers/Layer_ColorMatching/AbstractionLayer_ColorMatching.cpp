@@ -177,7 +177,7 @@ bool AbstractionLayer_ColorMatching::EvaluateQuality (const coor constraintCoord
         float value3 = (float)(1-(abs(m_constraintMatrix[constraintCoordinate.col][constraintCoordinate.row].m_centerColor.v-qVector[i].second->m_acm.m_centerColor.v))/255);
 
 
-        qVector[i].first = (value1*4+value2*2+value3*1)/6;
+        qVector[i].first = (value1*2+value2*2+value3*2)/6;
     }
 }
 

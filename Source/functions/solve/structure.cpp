@@ -169,9 +169,9 @@ bool backtrack(vector<LogEntry>& log, Puzzle& puzzleMat)
 
 
         //remove similar in log
-        Part myPart = *log.back().PieceCollector[0].second;//tmpsaves bad part
+        //Part myPart = *log.back().PieceCollector[0].second;//tmpsaves bad part
         log.back().PieceCollector.erase(log.back().PieceCollector.begin());//removes bad part from log
-         puzzleMat.removeSimilar(log.back().PieceCollector,myPart); //removes all pieces from log that are similar to bad part
+        //puzzleMat.removeSimilar(log.back().PieceCollector,myPart); //removes all pieces from log that are similar to bad part
         //TODO reprogram similar removal to allow multilayer tracking
         if(log.back().PieceCollector.size()) // this checks if 'removeSimilar' has cleared entire LogElement
         {
@@ -216,7 +216,7 @@ float capLogElements(vector<LogEntry>& log)
 {
 
     // Till Now only ground structure -> incorrect variable ans vector names
-    double limit = 0.1;
+    double limit = 0.8;
     double diff = 0;
 
     int id=0;
