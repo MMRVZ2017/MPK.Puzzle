@@ -127,6 +127,7 @@ void setsolution(vector<LogEntry>& log, Puzzle& puzzleMat)
 
 bool backtrack(vector<LogEntry>& log, Puzzle& puzzleMat)
 {
+    puzzleMat.resultImage(log);
     cout << "backtrack" << endl;
     if(log.empty())
     {
@@ -209,6 +210,7 @@ float capLogElements(vector<LogEntry>& log)
     }
     cut(log,id);//for debugging
     return 0;//for debugging
+
     int newid=0;
     //check if all over
     if(id==log.back().PieceCollector.size())

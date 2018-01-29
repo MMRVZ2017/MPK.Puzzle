@@ -16,7 +16,7 @@
 //#include <cstdlib>
 #include <cmath>
 
-
+#define PATH_FULL_PUZZLE "..\\..\\..\\puzzle_img_bb\\puzzle2.jpg"
 #ifdef _WIN32
 //#define PATH "..\\..\\..\\pieces\\%04d.jpg"
 #elif defined __unix__

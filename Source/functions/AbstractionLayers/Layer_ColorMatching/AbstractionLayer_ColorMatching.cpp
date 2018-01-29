@@ -8,7 +8,7 @@ bool AbstractionLayer_ColorMatching::PreProcessing(coor mySize, const vector<Par
     InitialiseConstraintMatrixSize(mySize.col, mySize.row); //col row switched in this function
 
     //**Get color for constraint matrix**//
-    Mat puzzle = imread("puzzle1.jpg", IMREAD_COLOR); // Read the picture of the puzzle
+    Mat puzzle = imread(PATH_FULL_PUZZLE, IMREAD_COLOR); // Read the picture of the puzzle
     if (puzzle.empty())                      // Check for invalid input
     {
         cout << "Could not open or find the image" << std::endl;
