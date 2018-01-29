@@ -168,6 +168,10 @@ bool AbstractionLayer_ColorMatching::EvaluateQuality (const coor constraintCoord
     {
         float value1 = PlaceOfPartGood(constraintCoordinate, qVector[i].second->m_acm.m_centerColor);
 
+        if((constraintCoordinate.col == 31) && (constraintCoordinate.row == 0))
+        {
+            //cout << "test" << endl;
+        }
 
         float value2 = (float)(1-(abs(m_constraintMatrix[constraintCoordinate.col][constraintCoordinate.row].m_centerColor.s-qVector[i].second->m_acm.m_centerColor.s))/255);
         float value3 = (float)(1-(abs(m_constraintMatrix[constraintCoordinate.col][constraintCoordinate.row].m_centerColor.v-qVector[i].second->m_acm.m_centerColor.v))/255);
@@ -175,6 +179,8 @@ bool AbstractionLayer_ColorMatching::EvaluateQuality (const coor constraintCoord
 
         qVector[i].first = (value1+value2+value3)/3;
     }
+
+    return true;
 }
 
 float AbstractionLayer_ColorMatching::PlaceOfPartGood(coor myCoor, HSV myPart)

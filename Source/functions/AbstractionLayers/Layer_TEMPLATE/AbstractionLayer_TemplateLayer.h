@@ -32,7 +32,6 @@
 
 
 using namespace std;
-using namespace cv; //for openCV functions
 
 class AbstractionLayer_TemplateLayer : public AbstractionLayer_Base<AbstractionLayer_TemplateLayer_Properties>
 {

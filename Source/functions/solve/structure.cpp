@@ -1,4 +1,6 @@
 #include "../../header.h"
+//#include <time.h>
+
 bool SetBestOrMoreLayersArithmetical(vector<LogEntry>& log, qualityVector& cqVector);
 void calculateTrueDestructionPower(vector<LogEntry>& log, Puzzle& puzzleMat, float Layerworth);
 void cut(vector<LogEntry>& log, int& cutID);
@@ -72,7 +74,10 @@ coor calculateNextCoor(vector<LogEntry>& log, Puzzle& puzzleMat)
 void solve(vector<LogEntry>& log,Puzzle& puzzleMat)
 {
     log.back().abstractionLevel = puzzleMat.dp.getNextAbstractionLayer(log.back().myCoor,log.back().abstractionLevel); //sets in abstractionLevel
-    cout << "a: " << log.back().abstractionLevel << endl;
+    //cout << "a: " << log.back().abstractionLevel << endl;
+
+    //if(log.back().myCoor.col>=31 && log.back().myCoor.row==0)
+        //cout << "Test";
 
     //status(log,p_Box,puzzleMat);
     //TODO!! Add more layers here
@@ -97,8 +102,9 @@ void solve(vector<LogEntry>& log,Puzzle& puzzleMat)
         default:
         break;
     }
+    //cout << "remaining: " << log.back().PieceCollector.size() << endl;
     float worth = capLogElements(log);
-    cout << "remaining: " << log.back().PieceCollector.size() << endl;
+    //cout << "remaining: " << log.back().PieceCollector.size() << endl;
     calculateTrueDestructionPower(log,puzzleMat, worth);
     CalculateNewCombinedQuality(log, log.back().PieceCollector, puzzleMat.combinedQualityVector);
 
@@ -120,15 +126,19 @@ void setsolution(vector<LogEntry>& log, Puzzle& puzzleMat)
 	log.back().Set();
     puzzleMat.setConstraints(log.back().myCoor,log.back().PieceCollector.begin()->second);
     cout << "set:" << log.back().myCoor.col << "," << log.back().myCoor.row << endl;
+    //struct timespec tim, tim2;
+    //tim.tv_sec  = 0;
+    //tim.tv_nsec = 400000000L;
+    //nanosleep(&tim , &tim2);
     //cout << "ID: " << log.back().PieceCollector[0].second->GetPartID() << endl;
-    if(log.back().myCoor.col>=3 && log.back().myCoor.row==2)
-        puzzleMat.resultImage(log);
+    //if(log.back().myCoor.col>=34 && log.back().myCoor.row==2)
+       //puzzleMat.resultImage(log);
 
 }
 
 bool backtrack(vector<LogEntry>& log, Puzzle& puzzleMat)
 {
-   cout << "backtrack" << endl;
+    //cout << "backtrack" << endl;
     if(log.empty())
     {
         cout << "Puzzle not solveable!" << endl;
@@ -192,7 +202,7 @@ float capLogElements(vector<LogEntry>& log)
 {
 
     // Till Now only ground structure -> incorrect variable ans vector names
-    double limit = 0.1;
+    double limit = 0;
     double diff = 0;
 
     int id=0;

@@ -27,7 +27,6 @@
 
 
 using namespace std;
-using namespace cv;
 
 class AbstractionLayer_ColorMatching : public AbstractionLayer_Base<AbstractionLayer_ColorMatching_Properties>
 {

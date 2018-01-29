@@ -6,7 +6,6 @@
 #include "opencv2/imgproc/imgproc.hpp"
 
 using namespace std;
-using namespace cv;
 
 class AbstractionLayer_PoempelPosition : public AbstractionLayer_Base<AbstractionLayer_PoempelPosition_Properties>
 {
