@@ -9,6 +9,7 @@
 #include "../functions/AbstractionLayers/Layer3_PoempelPosition/AbstractionLayer_PoempelPosition.h"
 #include "../functions/AbstractionLayers/Layer_SURFFeatures/AbstractionLayer_SURFFeatures.h"
 #include "../functions/AbstractionLayers/Layer_ColorMatching/AbstractionLayer_ColorMatching.h"
+#include "../functions/AbstractionLayers/Layer_Histogram/AbstractionLayer_Histogram.h"
 #include "../functions/AbstractionLayers/DestructionPower/DestructionPower.h"
 
 using namespace std;
@@ -56,6 +57,7 @@ public:
         if(!a3.PreProcessing({cols,rows}, &p_myBox)) return false;
         if(!a4.PreProcessing({cols,rows}, &p_myBox)) return false;
         if(!acm.PreProcessing({cols,rows}, &p_myBox)) return false;
+        if(!his.PreProcessing({cols,rows}, &p_myBox)) return false;
 
         return true;
     }
@@ -67,6 +69,7 @@ public:
     AbstractionLayer_PoempelPosition a3;
     AbstractionLayer_SURFFeatures a4;
     AbstractionLayer_ColorMatching acm;
+    AbstractionLayer_Histogram his;
 
     void removeConstrains(coor removeCoordinates);
     void setConstraints(coor setConstraints, Part *constraintPiece);

@@ -10,7 +10,7 @@
 #include "../functions/AbstractionLayers/Layer3_PoempelPosition/AbstractionLayer_PoempelPosition_Properties.h"
 #include "../functions/AbstractionLayers/Layer_ColorMatching/AbstractionLayer_ColorMatching_Properties.h"
 #include "../functions/AbstractionLayers/Layer_SURFFeatures/AbstractionLayer_SURFFeatures_Properties.h"
-
+#include "../functions/AbstractionLayers/Layer_Histogram/AbstractionLayer_Histogram_Properties.h"
 class LayerContainer;
 
 class Part
@@ -47,6 +47,7 @@ public:
     AbstractionLayer_PoempelPosition_Properties m_a3;
     AbstractionLayer_SURFFeatures_Properties m_a4;
     AbstractionLayer_ColorMatching_Properties m_acm;
+    AbstractionLayer_Histogram_Properties m_his;
 private:
     int32_t m_partID;
     uint8_t m_numOfRotations;
