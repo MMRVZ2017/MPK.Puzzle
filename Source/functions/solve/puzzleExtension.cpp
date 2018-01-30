@@ -78,8 +78,10 @@ void Puzzle::setConstraints(coor setConstraints, Part* constraintPiece)
 
     //a1
     this->a1.SetConstraintOnPosition(setConstraints,constraintPiece->m_a1);
+    //a2
+    this->a2.SetConstraintOnPosition(setConstraints,constraintPiece->m_aHistogram);
     //a3
-    this->a3.SetConstraintOnPosition(setConstraints,constraintPiece->m_Histogram);
+    this->a3.SetConstraintOnPosition(setConstraints,constraintPiece->m_aMeanDifference);
 
     //TODO!! Add other layer remove here
 }

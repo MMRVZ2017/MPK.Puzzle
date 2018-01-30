@@ -227,7 +227,7 @@ Mat analyseParts::readImages(int count)
         return src;
     }
 
-    if(DISPLAY)imshow("src",src);
+    //if(DISPLAY)imshow("src",src);
 
     Mat im_gray, im_bw;
     cvtColor(src, im_gray, CV_RGB2GRAY);
@@ -362,7 +362,7 @@ bool analyseParts::getImages(){
     Mat mask_gray;
 
     for (int i = 0; i < nr_parts; i++) {
-        if(DISPLAY) cout << "Bild " << i << endl;
+       // if(DISPLAY) cout << "Bild " << i << endl;
         Mat im_bw = readImages(i);
 
         if(!im_bw.data)
@@ -568,7 +568,7 @@ vector<Point> analyseParts::findCorners(vector<Point> contour, Point center){
     line(drawing,Point(center.x-dist,(IMG_SIZE/2)),Point(center.x-dist,0),Scalar(255,0,255),3,8);
     line(drawing,Point(0,center.y-dist),Point((IMG_SIZE/2),center.y-dist),Scalar(255,0,255),3,8);
     circle(drawing,quad_contour[3][max_idx],5,Scalar(50,100,255),5,8);
-    if(DISPLAY) imshow("draw",drawing);
+   // if(DISPLAY) imshow("draw",drawing);
     return corners;
 }
 
@@ -699,8 +699,8 @@ unsigned char analyseParts::analyseContour(vector<Point> corners, vector<Point> 
 
     //cout << bitset<sizeof(char) * CHAR_BIT> (tabs) <<  "b\n";
 
-    if(DISPLAY)imshow("corners",drawing);
-    if(DISPLAY)waitKey(0);
+    //if(DISPLAY)imshow("corners",drawing);
+    //if(DISPLAY)waitKey(0);
     return tabs;
 }
 

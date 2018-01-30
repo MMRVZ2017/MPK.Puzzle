@@ -73,7 +73,7 @@ bool AbstractionLayer_Histogram::PreProcessing(coor mySize,  const vector<Part*>
             calcHist(&hsv_img1, 1, channels, Mat(), hist_img1, 2, histSize, ranges, true, false);
             // normalize(hist_img1, hist_img1, 0, 1, NORM_MINMAX, -1, Mat());
 
-            ref_partArray[iterator]->m_Histogram.image=hsv_img1;
+            ref_partArray[iterator]->m_aHistogram.image=hsv_img1;
             iterator++;
 
         }
@@ -91,7 +91,7 @@ bool AbstractionLayer_Histogram::EvaluateQuality (const coor constraintCoordinat
     //evaluateQuality = evaluateProbabilaty
     for(int i = 0;i < qVector.size();i++)
     {
-        if(PlaceOfPartGood(constraintCoordinate, qVector[i].second->m_Histogram.image))
+        if(PlaceOfPartGood(constraintCoordinate, qVector[i].second->m_aHistogram.image))
         {
             qVector[i].first=1;
 

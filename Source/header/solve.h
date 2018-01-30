@@ -49,6 +49,7 @@ public:
         createBox(); createp_box();
         dp.PreProcessing({cols,rows}, nullptr);
         a1.PreProcessing({cols,rows}, &p_myBox);
+        a2.PreProcessing({cols,rows}, &p_myBox);
         a3.PreProcessing({cols,rows},&p_myBox);
         return true;
     }

@@ -9,7 +9,7 @@ using namespace cv;
 
 Mat cMeanDifference::readImages(int count)
 {
-    char name[100];
+    char name[200];
     Mat corr;
     Mat ref_gray;
 
@@ -22,7 +22,7 @@ Mat cMeanDifference::readImages(int count)
     }
 
     if(DISPLAY)imshow("src",src);
-
+    //waitKey();
     Mat im_color;
     cvtColor(src, im_color, COLOR_BGR2HSV);
     return im_color;

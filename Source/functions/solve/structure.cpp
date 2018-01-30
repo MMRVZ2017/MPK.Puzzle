@@ -78,17 +78,19 @@ void solve(vector<LogEntry>& log,Puzzle& puzzleMat)
     switch(log.back().abstractionLevel)
     {
         case 0://pömpel
-            return;
+
             puzzleMat.a1.EvaluateQuality(log.back().myCoor, log.back().PieceCollector);
         break;
         case 2:
-            return;
+
             puzzleMat.a2.EvaluateQuality(log.back().myCoor, log.back().PieceCollector);
+            break;
         case 3:
-            return;
+
             puzzleMat.a3.EvaluateQuality(log.back().myCoor, log.back().PieceCollector);
+            break;
         case -1://random
-            return;
+
             setsolution(log,puzzleMat);
         return;
         default:

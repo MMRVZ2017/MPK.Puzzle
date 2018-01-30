@@ -23,7 +23,7 @@
 #include <vector>
 #include <bitset>
 
-#define DISPLAY false
+#define DISPLAY true
 
 #ifdef _WIN32
 //#define PATH "..\\..\\..\\pieces\\%04d.jpg"

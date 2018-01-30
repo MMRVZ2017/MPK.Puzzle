@@ -4,7 +4,7 @@
 
 #ifndef MPK_PUZZLE_ABSTRACTIONLAYER_HISTOGRAM_H
 #define MPK_PUZZLE_ABSTRACTIONLAYER_HISTOGRAM_H
-#define DISPLAY false
+#define DISPLAY true
 //#define PATH "..\\..\\..\\pieces\\%04d.jpg"
 #define PATH "C:\\Users\\Niko\\Desktop\\Technikum\\Semester 1\\MPK\\Projekt\\GitHubMMR\\MPK.Puzzle\\Source\\pieces\\%04d.jpg"
 #include "opencv2/highgui/highgui.hpp"
