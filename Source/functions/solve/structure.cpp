@@ -105,14 +105,14 @@ void solve(vector<LogEntry>& log,Puzzle& puzzleMat)
         case 0://pömpel
             puzzleMat.a1.EvaluateQuality(log.back().myCoor,log.back().PieceCollector);
         break;
-        case 4://SURFFeature
+        case 1://SURFFeature
 //            return;
             puzzleMat.a4.EvaluateQuality(log.back().myCoor,log.back().PieceCollector);
             break;
         case 3://poempelposition
             puzzleMat.a3.EvaluateQuality(log.back().myCoor,log.back().PieceCollector);
             break;
-        case 1://color
+        case 4://color
             puzzleMat.acm.EvaluateQuality(log.back().myCoor,log.back().PieceCollector);
             break;
         case 2://KantenLaenge
@@ -148,7 +148,7 @@ void setsolution(vector<LogEntry>& log, Puzzle& puzzleMat)
     puzzleMat.setConstraints(log.back().myCoor,log.back().PieceCollector.begin()->second);
     cout << "set:" << log.back().myCoor.col << "," << log.back().myCoor.row << endl;
     //cout << "ID: " << log.back().PieceCollector[0].second->GetPartID() << endl;
-    puzzleMat.resultImage(log);
+    //puzzleMat.resultImage(log);
 
 }
 
