@@ -14,7 +14,7 @@ set(SOURCE_FILES
         functions/AbstractionLayers/Layer_SURFFeatures/AbstractionLayer_SURFFeatures.cpp
         functions/AbstractionLayers/Layer_ColorMatching/AbstractionLayer_ColorMatching.cpp
         functions/AbstractionLayers/DestructionPower/DestructionPower.cpp
-        functions/AbstractionLayers/Layer_Histogram/AbstractionLayer_Histogram.cpp
+        functions/AbstractionLayers/Layer2_KantenLaenge/AbstractionLayer_KantenLaenge.cpp
         header/solve.h
         header/input.h
         functions/solve/puzzleExtension.cpp)

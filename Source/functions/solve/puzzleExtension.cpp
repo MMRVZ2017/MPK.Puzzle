@@ -70,7 +70,7 @@ void Puzzle::removeConstrains(coor removeCoordinates)
     this->a3.RemoveConstraintOnPosition(removeCoordinates);
     this->a4.RemoveConstraintOnPosition(removeCoordinates);
     this->acm.RemoveConstraintOnPosition(removeCoordinates);
-    this->his.RemoveConstraintOnPosition(removeCoordinates);
+    this->a2.RemoveConstraintOnPosition(removeCoordinates);
     //TODO!! Add other layer remove here
 }
 void Puzzle::setConstraints(coor setConstraints, Part* constraintPiece)
@@ -93,7 +93,7 @@ void Puzzle::setConstraints(coor setConstraints, Part* constraintPiece)
     this->acm.SetConstraintOnPosition(setConstraints,constraintPiece->m_acm);
 
     //his
-    this->his.SetConstraintOnPosition(setConstraints,constraintPiece->m_his);
+    this->a2.SetConstraintOnPosition(setConstraints,constraintPiece->m_a2);
     //TODO!! Add other layer remove here
 }
 

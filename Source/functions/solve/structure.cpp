@@ -58,27 +58,25 @@ coor calculateNextCoor(vector<LogEntry>& log, Puzzle& puzzleMat)
 {
 
     if (log.size() == 1)
-//        return {0,0};
-return {1,1};
+        return {0,0};
 
     unsigned int col= log.rbegin()[1].myCoor.col;
     unsigned int row= log.rbegin()[1].myCoor.row;
     //level 2 edges first
 
-//    if(col == 0 && row < 27)
-//        return {col,++row};
-//    if(row== 27 && col < 35)
-//        return {++col,row};
-//    if(col == 35 && row >0)
-//        return {col, --row};
-//    if(col >1&& row ==0)
-//        return{--col,row};
-//    if(col==1 && row==0)
-//        return {1,1};
+    if(col == 0 && row < 27)
+        return {col,++row};
+    if(row== 27 && col < 35)
+        return {++col,row};
+    if(col == 35 && row >0)
+        return {col, --row};
+    if(col >1&& row ==0)
+        return{--col,row};
+    if(col==1 && row==0)
+        return {1,1};
 
-
-//    log.pop_back();//vis only!!!
-//    puzzleMat.resultImage(log);//vis only!!!
+    log.pop_back();//vis only!!!
+    puzzleMat.resultImage(log);//vis only!!!
 
 
     if(row<puzzleMat.getSizeAsCoor().row-2) row++;
@@ -104,10 +102,10 @@ void solve(vector<LogEntry>& log,Puzzle& puzzleMat)
     //TODO!! Add more layers here
     switch(log.back().abstractionLevel)
     {
-        case 10://pömpel
+        case 0://pömpel
             puzzleMat.a1.EvaluateQuality(log.back().myCoor,log.back().PieceCollector);
         break;
-        case 2://SURFFeature
+        case 4://SURFFeature
 //            return;
             puzzleMat.a4.EvaluateQuality(log.back().myCoor,log.back().PieceCollector);
             break;
@@ -117,8 +115,8 @@ void solve(vector<LogEntry>& log,Puzzle& puzzleMat)
         case 1://color
             puzzleMat.acm.EvaluateQuality(log.back().myCoor,log.back().PieceCollector);
             break;
-        case 0://histogram
-            puzzleMat.his.EvaluateQuality(log.back().myCoor,log.back().PieceCollector);
+        case 2://KantenLaenge
+            puzzleMat.a2.EvaluateQuality(log.back().myCoor,log.back().PieceCollector);
             break;
         case -1://random
             setsolution(log,puzzleMat);
